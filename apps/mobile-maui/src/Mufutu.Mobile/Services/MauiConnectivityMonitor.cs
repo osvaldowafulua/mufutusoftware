@@ -16,6 +16,7 @@ public sealed class MauiConnectivityMonitor : IConnectivityMonitor, IDisposable
     private readonly ICampoNotificationService _notifications;
     private readonly ICampoSyncEngine _sync;
     private readonly IAuthSessionStore _session;
+    private readonly INotificationPresenter _notificationPresenter;
     private Timer? _periodicTimer;
 
     public event EventHandler? ConnectivityChanged;
@@ -24,12 +25,14 @@ public sealed class MauiConnectivityMonitor : IConnectivityMonitor, IDisposable
         ICampoDataService data,
         ICampoNotificationService notifications,
         ICampoSyncEngine sync,
-        IAuthSessionStore session)
+        IAuthSessionStore session,
+        INotificationPresenter notificationPresenter)
     {
         _data = data;
         _notifications = notifications;
         _sync = sync;
         _session = session;
+        _notificationPresenter = notificationPresenter;
         Connectivity.ConnectivityChanged += OnConnectivityChanged;
     }
 
@@ -71,7 +74,7 @@ public sealed class MauiConnectivityMonitor : IConnectivityMonitor, IDisposable
 
         try
         {
-            await Plugin.LocalNotification.LocalNotificationCenter.Current.RequestNotificationPermission();
+            await _notificationPresenter.RequestPermissionAsync();
         }
         catch
         {

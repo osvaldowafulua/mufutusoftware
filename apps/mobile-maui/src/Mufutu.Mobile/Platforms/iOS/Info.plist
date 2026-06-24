@@ -4,6 +4,8 @@
 <dict>
     <key>CFBundleDisplayName</key>
     <string>MUFUTU</string>
+    <key>NSUserNotificationsUsageDescription</key>
+    <string>Alertas de novas ordens de trabalho e mensagens da oficina.</string>
     <key>NSCameraUsageDescription</key>
     <string>Fotografar avarias no campo para pedidos de manutenção.</string>
     <key>NSPhotoLibraryUsageDescription</key>

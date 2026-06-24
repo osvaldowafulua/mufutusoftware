@@ -12,6 +12,7 @@ namespace Mufutu.Mobile.Core.Notifications;
 public interface INotificationPresenter
 {
     Task ShowAsync(NotificationDto notification, CancellationToken ct = default);
+    Task RequestPermissionAsync(CancellationToken ct = default);
 }
 
 public interface ICampoNotificationService

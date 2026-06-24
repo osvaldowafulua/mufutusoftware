@@ -6,8 +6,6 @@ using Mufutu.Mobile.Core.Services;
 using Mufutu.Mobile.Services;
 using Mufutu.Mobile.ViewModels;
 using Mufutu.Mobile.Views;
-using Plugin.LocalNotification;
-
 namespace Mufutu.Mobile;
 
 public static class MauiProgram
@@ -15,9 +13,7 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        builder
-            .UseMauiApp<App>()
-            .UseLocalNotification();
+        builder.UseMauiApp<App>();
 
         builder.Services.AddSingleton<IDatabasePathProvider, MauiDatabasePathProvider>();
         builder.Services.AddSingleton<MauiConnectivityMonitor>();

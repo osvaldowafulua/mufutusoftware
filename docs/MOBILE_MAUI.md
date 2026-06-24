@@ -62,7 +62,7 @@ Ficheiro → Abrir → Projecto/Solução
 
 - `GET /notifications` — lista + cache local (lidas offline)
 - WebSocket `wss://…/notifications` com Bearer token
-- `Plugin.LocalNotification` — alerta no iPhone/Android quando chega OT nova
+- Notificações locais nativas (Android NotificationCompat + iOS UNUserNotificationCenter) — alerta quando chega OT nova
 - Ecrã **Notificações** no hub (ícone 🔔 / contador)
 
 ### iPhone — notch / Dynamic Island

@@ -23,11 +23,6 @@
     <CodesignProvision Condition="'$(CI)' == 'true'">-</CodesignProvision>
   </PropertyGroup>
 
-  <ItemGroup Condition="$(TargetFramework.Contains('-android'))">
-    <PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.4.3.1" />
-    <PackageReference Include="Xamarin.AndroidX.Collection.Jvm" Version="1.4.3.1" />
-  </ItemGroup>
-
   <ItemGroup>
     <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#0F1419" BaseSize="128,128" />
   </ItemGroup>
@@ -37,7 +32,6 @@
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="Plugin.LocalNotification" Version="12.0.2" />
   </ItemGroup>
 
   <ItemGroup>
