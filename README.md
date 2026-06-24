@@ -1,14 +1,16 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/logo-software-white.png" />
-    <source media="(prefers-color-scheme: light)" srcset="assets/brand/logo-software-dark.png" />
-    <img alt="MUFUTU Software" src="assets/brand/logo-software-banner.png" width="420" />
-  </picture>
+  <img alt="MUFUTU Software" src="assets/brand/logo-software-horizontal.png" width="520" />
 </p>
 
 <p align="center">
   <strong>Cockpit de operações e gestão de ativos para mineração</strong><br/>
   <sub>CMMS/EAM · Angola · Offline-first · Multi-site MUA · LUC · MIL</sub>
+</p>
+
+<p align="center">
+  <a href="https://github.com/osvaldowafulua/mufutusoftware/stargazers">
+    <img src="assets/brand/icon-orange.png" alt="MUFUTU" width="64" />
+  </a>
 </p>
 
 <p align="center">
@@ -237,6 +239,12 @@ mufutusoftware/
 ---
 
 ## Estatísticas & comunidade
+
+<p align="center">
+  <a href="https://github.com/osvaldowafulua/mufutusoftware">
+    <img src="assets/brand/icon-orange.png" alt="MUFUTU" width="56" />
+  </a>
+</p>
 
 <p align="center">
   <a href="https://github.com/osvaldowafulua/mufutusoftware">
