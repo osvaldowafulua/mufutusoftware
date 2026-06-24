@@ -3,44 +3,7 @@
     x:Class="Mufutu.Mobile.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:views="clr-namespace:Mufutu.Mobile.Views"
     Shell.FlyoutBehavior="Disabled"
     Shell.NavBarIsVisible="False"
     Title="MUFUTU">
-
-    <ShellContent
-        Title="Entrar"
-        ContentTemplate="{DataTemplate views:LoginPage}"
-        Route="login" />
-
-    <ShellContent
-        Title="Campo"
-        ContentTemplate="{DataTemplate views:CampoHubPage}"
-        Route="campo" />
-
-    <ShellContent
-        Title="Trabalhos"
-        ContentTemplate="{DataTemplate views:OtsPage}"
-        Route="ots" />
-
-    <ShellContent
-        Title="Avaria"
-        ContentTemplate="{DataTemplate views:AvariaPage}"
-        Route="avaria" />
-
-    <ShellContent
-        Title="Checklist"
-        ContentTemplate="{DataTemplate views:ChecklistPage}"
-        Route="checklist" />
-
-    <ShellContent
-        Title="Notificações"
-        ContentTemplate="{DataTemplate views:NotificationsPage}"
-        Route="notifications" />
-
-    <ShellContent
-        Title="Enviar"
-        ContentTemplate="{DataTemplate views:SyncPage}"
-        Route="sync" />
-
 </Shell>
