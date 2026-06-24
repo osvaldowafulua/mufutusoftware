@@ -52,15 +52,14 @@
   },
   "win": {
     "target": [
-      { "target": "nsis", "arch": ["x64"] },
-      { "target": "zip", "arch": ["x64"] }
+      { "target": "nsis", "arch": ["x64"] }
     ],
     "icon": "assets/icon.ico",
     "artifactName": "MUFUTU-${version}-win-${arch}.${ext}"
   },
   "nsis": {
     "oneClick": false,
-    "perMachine": false,
+    "perMachine": true,
     "allowToChangeInstallationDirectory": true,
     "allowElevation": true,
     "installerIcon": "assets/icon.ico",
@@ -69,9 +68,14 @@
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true,
     "shortcutName": "MUFUTU",
+    "runAfterFinish": true,
+    "menuCategory": "MUFUTU",
+    "uninstallDisplayName": "MUFUTU",
     "installerLanguages": ["pt_BR", "en_US"],
     "language": "1046",
-    "artifactName": "MUFUTU-Setup-${version}-${arch}.${ext}"
+    "artifactName": "MUFUTU-Setup-${version}-${arch}.${ext}",
+    "deleteAppDataOnUninstall": false,
+    "warningsAsErrors": false
   },
   "linux": {
     "target": ["AppImage"],

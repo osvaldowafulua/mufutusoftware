@@ -49,24 +49,17 @@
 
 ---
 
-## Descarregar agora (v1.0.5)
+## Descarregar agora
 
-| Plataforma | Ficheiro | Link directo |
-|------------|----------|--------------|
-| **macOS** (Apple Silicon) | `.dmg` | [MUFUTU-1.0.5-arm64.dmg](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.5-arm64.dmg) |
-| **macOS** (ZIP) | `.zip` | [MUFUTU-1.0.5-arm64.zip](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.5-arm64.zip) |
-| **Windows** (portátil x64) | `.zip` | [MUFUTU-1.0.0-win-x64.zip](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.0-win-x64.zip) |
-| **Web** | browser | [app.mufutu.ao](https://app.mufutu.ao) |
+| Plataforma | Instalador oficial | Notas |
+|------------|-------------------|--------|
+| **Windows** | [`MUFUTU-Setup-1.0.6-x64.exe`](https://github.com/osvaldowafulua/mufutusoftware/releases/latest) | Assistente de instalação — **use este** |
+| **macOS** | [`MUFUTU-1.0.5-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.5-arm64.dmg) | Arrastar para Aplicações |
+| **Web** | [app.mufutu.ao](https://app.mufutu.ao) | Sem instalador |
 
-Verifique integridade com [`checksums.sha256`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/checksums.sha256) antes de instalar.
+> **Não use o ZIP Windows** (`MUFUTU-*-win-x64.zip`) — é versão **portátil** para testes. O utilizador final deve instalar com **`MUFUTU-Setup-*.exe`**. Ver [windows/INSTALAR.md](windows/INSTALAR.md).
 
-<p align="center">
-  <img src="https://img.shields.io/badge/macOS-DMG_arm64-000000?style=flat-square&logo=apple&logoColor=white" />
-  <img src="https://img.shields.io/badge/Windows-ZIP_x64-0078D4?style=flat-square&logo=windows&logoColor=white" />
-  <img src="https://img.shields.io/badge/Windows-Setup.exe-em_breve-0078D4?style=flat-square&logo=windows&logoColor=white" />
-  <img src="https://img.shields.io/badge/Android-APK-em_breve-3DDC84?style=flat-square&logo=android&logoColor=white" />
-  <img src="https://img.shields.io/badge/iOS-App_Store-em_breve-000000?style=flat-square&logo=apple&logoColor=white" />
-</p>
+Verifique integridade com `checksums.sha256` em cada release.
 
 ---
 
