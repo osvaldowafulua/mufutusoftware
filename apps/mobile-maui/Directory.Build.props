@@ -9,5 +9,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <MauiVersion>8.0.100</MauiVersion>
+    <!-- SDK 9+ no CI: net8.0-android ainda compila -->
+    <CheckEolWorkloads>false</CheckEolWorkloads>
   </PropertyGroup>
 </Project>

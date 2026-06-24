@@ -16,7 +16,7 @@ permissions:
   actions: read
 
 env:
-  DOTNET_VERSION: '8.0.x'
+  DOTNET_VERSION: '8.0.404'
   MOBILE_MAUI_DIR: apps/mobile-maui
   CI: true
 
@@ -30,6 +30,9 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: SDK activo
+        run: dotnet --info
 
       - name: Restore Core + Tests
         working-directory: ${{ env.MOBILE_MAUI_DIR }}
@@ -62,8 +65,12 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Instalar workload MAUI
-        run: dotnet workload install maui-android --skip-manifest-update
+      - name: SDK activo
+        shell: bash
+        run: dotnet --version
+
+      - name: Instalar workload MAUI Android
+        run: dotnet workload install maui-android
 
       - name: Resolve version
         id: ver
@@ -78,12 +85,13 @@ jobs:
 
       - name: Build & publish APK
         working-directory: ${{ env.MOBILE_MAUI_DIR }}
+        shell: bash
         run: |
-          dotnet restore Mufutu.Mobile.sln
-          dotnet publish src/Mufutu.Mobile/Mufutu.Mobile.csproj `
-            -f net8.0-android -c Release `
-            -p:ApplicationDisplayVersion=${{ steps.ver.outputs.version }} `
-            -p:AndroidPackageFormat=apk `
+          dotnet restore src/Mufutu.Mobile/Mufutu.Mobile.csproj -f net8.0-android
+          dotnet publish src/Mufutu.Mobile/Mufutu.Mobile.csproj \
+            -f net8.0-android -c Release \
+            -p:ApplicationDisplayVersion=${{ steps.ver.outputs.version }} \
+            -p:AndroidPackageFormat=apk \
             -o artifacts/android
 
       - uses: actions/upload-artifact@v4
@@ -103,18 +111,31 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Instalar workload MAUI iOS
-        run: dotnet workload install maui-ios --skip-manifest-update
+      - name: SDK activo
+        run: dotnet --version
+
+      - name: Instalar workloads MAUI (multi-target)
+        run: dotnet workload install maui-android maui-ios
+
+      - name: Resolve version
+        id: ver
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [[ "$TAG" =~ ^mobile-maui/v(.+)$ ]]; then
+            echo "version=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${{ github.event.inputs.version || '1.0.0' }}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Build iOS (sem assinatura em CI)
         working-directory: ${{ env.MOBILE_MAUI_DIR }}
         env:
           CI: true
         run: |
-          dotnet restore Mufutu.Mobile.sln
+          dotnet restore src/Mufutu.Mobile/Mufutu.Mobile.csproj -f net8.0-ios
           dotnet build src/Mufutu.Mobile/Mufutu.Mobile.csproj \
             -f net8.0-ios -c Release \
-            -p:ApplicationDisplayVersion=${{ github.event.inputs.version || '1.0.0' }}
+            -p:ApplicationDisplayVersion=${{ steps.ver.outputs.version }}
 
       - name: Teste conectividade (macOS runner)
         run: bash ${{ env.MOBILE_MAUI_DIR }}/scripts/test-api-connectivity.sh
@@ -139,6 +160,6 @@ jobs:
           TAG="${{ github.ref_name }}"
           VER="${TAG#mobile-maui/v}"
           NOTES="MUFUTU Mobile MAUI ${VER} — Android APK + pipeline iOS validado."
-          gh release create "v${VER}" --repo "$GITHUB_REPOSITORY" --title "MUFUTU Mobile ${VER}" \
+          gh release create "mobile-maui/v${VER}" --repo "$GITHUB_REPOSITORY" --title "MUFUTU Mobile ${VER}" \
             --notes "$NOTES" release-assets/**/* 2>/dev/null || \
-          gh release upload "v${VER}" --repo "$GITHUB_REPOSITORY" --clobber release-assets/**/*
+          gh release upload "mobile-maui/v${VER}" --repo "$GITHUB_REPOSITORY" --clobber release-assets/**/*
