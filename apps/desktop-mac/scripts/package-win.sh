@@ -3,7 +3,10 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
-CMMS="${MUFUTU_CMMS_DIR:-$ROOT/../mufutu}"
+CMMS="$(cd "${MUFUTU_CMMS_DIR:-$ROOT/../mufutu}" 2>/dev/null && pwd || true)"
+if [[ -z "$CMMS" || ! -d "$CMMS/apps/web" ]]; then
+  CMMS="$(cd "$ROOT/../mufutu" && pwd)"
+fi
 WEB="$CMMS/apps/web"
 ELECTRON="$ROOT/apps/electron"
 OUT="$ROOT/apps/desktop-win/artifacts/installer"
@@ -14,8 +17,19 @@ BACKUP="$ELECTRON/.electron-obfuscate-backup"
 
 if [[ ! -d "$WEB" ]]; then
   echo "❌ CMMS não encontrado: $WEB" >&2
-  echo "   Defina MUFUTU_CMMS_DIR ou clone mufutu ao lado de mufutusoftware" >&2
+  echo "   Execute a partir de mufutusoftware:" >&2
+  echo "   cd /Users/fluadigital/Documents/GitHub/mufutusoftware" >&2
+  echo "   bash apps/desktop-mac/scripts/package-win.sh $VERSION" >&2
+  echo "   Ou: MUFUTU_CMMS_DIR=/caminho/mufutu bash ..." >&2
   exit 1
+fi
+
+if [[ "$(uname -s)" != "MINGW"* && "$(uname -s)" != "MSYS"* && "$(uname -s)" != "CYGWIN"* && "$(uname -s)" != "Windows_NT" ]]; then
+  if ! command -v wine64 >/dev/null 2>&1 && ! command -v wine >/dev/null 2>&1; then
+    echo "⚠️  Build NSIS (.exe) no Mac requer Wine ou GitHub Actions (Windows)." >&2
+    echo "   Alternativa: bash apps/desktop-mac/scripts/package-win.sh no PC Windows" >&2
+    echo "   Ou: GitHub → Actions → Windows Electron Installer (NSIS)" >&2
+  fi
 fi
 
 restore_electron_sources() {
