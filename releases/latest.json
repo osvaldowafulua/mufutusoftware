@@ -1,9 +1,9 @@
 {
   "product": "MUFUTU",
-  "version": "1.0.5",
-  "tag": "v1.0.5",
+  "version": "1.0.6",
+  "tag": "v1.0.6",
   "channel": "stable",
-  "releasedAt": "2026-06-24T08:23:12Z",
+  "releasedAt": "2026-06-24T14:20:37Z",
   "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/latest",
   "platforms": {
     "macos": {
@@ -11,8 +11,8 @@
       "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.5-arm64.zip"
     },
     "windows": {
-      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.0-win-x64.zip",
-      "note": "Instalador MSI/EXE em breve — use ZIP portátil ou app web"
+      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.6/MUFUTU-Setup-1.0.6-x64.exe",
+      "note": "Use o instalador .exe — não o ZIP portátil"
     },
     "web": "https://app.mufutu.ao"
   }

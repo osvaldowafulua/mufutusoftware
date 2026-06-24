@@ -53,7 +53,7 @@
 
 | Plataforma | Instalador oficial | Notas |
 |------------|-------------------|--------|
-| **Windows** | [`MUFUTU-Setup-1.0.6-x64.exe`](https://github.com/osvaldowafulua/mufutusoftware/releases/latest) | Assistente de instalação — **use este** |
+| **Windows** | [`MUFUTU-Setup-1.0.6-x64.exe`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.6/MUFUTU-Setup-1.0.6-x64.exe) | Assistente de instalação — **use este** |
 | **macOS** | [`MUFUTU-1.0.5-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.5-arm64.dmg) | Arrastar para Aplicações |
 | **Web** | [app.mufutu.ao](https://app.mufutu.ao) | Sem instalador |
 
