@@ -1,0 +1,7 @@
+bin/
+obj/
+artifacts/
+scripts/certs/*.pfx
+*.user
+*.suo
+.vs/

@@ -1,0 +1,57 @@
+{
+  "name": "@mufutu/mobile",
+  "version": "1.0.0",
+  "description": "MUFUTU Mobile Application - React Native",
+  "main": "index.js",
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "type-check": "tsc --noEmit",
+    "pod-install": "cd ios && pod install",
+    "clean": "react-native clean",
+    "build:android": "cd android && ./gradlew assembleRelease",
+    "build:ios": "cd ios && xcodebuild -workspace Mufutu.xcworkspace -scheme Mufutu -configuration Release -destination generic/platform=iOS -archivePath Mufutu.xcarchive archive"
+  },
+  "dependencies": {
+    "@react-navigation/bottom-tabs": "^7.18.2",
+    "@react-navigation/drawer": "^7.12.2",
+    "@react-navigation/native": "^7.3.3",
+    "@react-navigation/stack": "^7.10.5",
+    "axios": "^1.18.0",
+    "date-fns": "^4.1.0",
+    "react": "^19.2.7",
+    "react-hook-form": "^7.71.2",
+    "react-native": "^0.86.0",
+    "react-native-elements": "^3.4.3",
+    "react-native-gesture-handler": "^3.0.2",
+    "react-native-paper": "^5.15.3",
+    "react-native-reanimated": "^4.4.1",
+    "react-native-safe-area-context": "^5.8.0",
+    "react-native-screens": "^4.25.2",
+    "react-native-vector-icons": "^10.3.0",
+    "socket.io-client": "^4.8.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.0",
+    "@babel/runtime": "^7.29.0",
+    "@react-native/eslint-config": "^0.86.0",
+    "@react-native/metro-config": "^0.86.0",
+    "@tsconfig/react-native": "^3.0.9",
+    "@types/react": "^19.2.7",
+    "@types/react-test-renderer": "^19.1.0",
+    "babel-jest": "^30.4.1",
+    "eslint": "^9.39.4",
+    "jest": "^30.4.1",
+    "metro-react-native-babel-preset": "^0.77.0",
+    "prettier": "^3.8.1",
+    "react-test-renderer": "^19.2.7",
+    "typescript": "^5.9.3"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}

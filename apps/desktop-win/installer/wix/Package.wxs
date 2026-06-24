@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+    Name="MUFUTU"
+    Manufacturer="Muapi Holding"
+    Version="!(bind FileVersion.MUFUTU.exe)"
+    UpgradeCode="A3F8C2E1-9B4D-4F6A-8C1E-2D5F7A9B3C4E"
+    Scope="perMachine">
+    <MajorUpgrade DowngradeErrorMessage="Uma versão mais recente do MUFUTU já está instalada." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="MainFeature" Title="MUFUTU Desktop" Level="1">
+      <ComponentGroupRef Id="AppFiles" />
+    </Feature>
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="MUFUTU" />
+    </StandardDirectory>
+  </Package>
+</Wix>

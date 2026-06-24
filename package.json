@@ -1,0 +1,19 @@
+{
+  "name": "mufutusoftware",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MUFUTU — clientes desktop/mobile e distribuição pública",
+  "workspaces": [
+    "apps/electron",
+    "apps/mobile"
+  ],
+  "scripts": {
+    "build:mac": "bash apps/desktop-mac/scripts/package.sh",
+    "build:desktop-win": "dotnet build apps/desktop-win/Mufutu.sln -c Release",
+    "test:desktop-win": "dotnet test apps/desktop-win/tests/Mufutu.Desktop.Tests/Mufutu.Desktop.Tests.csproj -c Release",
+    "publish:release": "bash scripts/publish-release.sh"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

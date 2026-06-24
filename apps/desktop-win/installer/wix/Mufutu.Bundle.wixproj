@@ -1,0 +1,10 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup>
+    <OutputName>MUFUTU-Setup</OutputName>
+    <OutputType>Bundle</OutputType>
+    <Platform>x64</Platform>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="Mufutu.Package.wixproj" />
+  </ItemGroup>
+</Project>

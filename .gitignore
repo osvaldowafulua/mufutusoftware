@@ -1,4 +1,4 @@
-# Binários e instaladores — distribuir apenas via GitHub Releases (HTTPS)
+# Builds — nunca commitar (só Releases GitHub)
 *.exe
 *.msi
 *.dmg
@@ -8,39 +8,43 @@
 *.aab
 *.ipa
 *.app
-*.msix
-*.deb
-*.rpm
+*.asar
+**/*.blockmap
+**/*.nsis.7z
+**/win-*-unpacked/
+**/mac-*/
 
-# Assinaturas e chaves — nunca commitar
+apps/desktop-mac/artifacts/
+apps/desktop-win/artifacts/
+apps/electron/dist-electron/
+apps/electron/electron-app/
+apps/electron/.electron-obfuscate-backup/
+apps/mobile/android/app/build/
+apps/mobile/ios/build/
+apps/mobile/ios/Pods/
+staging/
+
+# Chaves
 *.pfx
 *.p12
 *.pem
 *.key
 *.jks
 *.keystore
-*.mobileprovision
-*.provisionprofile
 
-# Manifestos com artefactos locais (usar releases/ no GitHub)
-checksums/*.sha256
-!checksums/README.md
-
-# Ambiente e segredos
+# Segredos
 .env
 .env.*
 secrets/
-*.secret
 
-# SO e IDEs
+# SO / IDE
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
 *.log
+node_modules/
 
-# Temporários de upload
-uploads/
-staging/
-dist/
-artifacts/
+# Checksums locais
+checksums/*.sha256
+!checksums/README.md

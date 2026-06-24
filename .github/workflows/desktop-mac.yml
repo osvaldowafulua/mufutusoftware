@@ -1,0 +1,156 @@
+name: macOS Desktop (Electron)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão semver (ex: 1.0.0)'
+        required: false
+        default: '1.0.0'
+  push:
+    tags:
+      - 'desktop-mac/v*'
+
+permissions:
+  contents: write
+  security-events: write
+  actions: read
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  security-sast:
+    name: Security SAST
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm install --legacy-peer-deps
+      - name: npm audit (high+)
+        continue-on-error: true
+        run: |
+          mkdir -p apps/desktop-mac
+          npm audit --audit-level=high 2>&1 | tee apps/desktop-mac/audit.log
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-mac-sast-log
+          path: apps/desktop-mac/audit.log
+          retention-days: 30
+
+  codeql:
+    name: CodeQL JavaScript
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - run: npm install --legacy-peer-deps -w @mufutu/electron 2>/dev/null || npm install --legacy-peer-deps --prefix apps/electron
+      - uses: github/codeql-action/analyze@v3
+
+  package-sign:
+    name: Build DMG ZIP Sign Verify
+    needs: [security-sast, codeql]
+    runs-on: macos-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout CMMS (mufutu — privado)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
+
+      - name: Resolve version
+        id: version
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [[ "$TAG" =~ ^desktop-mac/v(.+)$ ]]; then
+            echo "version=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${{ github.event.inputs.version || '1.0.0' }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install javascript-obfuscator
+        run: npm install --legacy-peer-deps && npm install javascript-obfuscator@4.1.1 --no-save
+
+      - name: Import Apple signing certificate
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          if [ -z "${APPLE_CERTIFICATE:-}" ]; then
+            echo "Sem APPLE_CERTIFICATE — DMG/ZIP sem assinatura Apple"
+            exit 0
+          fi
+          echo "$APPLE_CERTIFICATE" | base64 --decode > /tmp/mufutu-mac.p12
+          security create-keychain -p actions build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p actions build.keychain
+          security import /tmp/mufutu-mac.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k actions build.keychain
+          echo "CSC_IDENTITY_AUTO_DISCOVERY=true" >> "$GITHUB_ENV"
+
+      - name: Package (DMG + ZIP)
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          MUFUTU_CMMS_DIR: ${{ github.workspace }}/mufutu
+        run: |
+          chmod +x apps/desktop-mac/scripts/*.sh
+          apps/desktop-mac/scripts/package.sh "${{ steps.version.outputs.version }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mufutu-desktop-mac
+          path: |
+            apps/desktop-mac/artifacts/dist/**
+            apps/desktop-mac/artifacts/logs/**
+          retention-days: 90
+
+  pentest-basic:
+    name: OWASP ZAP baseline
+    needs: package-sign
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: ${{ secrets.ZAP_BASE_URL || 'https://app.mufutu.ao' }}
+          cmd_options: '-a -I'
+
+  release:
+    name: GitHub Release
+    needs: [package-sign, pentest-basic]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/desktop-mac/')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: mufutu-desktop-mac
+          path: release-assets
+      - name: Publicar release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x scripts/publish-release.sh scripts/publish-mufutusoftware-release.sh 2>/dev/null || true
+          TAG="${{ github.ref_name }}"
+          VERSION="${TAG#desktop-mac/v}"
+          bash scripts/publish-release.sh "$VERSION" release-assets/dist 2>/dev/null || \
+          bash scripts/publish-mufutusoftware-release.sh "$VERSION" release-assets/dist

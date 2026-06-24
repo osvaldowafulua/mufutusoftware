@@ -1,0 +1,82 @@
+{
+  "appId": "com.mufutu.desktop",
+  "productName": "MUFUTU",
+  "copyright": "Copyright © 2026 MUFUTU",
+  "electronVersion": "42.4.1",
+  "directories": {
+    "output": "dist-electron",
+    "buildResources": "build"
+  },
+  "files": [
+    "electron-main.js",
+    "launch-server.js",
+    "electron-ipv4.js",
+    "electron-labels-bridge.js",
+    "electron-connectivity-bridge.js",
+    "electron-update.js",
+    "electron-splash.html",
+    "preload.js",
+    "electron-app/**/*",
+    "assets/icon.png",
+    "assets/icon.icns",
+    "assets/icon.ico",
+    "assets/splash-logo.png",
+    "package.json"
+  ],
+  "asar": true,
+  "asarUnpack": [
+    "electron-app/**"
+  ],
+  "mac": {
+    "category": "public.app-category.productivity",
+    "target": [
+      { "target": "dmg", "arch": ["arm64"] },
+      { "target": "zip", "arch": ["arm64"] }
+    ],
+    "icon": "assets/icon.icns",
+    "darkModeSupport": true,
+    "hardenedRuntime": true,
+    "artifactName": "MUFUTU-${version}-${arch}.${ext}",
+    "gatekeeperAssess": false,
+    "entitlements": "build/entitlements.mac.plist",
+    "entitlementsInherit": "build/entitlements.mac.plist"
+  },
+  "dmg": {
+    "title": "MUFUTU ${version}",
+    "icon": "assets/icon.icns",
+    "window": { "width": 540, "height": 380 },
+    "contents": [
+      { "x": 130, "y": 220 },
+      { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+    ]
+  },
+  "win": {
+    "target": [
+      { "target": "nsis", "arch": ["x64"] },
+      { "target": "zip", "arch": ["x64"] }
+    ],
+    "icon": "assets/icon.ico",
+    "artifactName": "MUFUTU-${version}-win-${arch}.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "MUFUTU",
+    "installerIcon": "assets/icon.ico",
+    "uninstallerIcon": "assets/icon.ico"
+  },
+  "linux": {
+    "target": ["AppImage"],
+    "icon": "assets/icon.png"
+  },
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "osvaldowafulua",
+      "repo": "mufutusoftware",
+      "releaseType": "release"
+    }
+  ]
+}
