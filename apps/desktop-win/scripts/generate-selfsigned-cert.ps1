@@ -8,7 +8,7 @@
 param(
   [string]$OutputDir = "$PSScriptRoot\certs",
   [string]$Password = "MufutuDevSign!2026",
-  [string]$Subject = "CN=MUFUTU Desktop Dev, O=Muapi Holding, C=AO"
+  [string]$Subject = "CN=MUFUTU Desktop Dev, O=Smart Cloud Lda, C=AO"
 )
 
 $ErrorActionPreference = "Stop"

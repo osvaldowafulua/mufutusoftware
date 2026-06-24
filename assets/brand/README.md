@@ -8,4 +8,6 @@
 
 Cor de marca: **#E8612D** (laranja MUFUTU)
 
+**MUFUTU** é marca registada da **Smart Cloud, Lda**.
+
 Legado (substituído): `logo-software-banner.png`, `logo-software-white.png`, `logo-software-dark.png`

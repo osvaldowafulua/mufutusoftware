@@ -2,7 +2,7 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
      xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
   <Bundle Name="MUFUTU Desktop"
-          Manufacturer="Muapi Holding"
+          Manufacturer="Smart Cloud, Lda"
           Version="1.0.0.0"
           UpgradeCode="D4E5F6A7-B8C9-4D0E-9F1A-2B3C4D5E6F70">
     <BootstrapperApplication>

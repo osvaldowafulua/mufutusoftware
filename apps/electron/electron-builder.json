@@ -1,7 +1,7 @@
 {
   "appId": "com.mufutu.desktop",
   "productName": "MUFUTU",
-  "copyright": "Copyright © 2026 MUFUTU",
+  "copyright": "Copyright © 2026 Smart Cloud, Lda — marca MUFUTU",
   "electronVersion": "42.4.1",
   "directories": {
     "output": "dist-electron",

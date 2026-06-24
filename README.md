@@ -4,7 +4,8 @@
 
 <p align="center">
   <strong>Cockpit de operações e gestão de ativos para mineração</strong><br/>
-  <sub>CMMS/EAM · Angola · Offline-first · Multi-site MUA · LUC · MIL</sub>
+  <sub>CMMS/EAM · Angola · Offline-first · Multi-site MUA · LUC · MIL</sub><br/>
+  <sub>MUFUTU é marca da <strong>Smart Cloud, Lda</strong></sub>
 </p>
 
 <p align="center">
@@ -154,7 +155,7 @@ MUFUTU-LIC-xxxxxxxxxxxxxxxx
 
 | Perfil | Acção |
 |--------|--------|
-| **Nova empresa** | Contacte a Muapi: **licenca@mufutu.ao** ou [mufutu.ao](https://mufutu.ao) |
+| **Nova empresa** | Contacte a Smart Cloud, Lda: **licenca@mufutu.ao** ou [mufutu.ao](https://mufutu.ao) |
 | **Cliente existente** | O administrador recebe a chave no onboarding ou renovação |
 | **Administrador** | Na app: **Definições → Licença** → colar a chave e activar |
 
@@ -172,7 +173,7 @@ Chaves revogadas deixam de funcionar na próxima validação online.
 
 ### Renovação e suporte
 
-- Renovação: gestor de conta Muapi ou **suporte@mufutu.ao**
+- Renovação: gestor de conta Smart Cloud ou **suporte@mufutu.ao**
 - Tickets: formulário em **Definições → Suporte** na aplicação web
 - Urgências operacionais: canal acordado no contrato SLA
 
@@ -296,4 +297,4 @@ mufutusoftware/
 - [LICENSE](LICENSE) — Aviso de copyright
 - [SECURITY.md](SECURITY.md) — Política de segurança e divulgação responsável
 
-**MUFUTU** é marca da **Muapi**. Angola · Lunda Norte · Luachimo · Lunda Sul.
+**MUFUTU** é marca da **[Smart Cloud, Lda](https://mufutu.ao)**. Angola · Lunda Norte · Luachimo · Lunda Sul.

@@ -1,4 +1,4 @@
-# Publicar um release (equipa Muapi)
+# Publicar um release (equipa Smart Cloud)
 
 Guia interno para publicar **binários finais** neste repositório público.
 O código-fonte e pipelines completos permanecem no repositório privado `mufutu`.
