@@ -1,6 +1,8 @@
 # MUFUTU — Android
 
-Aplicação **React Native** para técnicos e supervisores em campo.
+Cliente **.NET MAUI** (`apps/mobile-maui/`) para técnicos e supervisores em campo.
+
+> Guia completo: [docs/MOBILE_MAUI.md](../docs/MOBILE_MAUI.md) · Stub legado React Native em `apps/mobile/`.
 
 ## Descarregar
 

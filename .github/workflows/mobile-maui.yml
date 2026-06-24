@@ -1,0 +1,144 @@
+name: Mobile MAUI (Android + iOS)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão semver (ex: 1.0.0)'
+        required: false
+        default: '1.0.0'
+  push:
+    tags:
+      - 'mobile-maui/v*'
+
+permissions:
+  contents: write
+  actions: read
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  MOBILE_MAUI_DIR: apps/mobile-maui
+  CI: true
+
+jobs:
+  test-connectivity:
+    name: Testes unitários + API health
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore Core + Tests
+        working-directory: ${{ env.MOBILE_MAUI_DIR }}
+        run: dotnet restore tests/Mufutu.Mobile.Tests/Mufutu.Mobile.Tests.csproj
+
+      - name: Unit tests (conectividade)
+        working-directory: ${{ env.MOBILE_MAUI_DIR }}
+        run: |
+          dotnet test tests/Mufutu.Mobile.Tests/Mufutu.Mobile.Tests.csproj \
+            -c Release --logger "trx;LogFileName=mobile-connectivity.trx"
+
+      - name: Probe API produção
+        run: bash ${{ env.MOBILE_MAUI_DIR }}/scripts/test-api-connectivity.sh
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-maui-test-results
+          path: ${{ env.MOBILE_MAUI_DIR }}/tests/Mufutu.Mobile.Tests/TestResults/**/*.trx
+          retention-days: 30
+
+  build-android:
+    name: Build Android (APK)
+    needs: test-connectivity
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Instalar workload MAUI
+        run: dotnet workload install maui-android --skip-manifest-update
+
+      - name: Resolve version
+        id: ver
+        shell: bash
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [[ "$TAG" =~ ^mobile-maui/v(.+)$ ]]; then
+            echo "version=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${{ github.event.inputs.version || '1.0.0' }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build & publish APK
+        working-directory: ${{ env.MOBILE_MAUI_DIR }}
+        run: |
+          dotnet restore Mufutu.Mobile.sln
+          dotnet publish src/Mufutu.Mobile/Mufutu.Mobile.csproj `
+            -f net8.0-android -c Release `
+            -p:ApplicationDisplayVersion=${{ steps.ver.outputs.version }} `
+            -p:AndroidPackageFormat=apk `
+            -o artifacts/android
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mufutu-mobile-android
+          path: ${{ env.MOBILE_MAUI_DIR }}/artifacts/android/**
+          retention-days: 30
+
+  build-ios:
+    name: Build iOS
+    needs: test-connectivity
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Instalar workload MAUI iOS
+        run: dotnet workload install maui-ios --skip-manifest-update
+
+      - name: Build iOS (sem assinatura em CI)
+        working-directory: ${{ env.MOBILE_MAUI_DIR }}
+        env:
+          CI: true
+        run: |
+          dotnet restore Mufutu.Mobile.sln
+          dotnet build src/Mufutu.Mobile/Mufutu.Mobile.csproj \
+            -f net8.0-ios -c Release \
+            -p:ApplicationDisplayVersion=${{ github.event.inputs.version || '1.0.0' }}
+
+      - name: Teste conectividade (macOS runner)
+        run: bash ${{ env.MOBILE_MAUI_DIR }}/scripts/test-api-connectivity.sh
+
+  release:
+    name: Publicar artefactos
+    needs: [build-android, build-ios]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/mobile-maui/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mufutu-mobile-android
+          path: release-assets
+
+      - name: Publicar GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ github.ref_name }}"
+          VER="${TAG#mobile-maui/v}"
+          NOTES="MUFUTU Mobile MAUI ${VER} — Android APK + pipeline iOS validado."
+          gh release create "v${VER}" --repo "$GITHUB_REPOSITORY" --title "MUFUTU Mobile ${VER}" \
+            --notes "$NOTES" release-assets/**/* 2>/dev/null || \
+          gh release upload "v${VER}" --repo "$GITHUB_REPOSITORY" --clobber release-assets/**/*

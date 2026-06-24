@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:FieldCampoPage
+    x:Class="Mufutu.Mobile.Views.AvariaPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Mufutu.Mobile.Views.Controls"
+    xmlns:core="clr-namespace:Mufutu.Mobile.Core;assembly=Mufutu.Mobile.Core"
+    xmlns:views="clr-namespace:Mufutu.Mobile.Views"
+    Title="Avaria"
+    Shell.NavBarIsVisible="False">
+
+    <controls:FieldShellView
+        ActiveRoute="avaria"
+        SiteLabel="{Binding SiteLabel}"
+        UserLabel="{Binding UserLabel}">
+        <controls:FieldShellView.Body>
+            <ScrollView Padding="16">
+                <VerticalStackLayout Spacing="14">
+                    <VerticalStackLayout IsVisible="{Binding Sent}" Spacing="12">
+                        <Label Text="Enviado" FontSize="22" FontAttributes="Bold" TextColor="#4CAF50" />
+                        <Label Text="{Binding SentMessage}" TextColor="#8B9CB3" />
+                        <Button Text="Nova avaria" Command="{Binding ResetCommand}" BackgroundColor="#1565C0" TextColor="White" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout IsVisible="{Binding Sent, Converter={StaticResource InvertedBoolConverter}}" Spacing="14">
+                        <Label Text="Tire uma foto da avaria" FontSize="16" TextColor="#E8EDF4" />
+                        <Button
+                            Text="Abrir câmara"
+                            Command="{Binding TakePhotoCommand}"
+                            BackgroundColor="#1A2332"
+                            TextColor="#E8EDF4"
+                            BorderColor="#2A3548"
+                            BorderWidth="1"
+                            HeightRequest="52" />
+                        <Label
+                            Text="Foto tirada ✓"
+                            TextColor="#4CAF50"
+                            IsVisible="{Binding HasPhoto}" />
+
+                        <Label Text="O que aconteceu?" FontSize="16" TextColor="#E8EDF4" Margin="0,8,0,0" />
+                        <CollectionView ItemsSource="{Binding Reasons}" SelectionMode="None" HeightRequest="220">
+                            <CollectionView.ItemsLayout>
+                                <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="8" VerticalItemSpacing="8" />
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="core:FaultReason">
+                                    <Button
+                                        Text="{Binding Label}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type views:AvariaPage}}, Path=BindingContext.SelectReasonCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="#1A2332"
+                                        TextColor="#E8EDF4"
+                                        BorderColor="#2A3548"
+                                        BorderWidth="1"
+                                        HeightRequest="48"
+                                        CornerRadius="8" />
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <Label
+                            Text="{Binding SelectedReason.Label, StringFormat='Motivo: {0}'}"
+                            TextColor="#5BA8E8"
+                            IsVisible="{Binding SelectedReason, Converter={StaticResource NotNullConverter}}" />
+
+                        <Label Text="{Binding ErrorMessage}" TextColor="#FF6B6B" FontSize="12" />
+
+                        <Button
+                            Text="Enviar"
+                            Command="{Binding SendCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                            BackgroundColor="#E8612D"
+                            TextColor="White"
+                            HeightRequest="52"
+                            CornerRadius="10" />
+                        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="#5BA8E8" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+        </controls:FieldShellView.Body>
+    </controls:FieldShellView>
+</views:FieldCampoPage>

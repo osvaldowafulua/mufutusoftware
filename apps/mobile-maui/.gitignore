@@ -1,0 +1,6 @@
+artifacts/
+bin/
+obj/
+*.user
+*.trx
+.DS_Store

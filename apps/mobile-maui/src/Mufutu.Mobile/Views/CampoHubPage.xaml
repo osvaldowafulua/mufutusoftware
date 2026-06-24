@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:FieldCampoPage
+    x:Class="Mufutu.Mobile.Views.CampoHubPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Mufutu.Mobile.Views.Controls"
+    xmlns:views="clr-namespace:Mufutu.Mobile.Views"
+    Title="Campo"
+    Shell.NavBarIsVisible="False">
+
+    <controls:FieldShellView
+        x:Name="Shell"
+        ActiveRoute="campo"
+        HeaderRightText="{Binding StatusLine}"
+        SiteLabel="{Binding SiteLabel}"
+        UserLabel="{Binding UserLabel}">
+        <controls:FieldShellView.Body>
+            <ScrollView>
+                <VerticalStackLayout Padding="16,20" Spacing="14">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout Grid.Column="0" Spacing="0">
+                            <Label
+                                Text="{Binding HubTitle}"
+                                FontSize="24"
+                                FontAttributes="Bold"
+                                TextColor="#E8EDF4" />
+                            <Label
+                                Text="{Binding HubSubtitle}"
+                                FontSize="14"
+                                TextColor="#8B9CB3" />
+                        </VerticalStackLayout>
+                        <Button
+                            Grid.Column="1"
+                            Text="{Binding NotificationBadge}"
+                            Command="{Binding GoNotificationsCommand}"
+                            BackgroundColor="#1A2332"
+                            TextColor="#5BA8E8"
+                            BorderColor="#2A3548"
+                            BorderWidth="1"
+                            CornerRadius="20"
+                            WidthRequest="52"
+                            HeightRequest="44"
+                            Padding="0" />
+                    </Grid>
+
+                    <Button
+                        Text="Minhas OTs"
+                        Command="{Binding GoOtsCommand}"
+                        HeightRequest="56"
+                        CornerRadius="12"
+                        BackgroundColor="#1A2332"
+                        TextColor="#E8EDF4"
+                        BorderColor="#2A3548"
+                        BorderWidth="1" />
+                    <Button
+                        Text="Reportar avaria"
+                        Command="{Binding GoAvariaCommand}"
+                        HeightRequest="56"
+                        CornerRadius="12"
+                        BackgroundColor="#1A2332"
+                        TextColor="#E8EDF4"
+                        BorderColor="#2A3548"
+                        BorderWidth="1" />
+                    <Button
+                        Text="Checklist"
+                        Command="{Binding GoChecklistCommand}"
+                        HeightRequest="56"
+                        CornerRadius="12"
+                        BackgroundColor="#1A2332"
+                        TextColor="#E8EDF4"
+                        BorderColor="#2A3548"
+                        BorderWidth="1" />
+                    <Button
+                        Text="Enviar dados"
+                        Command="{Binding GoSyncCommand}"
+                        HeightRequest="56"
+                        CornerRadius="12"
+                        BackgroundColor="#1565C0"
+                        TextColor="White" />
+                </VerticalStackLayout>
+            </ScrollView>
+        </controls:FieldShellView.Body>
+    </controls:FieldShellView>
+</views:FieldCampoPage>
