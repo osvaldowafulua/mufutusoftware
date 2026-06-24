@@ -87,9 +87,9 @@ jobs:
         working-directory: ${{ env.MOBILE_MAUI_DIR }}
         shell: bash
         run: |
-          dotnet restore src/Mufutu.Mobile/Mufutu.Mobile.csproj -f net8.0-android
+          dotnet restore src/Mufutu.Mobile/Mufutu.Mobile.csproj --framework net8.0-android
           dotnet publish src/Mufutu.Mobile/Mufutu.Mobile.csproj \
-            -f net8.0-android -c Release \
+            --framework net8.0-android -c Release \
             -p:ApplicationDisplayVersion=${{ steps.ver.outputs.version }} \
             -p:AndroidPackageFormat=apk \
             -o artifacts/android
@@ -132,9 +132,9 @@ jobs:
         env:
           CI: true
         run: |
-          dotnet restore src/Mufutu.Mobile/Mufutu.Mobile.csproj -f net8.0-ios
+          dotnet restore src/Mufutu.Mobile/Mufutu.Mobile.csproj --framework net8.0-ios
           dotnet build src/Mufutu.Mobile/Mufutu.Mobile.csproj \
-            -f net8.0-ios -c Release \
+            --framework net8.0-ios -c Release \
             -p:ApplicationDisplayVersion=${{ steps.ver.outputs.version }}
 
       - name: Teste conectividade (macOS runner)
