@@ -93,6 +93,7 @@ jobs:
         working-directory: ${{ env.MOBILE_MAUI_DIR }}
         shell: pwsh
         run: |
+          dotnet nuget locals all --clear
           dotnet publish src/Mufutu.Mobile/Mufutu.Mobile.csproj `
             -f net8.0-android -c Release `
             -p:ApplicationDisplayVersion=${{ steps.ver.outputs.version }} `

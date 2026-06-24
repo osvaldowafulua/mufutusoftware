@@ -23,8 +23,12 @@
     <CodesignProvision Condition="'$(CI)' == 'true'">-</CodesignProvision>
   </PropertyGroup>
 
+  <ItemGroup Condition="$(TargetFramework.Contains('-android'))">
+    <PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.4.3.1" />
+    <PackageReference Include="Xamarin.AndroidX.Collection.Jvm" Version="1.4.3.1" />
+  </ItemGroup>
+
   <ItemGroup>
-    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#E8612D" />
     <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#0F1419" BaseSize="128,128" />
   </ItemGroup>
 
