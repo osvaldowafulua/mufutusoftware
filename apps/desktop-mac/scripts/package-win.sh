@@ -46,6 +46,9 @@ echo "=== npm install (mufutu CMMS) ==="
 cd "$CMMS"
 npm install --legacy-peer-deps 2>&1 | tee "$LOG/npm-install.log"
 
+echo "=== Build workspace packages (@mufutu/core, @mufutu/ui) ==="
+npm run build -w @mufutu/core -w @mufutu/ui 2>&1 | tee "$LOG/workspace-build.log"
+
 echo "=== Next.js standalone ==="
 cd "$WEB"
 rm -f .next/lock 2>/dev/null || true
