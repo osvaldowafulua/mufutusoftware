@@ -62,6 +62,7 @@ jobs:
           retention-days: 14
 
       - name: Publicar no GitHub Release
+        if: startsWith(github.ref, 'refs/tags/desktop-electron/')
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -69,17 +70,9 @@ jobs:
           VER="${{ steps.ver.outputs.version }}"
           TAG="v${VER}"
           DIR="apps/desktop-win/artifacts/installer"
+          NOTES="Instalador Windows MUFUTU-Setup-${VER}-x64.exe (equivalente ao DMG no Mac)."
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" &>/dev/null; then
             gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "$DIR"/*
           else
-            gh release create "$TAG" \
-              --repo "$GITHUB_REPOSITORY" \
-              --title "MUFUTU ${VER}" \
-              --notes "## Windows
-- **MUFUTU-Setup-${VER}-x64.exe** — instalador (equivalente ao DMG no Mac)
-- Duplo clique → assistente → atalhos Ambiente de trabalho + Menu Iniciar
-
-## macOS
-Ver releases anteriores ou correr workflow macOS." \
-              "$DIR"/*
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "MUFUTU ${VER}" --notes "$NOTES" "$DIR"/*
           fi
