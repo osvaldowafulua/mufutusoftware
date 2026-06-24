@@ -127,7 +127,7 @@ public partial class SyncViewModel : ObservableObject
             };
             var pending = await _data.GetPendingCountAsync();
             DetailText = result.ErrorMessage
-                ?? $"HTTP {result.HttpStatusCode} · {result.ElapsedMilliseconds} ms · {result.NetworkDescription} · {pending} pendente(s)";
+                ?? $"HTTP {result.HttpStatusCode} · {result.ElapsedMs} ms · {result.NetworkDescription} · {pending} pendente(s)";
         }
         finally
         {

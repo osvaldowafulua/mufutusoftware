@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Mufutu.Mobile.Core;
 using Mufutu.Mobile.Core.Notifications;
 using Mufutu.Mobile.Core.Offline;

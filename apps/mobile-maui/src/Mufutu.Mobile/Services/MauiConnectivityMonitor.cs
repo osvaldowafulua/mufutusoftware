@@ -48,7 +48,7 @@ public sealed class MauiConnectivityMonitor : IConnectivityMonitor, IDisposable
         {
             var access = Connectivity.Current.NetworkAccess;
             var profiles = Connectivity.Current.ConnectionProfiles;
-            var profileNames = profiles.Count == 0
+            var profileNames = !profiles.Any()
                 ? "desconhecido"
                 : string.Join(", ", profiles.Select(p => p switch
                 {
