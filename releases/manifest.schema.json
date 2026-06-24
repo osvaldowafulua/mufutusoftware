@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MUFUTU Public Release Manifest",
+  "description": "Metadados públicos de um release — sem segredos, sem URLs de administração",
+  "type": "object",
+  "required": ["product", "version", "releasedAt", "platforms"],
+  "properties": {
+    "product": {
+      "type": "string",
+      "const": "MUFUTU",
+      "description": "Nome comercial do produto"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?$",
+      "description": "Versão semver (ex: 1.0.0)"
+    },
+    "releasedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data ISO 8601 da publicação"
+    },
+    "channel": {
+      "type": "string",
+      "enum": ["stable", "beta", "lts"],
+      "default": "stable"
+    },
+    "platforms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "artifacts"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": ["windows", "macos", "android", "ios"]
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["filename", "sha256"],
+              "properties": {
+                "filename": { "type": "string" },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "sizeBytes": { "type": "integer", "minimum": 0 },
+                "signed": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "releaseNotesUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "Link público para notas (GitHub Release)"
+    },
+    "eula": {
+      "type": "string",
+      "const": "https://github.com/osvaldowafulua/mufutusoftware/blob/main/EULA.md"
+    }
+  },
+  "additionalProperties": false
+}

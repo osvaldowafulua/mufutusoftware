@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Licenciamento MUFUTU
+    url: mailto:licenca@mufutu.ao
+    about: Pedidos de licença, renovação e planos comerciais
+  - name: Suporte técnico
+    url: mailto:suporte@mufutu.ao
+    about: Problemas de instalação, login e operação (clientes com contrato)
+  - name: Segurança
+    url: mailto:seguranca@mufutu.ao
+    about: Reporte privado de vulnerabilidades — ver SECURITY.md

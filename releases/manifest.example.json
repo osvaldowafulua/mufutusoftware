@@ -1,0 +1,32 @@
+{
+  "product": "MUFUTU",
+  "version": "1.0.0",
+  "releasedAt": "2026-06-24T12:00:00Z",
+  "channel": "stable",
+  "platforms": [
+    {
+      "id": "windows",
+      "artifacts": [
+        {
+          "filename": "MUFUTU-Setup.exe",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "sizeBytes": 0,
+          "signed": true
+        }
+      ]
+    },
+    {
+      "id": "macos",
+      "artifacts": [
+        {
+          "filename": "MUFUTU-1.0.0-arm64.dmg",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "sizeBytes": 0,
+          "signed": true
+        }
+      ]
+    }
+  ],
+  "releaseNotesUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/tag/v1.0.0",
+  "eula": "https://github.com/osvaldowafulua/mufutusoftware/blob/main/EULA.md"
+}

@@ -1,65 +1,46 @@
-# gitignore template for Drupal 8 projects
-#
-# earlier versions of Drupal are tracked in `community/PHP/`
-#
-# follows official upstream conventions:
-# https://www.drupal.org/docs/develop/using-composer
+# Binários e instaladores — distribuir apenas via GitHub Releases (HTTPS)
+*.exe
+*.msi
+*.dmg
+*.pkg
+*.zip
+*.apk
+*.aab
+*.ipa
+*.app
+*.msix
+*.deb
+*.rpm
 
-# Ignore configuration files that may contain sensitive information
-/web/sites/*/*settings*.php
-/web/sites/*/*services*.yml
+# Assinaturas e chaves — nunca commitar
+*.pfx
+*.p12
+*.pem
+*.key
+*.jks
+*.keystore
+*.mobileprovision
+*.provisionprofile
 
-# Ignore paths that may contain user-generated content
-/web/sites/*/files
-/web/sites/*/public
-/web/sites/*/private
-/web/sites/*/files-public
-/web/sites/*/files-private
+# Manifestos com artefactos locais (usar releases/ no GitHub)
+checksums/*.sha256
+!checksums/README.md
 
-# Ignore paths that may contain temporary files
-/web/sites/*/translations
-/web/sites/*/tmp
-/web/sites/*/cache
+# Ambiente e segredos
+.env
+.env.*
+secrets/
+*.secret
 
-# Ignore drupal core (if not versioning drupal sources)
-/web/vendor
-/web/core
-/web/modules/README.txt
-/web/modules/contrib
-/web/profiles/README.txt
-/web/profiles/contrib
-/web/sites/development.services.yml
-/web/sites/example.settings.local.php
-/web/sites/example.sites.php
-/web/sites/README.txt
-/web/themes/README.txt
-/web/themes/contrib
-/web/.csslintrc
-/web/.editorconfig
-/web/.eslintignore
-/web/.eslintrc.json
-/web/.gitattributes
-/web/.htaccess
-/web/.ht.router.php
-/web/autoload.php
-/web/composer.json
-/web/composer.lock
-/web/example.gitignore
-/web/index.php
-/web/INSTALL.txt
-/web/LICENSE.txt
-/web/README.txt
-/web/robots.txt
-/web/update.php
-/web/web.config
+# SO e IDEs
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
 
-# Ignore vendor dependencies and scripts
-/vendor
-/composer.phar
-/composer
-/robo.phar
-/robo
-/drush.phar
-/drush
-/drupal.phar
-/drupal
+# Temporários de upload
+uploads/
+staging/
+dist/
+artifacts/
