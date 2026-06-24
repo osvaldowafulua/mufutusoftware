@@ -31,6 +31,34 @@ Verifique integridade com [`checksums.sha256`](https://github.com/osvaldowafulua
 
 ---
 
+Este repositório é o **código-fonte e distribuição** dos clientes nativos MUFUTU.
+
+| Repositório | Conteúdo |
+|-------------|----------|
+| **mufutusoftware** (aqui) | Desktop Win/Mac, Electron, mobile, Releases |
+| **mufutu** (privado) | CMMS web + API — sem instaladores |
+
+> Binários (`.dmg`, `.exe`) **não** vão em commits — só em [Releases](https://github.com/osvaldowafulua/mufutusoftware/releases).
+
+## Build local
+
+Requer o CMMS ao lado desta pasta:
+
+```
+GitHub/
+  mufutu/          ← privado (apps/web)
+  mufutusoftware/  ← este repo
+```
+
+```bash
+# macOS DMG
+npm run build:mac -- 1.0.6
+# ou
+bash apps/desktop-mac/scripts/package.sh 1.0.6
+```
+
+---
+
 ## O que é a MUFUTU?
 
 **MUFUTU** é um sistema **CMMS/EAM** (gestão de manutenção e activos) pensado para
