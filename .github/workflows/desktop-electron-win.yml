@@ -1,0 +1,71 @@
+name: Windows Electron Installer (NSIS)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão semver (ex: 1.0.6)'
+        required: true
+        default: '1.0.6'
+
+permissions:
+  contents: write
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  build-installer:
+    name: MUFUTU-Setup.exe (NSIS)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout CMMS (mufutu)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Build instalador NSIS
+        shell: bash
+        env:
+          MUFUTU_CMMS_DIR: ${{ github.workspace }}/mufutu
+        run: |
+          chmod +x apps/desktop-mac/scripts/package-win.sh
+          apps/desktop-mac/scripts/package-win.sh "${{ github.event.inputs.version }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mufutu-win-installer
+          path: |
+            apps/desktop-win/artifacts/installer/**
+          retention-days: 14
+
+      - name: Publicar no GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VER="${{ github.event.inputs.version }}"
+          TAG="v${VER}"
+          DIR="apps/desktop-win/artifacts/installer"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" &>/dev/null; then
+            gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "$DIR"/*
+          else
+            gh release create "$TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "MUFUTU ${VER}" \
+              --notes "## Windows
+- **MUFUTU-Setup-${VER}-x64.exe** — instalador (equivalente ao DMG no Mac)
+- Duplo clique → assistente → atalhos Ambiente de trabalho + Menu Iniciar
+
+## macOS
+Ver releases anteriores ou correr workflow macOS." \
+              "$DIR"/*
+          fi

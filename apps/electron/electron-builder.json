@@ -60,12 +60,18 @@
   },
   "nsis": {
     "oneClick": false,
+    "perMachine": false,
     "allowToChangeInstallationDirectory": true,
+    "allowElevation": true,
+    "installerIcon": "assets/icon.ico",
+    "uninstallerIcon": "assets/icon.ico",
+    "installerHeaderIcon": "assets/icon.ico",
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true,
     "shortcutName": "MUFUTU",
-    "installerIcon": "assets/icon.ico",
-    "uninstallerIcon": "assets/icon.ico"
+    "installerLanguages": ["pt_BR", "en_US"],
+    "language": "1046",
+    "artifactName": "MUFUTU-Setup-${version}-${arch}.${ext}"
   },
   "linux": {
     "target": ["AppImage"],
