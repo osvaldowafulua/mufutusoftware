@@ -169,7 +169,13 @@ jobs:
         run: |
           TAG="${{ github.ref_name }}"
           VER="${TAG#mobile-maui/v}"
-          NOTES="MUFUTU Mobile MAUI ${VER} — Android APK + pipeline iOS validado."
-          gh release create "mobile-maui/v${VER}" --repo "$GITHUB_REPOSITORY" --title "MUFUTU Mobile ${VER}" \
-            --notes "$NOTES" release-assets/**/* 2>/dev/null || \
-          gh release upload "mobile-maui/v${VER}" --repo "$GITHUB_REPOSITORY" --clobber release-assets/**/*
+          NOTES="MUFUTU Mobile MAUI ${VER} — Android APK."
+          ls -laR release-assets || true
+          mapfile -t FILES < <(find release-assets -name '*.apk' -type f)
+          if [ ${#FILES[@]} -eq 0 ]; then
+            echo "Nenhum APK em release-assets"
+            exit 1
+          fi
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "MUFUTU Mobile ${VER}" \
+            --notes "$NOTES" "${FILES[@]}" 2>/dev/null || \
+          gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "${FILES[@]}"
