@@ -1,14 +1,17 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/logo-software-white.png" />
-    <source media="(prefers-color-scheme: light)" srcset="assets/brand/logo-software-dark.png" />
-    <img alt="MUFUTU Software" src="assets/brand/logo-software-banner.png" width="420" />
-  </picture>
+  <img alt="MUFUTU Software" src="assets/brand/logo-software-horizontal.png" width="520" />
 </p>
 
 <p align="center">
   <strong>Cockpit de operações e gestão de ativos para mineração</strong><br/>
-  <sub>CMMS/EAM · Angola · Offline-first · Multi-site MUA · LUC · MIL</sub>
+  <sub>CMMS/EAM · Angola · Offline-first · Multi-site MUA · LUC · MIL</sub><br/>
+  <sub>MUFUTU é marca da <strong>Smart Cloud, Lda</strong></sub>
+</p>
+
+<p align="center">
+  <a href="https://github.com/osvaldowafulua/mufutusoftware/stargazers">
+    <img src="assets/brand/icon-orange.png" alt="MUFUTU" width="64" />
+  </a>
 </p>
 
 <p align="center">
@@ -49,24 +52,17 @@
 
 ---
 
-## Descarregar agora (v1.0.5)
+## Descarregar agora
 
-| Plataforma | Ficheiro | Link directo |
-|------------|----------|--------------|
-| **macOS** (Apple Silicon) | `.dmg` | [MUFUTU-1.0.5-arm64.dmg](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.5-arm64.dmg) |
-| **macOS** (ZIP) | `.zip` | [MUFUTU-1.0.5-arm64.zip](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.5-arm64.zip) |
-| **Windows** (portátil x64) | `.zip` | [MUFUTU-1.0.0-win-x64.zip](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.0-win-x64.zip) |
-| **Web** | browser | [app.mufutu.ao](https://app.mufutu.ao) |
+| Plataforma | Instalador oficial | Notas |
+|------------|-------------------|--------|
+| **Windows** | [`MUFUTU-Setup-1.0.6-x64.exe`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.6/MUFUTU-Setup-1.0.6-x64.exe) | Assistente de instalação — **use este** |
+| **macOS** | [`MUFUTU-1.0.5-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.5-arm64.dmg) | Arrastar para Aplicações |
+| **Web** | [app.mufutu.ao](https://app.mufutu.ao) | Sem instalador |
 
-Verifique integridade com [`checksums.sha256`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/checksums.sha256) antes de instalar.
+> **Não use o ZIP Windows** (`MUFUTU-*-win-x64.zip`) — é versão **portátil** para testes. O utilizador final deve instalar com **`MUFUTU-Setup-*.exe`**. Ver [windows/INSTALAR.md](windows/INSTALAR.md).
 
-<p align="center">
-  <img src="https://img.shields.io/badge/macOS-DMG_arm64-000000?style=flat-square&logo=apple&logoColor=white" />
-  <img src="https://img.shields.io/badge/Windows-ZIP_x64-0078D4?style=flat-square&logo=windows&logoColor=white" />
-  <img src="https://img.shields.io/badge/Windows-Setup.exe-em_breve-0078D4?style=flat-square&logo=windows&logoColor=white" />
-  <img src="https://img.shields.io/badge/Android-APK-em_breve-3DDC84?style=flat-square&logo=android&logoColor=white" />
-  <img src="https://img.shields.io/badge/iOS-App_Store-em_breve-000000?style=flat-square&logo=apple&logoColor=white" />
-</p>
+Verifique integridade com `checksums.sha256` em cada release.
 
 ---
 
@@ -159,7 +155,7 @@ MUFUTU-LIC-xxxxxxxxxxxxxxxx
 
 | Perfil | Acção |
 |--------|--------|
-| **Nova empresa** | Contacte a Muapi: **licenca@mufutu.ao** ou [mufutu.ao](https://mufutu.ao) |
+| **Nova empresa** | Contacte a Smart Cloud, Lda: **licenca@mufutu.ao** ou [mufutu.ao](https://mufutu.ao) |
 | **Cliente existente** | O administrador recebe a chave no onboarding ou renovação |
 | **Administrador** | Na app: **Definições → Licença** → colar a chave e activar |
 
@@ -177,7 +173,7 @@ Chaves revogadas deixam de funcionar na próxima validação online.
 
 ### Renovação e suporte
 
-- Renovação: gestor de conta Muapi ou **suporte@mufutu.ao**
+- Renovação: gestor de conta Smart Cloud ou **suporte@mufutu.ao**
 - Tickets: formulário em **Definições → Suporte** na aplicação web
 - Urgências operacionais: canal acordado no contrato SLA
 
@@ -247,6 +243,12 @@ mufutusoftware/
 
 <p align="center">
   <a href="https://github.com/osvaldowafulua/mufutusoftware">
+    <img src="assets/brand/icon-orange.png" alt="MUFUTU" width="56" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/osvaldowafulua/mufutusoftware">
     <img src="https://img.shields.io/github/commit-activity/m/osvaldowafulua/mufutusoftware?style=flat-square&label=commits%2Fmês&color=1565C0" alt="Commits" />
   </a>
   <a href="https://github.com/osvaldowafulua/mufutusoftware/pulse">
@@ -295,4 +297,4 @@ mufutusoftware/
 - [LICENSE](LICENSE) — Aviso de copyright
 - [SECURITY.md](SECURITY.md) — Política de segurança e divulgação responsável
 
-**MUFUTU** é marca da **Muapi**. Angola · Lunda Norte · Luachimo · Lunda Sul.
+**MUFUTU** é marca da **[Smart Cloud, Lda](https://mufutu.ao)**. Angola · Lunda Norte · Luachimo · Lunda Sul.

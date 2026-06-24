@@ -23,7 +23,7 @@ Ficheiros típicos: **`MUFUTU-*-release.apk`** ou **`MUFUTU-*.aab`** (Play Store
 
 ## Segurança
 
-- APK assinado com chave de release Muapi (v2/v3 signing).
+- APK assinado com chave de release Smart Cloud, Lda (v2/v3 signing).
 - ProGuard/R8 e ofuscação em builds de produção.
 - Comunicação TLS com a API do tenant; certificados pinning em roadmap.
 

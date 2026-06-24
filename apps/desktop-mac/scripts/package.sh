@@ -35,6 +35,10 @@ cd "$CMMS"
 npm install --legacy-peer-deps 2>&1 | tee "$LOG/npm-install.log"
 echo "::endgroup::"
 
+echo "::group::Build workspace packages"
+npm run build -w @mufutu/core -w @mufutu/ui 2>&1 | tee "$LOG/workspace-build.log"
+echo "::endgroup::"
+
 echo "::group::Next.js standalone"
 cd "$WEB"
 rm -f .next/lock 2>/dev/null || true

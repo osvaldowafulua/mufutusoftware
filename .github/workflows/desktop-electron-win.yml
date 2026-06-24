@@ -62,7 +62,6 @@ jobs:
           retention-days: 14
 
       - name: Publicar no GitHub Release
-        if: startsWith(github.ref, 'refs/tags/desktop-electron/')
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -70,7 +69,7 @@ jobs:
           VER="${{ steps.ver.outputs.version }}"
           TAG="v${VER}"
           DIR="apps/desktop-win/artifacts/installer"
-          NOTES="Instalador Windows MUFUTU-Setup-${VER}-x64.exe (equivalente ao DMG no Mac)."
+          NOTES="Instalador Windows MUFUTU-Setup-${VER}-x64.exe — assistente de instalacao (Program Files, atalhos, desinstalar em Definicoes)."
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" &>/dev/null; then
             gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "$DIR"/*
           else

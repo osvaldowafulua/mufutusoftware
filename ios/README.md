@@ -9,7 +9,7 @@ A Apple **não** permite distribuição pública de IPA fora da App Store ou can
 | Canal | Descrição |
 |-------|-----------|
 | **App Store** | Disponível quando publicado — link no site [mufutu.ao](https://mufutu.ao) |
-| **TestFlight** | Beta fechado — convite pelo administrador Muapi |
+| **TestFlight** | Beta fechado — convite pelo administrador Smart Cloud |
 | **Apple Business Manager** | Empresas com ABM — distribuição privada via MDM |
 
 Não procure ficheiros `.ipa` neste repositório para instalação manual em dispositivos pessoais.
@@ -34,7 +34,7 @@ Não procure ficheiros `.ipa` neste repositório para instalação manual em dis
 
 ## Empresas (MDM)
 
-O administrador Muapi fornece:
+O administrador Smart Cloud fornece:
 
 - Bundle ID da app
 - Link TestFlight ou pacote ABM

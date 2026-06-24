@@ -13,7 +13,7 @@ utilizar o software compilado, de acordo com o plano activado na sua organizaç�
 
 ## 2. O que não pode fazer
 
-- Copiar, vender ou sublicenciar o software fora do acordo com a Muapi.
+- Copiar, vender ou sublicenciar o software fora do acordo com a Smart Cloud, Lda.
 - Tentar aceder ao código-fonte, desofuscar, desencriptar ou fazer engenharia reversa.
 - Modificar instaladores oficiais ou distribuir versões alteradas.
 - Partilhar chaves de licença `MUFUTU-LIC-*` com terceiros não autorizados.
@@ -23,7 +23,7 @@ utilizar o software compilado, de acordo com o plano activado na sua organizaç�
 ## 3. Licença comercial
 
 A activação é feita pelo administrador da sua empresa em **Definições → Licença**
-na aplicação web ou no cliente desktop, com a chave fornecida pela Muapi.
+na aplicação web ou no cliente desktop, com a chave fornecida pela Smart Cloud, Lda.
 
 | Tipo | Descrição típica |
 |------|------------------|
@@ -31,7 +31,7 @@ na aplicação web ou no cliente desktop, com a chave fornecida pela Muapi.
 | Subscrição | Renovação anual, módulos por plano |
 | Definitiva | Uso perpétuo com manutenção contratada |
 
-Pedidos de licença: **licenca@mufutu.ao** ou através do seu gestor de conta Muapi.
+Pedidos de licença: **licenca@mufutu.ao** ou através do seu gestor de conta Smart Cloud.
 
 ## 4. Actualizações
 
@@ -46,7 +46,7 @@ Instale apenas pacotes com assinatura e checksum publicados no release oficial.
 
 O software comunica com os servidores da sua organização (tenant) para operações
 CMMS. O tratamento de dados pessoais segue a política de privacidade acordada
-no contrato com a Muapi e a legislação aplicável em Angola.
+no contrato com a Smart Cloud, Lda e a legislação aplicável em Angola.
 
 ## 6. Rescisão
 
@@ -60,4 +60,4 @@ Foro: Luanda.
 
 ---
 
-**Muapi — MUFUTU** · [mufutu.ao](https://mufutu.ao)
+**Smart Cloud, Lda** — marca **MUFUTU** · [mufutu.ao](https://mufutu.ao)

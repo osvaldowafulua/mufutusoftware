@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# MUFUTU — build Windows: instalador NSIS (.exe) + ZIP portátil
+# MUFUTU — build Windows: instalador NSIS (.exe) — instala em Program Files (não portátil)
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
@@ -25,11 +25,10 @@ if [[ ! -d "$WEB" ]]; then
 fi
 
 if [[ "$(uname -s)" != "MINGW"* && "$(uname -s)" != "MSYS"* && "$(uname -s)" != "CYGWIN"* && "$(uname -s)" != "Windows_NT" ]]; then
-  if ! command -v wine64 >/dev/null 2>&1 && ! command -v wine >/dev/null 2>&1; then
-    echo "⚠️  Build NSIS (.exe) no Mac requer Wine ou GitHub Actions (Windows)." >&2
-    echo "   Alternativa: bash apps/desktop-mac/scripts/package-win.sh no PC Windows" >&2
-    echo "   Ou: GitHub → Actions → Windows Electron Installer (NSIS)" >&2
-  fi
+  echo "❌ O instalador NSIS (.exe) só pode ser gerado em Windows ou GitHub Actions." >&2
+  echo "   Mac/Linux: use package.sh para DMG." >&2
+  echo "   GitHub: Actions → Windows Electron Installer (NSIS)" >&2
+  exit 1
 fi
 
 restore_electron_sources() {
@@ -46,6 +45,9 @@ mkdir -p "$OUT" "$LOG" "$ELECTRON/assets"
 echo "=== npm install (mufutu CMMS) ==="
 cd "$CMMS"
 npm install --legacy-peer-deps 2>&1 | tee "$LOG/npm-install.log"
+
+echo "=== Build workspace packages (@mufutu/core, @mufutu/ui) ==="
+npm run build -w @mufutu/core -w @mufutu/ui 2>&1 | tee "$LOG/workspace-build.log"
 
 echo "=== Next.js standalone ==="
 cd "$WEB"
@@ -70,28 +72,24 @@ if [[ "$SKIP_OBFUSCATE" != "1" ]]; then
   node "$ROOT/apps/desktop-mac/scripts/obfuscate-electron.mjs" 2>&1 | tee -a "$LOG/obfuscate.log"
 fi
 
-echo "=== electron-builder (NSIS + ZIP) ==="
+echo "=== electron-builder (NSIS instalador) ==="
 cd "$ELECTRON"
 npm install --legacy-peer-deps 2>&1 | tee -a "$LOG/electron-npm.log"
-npx electron-builder --win nsis zip --config electron-builder.json -p never \
+npx electron-builder --win nsis --config electron-builder.json -p never \
   -c.extraMetadata.version="$VERSION" 2>&1 | tee "$LOG/electron-builder.log"
 
 mkdir -p "$OUT"
 shopt -s nullglob
-copied=0
-for f in "$ELECTRON"/dist-electron/*.{exe,zip}; do
-  cp -f "$f" "$OUT/"
-  copied=1
-done
-[[ -f "$ELECTRON/dist-electron/latest.yml" ]] && cp -f "$ELECTRON/dist-electron/latest.yml" "$OUT/"
-
-if [[ "$copied" != "1" ]]; then
-  echo "❌ Sem .exe/.zip em $ELECTRON/dist-electron" >&2
+SETUP=( "$ELECTRON"/dist-electron/MUFUTU-Setup-*.exe )
+if [[ ${#SETUP[@]} -eq 0 ]]; then
+  echo "❌ Instalador MUFUTU-Setup-*.exe não gerado em $ELECTRON/dist-electron" >&2
   exit 1
 fi
+cp -f "${SETUP[@]}" "$OUT/"
+[[ -f "$ELECTRON/dist-electron/latest.yml" ]] && cp -f "$ELECTRON/dist-electron/latest.yml" "$OUT/"
 
 cd "$OUT"
-shasum -a 256 MUFUTU-* > checksums.sha256 2>/dev/null || sha256sum MUFUTU-* > checksums.sha256
+shasum -a 256 MUFUTU-Setup-*.exe > checksums.sha256 2>/dev/null || sha256sum MUFUTU-Setup-*.exe > checksums.sha256
 
 echo "✅ Instalador Windows: $OUT"
 ls -lh "$OUT"
