@@ -81,11 +81,14 @@ Todos os ecrãs Campo usam `FieldCampoPage` com **`SafeAreaEdges="All"`**: o hea
 
 ## 2. Visual Studio for Mac / `dotnet` CLI
 
-```bash
-cd mufutusoftware/apps/mobile-maui
+> **Repo:** `mufutusoftware` (software para download) — **não** `mufutu` (CMMS).  
+> Erros `cd` / workload: **`apps/mobile-maui/BUILD-LOCAL.md`**
 
-# Workloads (uma vez)
-dotnet workload install maui-android maui-ios
+```bash
+cd /Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui
+
+# Workloads (uma vez) — SDK Microsoft, não Homebrew; ver BUILD-LOCAL.md
+sudo dotnet workload install maui-android maui-ios
 
 dotnet restore Mufutu.Mobile.sln
 dotnet test tests/Mufutu.Mobile.Tests/Mufutu.Mobile.Tests.csproj -c Release
@@ -152,7 +155,11 @@ Actions → **Mobile MAUI (Android + iOS)** → Run workflow
 
 ### Tag de release
 
+No repositório **`mufutusoftware`** (não `mufutu`):
+
 ```bash
+cd /Users/fluadigital/Documents/GitHub/mufutusoftware
+git checkout main && git pull
 git tag mobile-maui/v1.0.0
 git push origin mobile-maui/v1.0.0
 ```

@@ -2,7 +2,11 @@
 
 Ver **[docs/MOBILE_MAUI.md](../../docs/MOBILE_MAUI.md)** — Visual Studio, build Android/iOS, rede Wi‑Fi e pipeline CI.
 
+**Build local / erros `cd` ou workload:** **[BUILD-LOCAL.md](./BUILD-LOCAL.md)**
+
 ```bash
-dotnet test tests/Mufutu.Mobile.Tests/Mufutu.Mobile.Tests.csproj -c Release
-bash scripts/test-api-connectivity.sh
+# A partir da raiz mufutusoftware (NÃO mufutu):
+cd /Users/fluadigital/Documents/GitHub/mufutusoftware
+npm run test:mobile-maui
+bash apps/mobile-maui/scripts/test-api-connectivity.sh
 ```
