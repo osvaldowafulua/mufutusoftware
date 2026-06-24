@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <Authors>MUFUTU</Authors>
+    <Company>Smart Cloud, Lda</Company>
+    <Product>MUFUTU Mobile</Product>
+    <Copyright>Copyright © 2026 Smart Cloud, Lda — marca MUFUTU</Copyright>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <MauiVersion>8.0.100</MauiVersion>
+  </PropertyGroup>
+</Project>
