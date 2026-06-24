@@ -3,6 +3,8 @@
 Guia interno para publicar **binários finais** neste repositório público.
 O código-fonte e pipelines completos permanecem no repositório privado `mufutu`.
 
+Ver também [POLITICA_REPOSITORIOS.md](POLITICA_REPOSITORIOS.md).
+
 ## Princípios de segurança
 
 - Publicar **apenas** artefactos de produção (ofuscados, sem símbolos de debug).
