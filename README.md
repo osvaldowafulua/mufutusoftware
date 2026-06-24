@@ -4,11 +4,30 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/osvaldowafulua/mufutusoftware/releases">Descarregar</a> ·
+  <a href="https://github.com/osvaldowafulua/mufutusoftware/releases/latest">
+    <img src="https://img.shields.io/github/v/release/osvaldowafulua/mufutusoftware?label=vers%C3%A3o&style=flat-square" alt="Última versão" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/osvaldowafulua/mufutusoftware/releases/latest"><strong>⬇ Descarregar última versão</strong></a> ·
   <a href="#licenças">Licenças</a> ·
   <a href="EULA.md">EULA</a> ·
   <a href="SECURITY.md">Segurança</a>
 </p>
+
+---
+
+## Descarregar agora (v1.0.5)
+
+| Plataforma | Ficheiro | Link directo |
+|------------|----------|--------------|
+| **macOS** (Apple Silicon) | `.dmg` | [MUFUTU-1.0.5-arm64.dmg](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.5-arm64.dmg) |
+| **macOS** (ZIP) | `.zip` | [MUFUTU-1.0.5-arm64.zip](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.5-arm64.zip) |
+| **Windows** (portátil x64) | `.zip` | [MUFUTU-1.0.0-win-x64.zip](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.0-win-x64.zip) |
+| **Web** | browser | [app.mufutu.ao](https://app.mufutu.ao) |
+
+Verifique integridade com [`checksums.sha256`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/checksums.sha256) antes de instalar.
 
 ---
 

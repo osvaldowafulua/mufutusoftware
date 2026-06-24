@@ -4,8 +4,13 @@ Cliente nativo **WPF / .NET 8** para Windows 10 e 11 (64-bit).
 
 ## Descarregar
 
-1. [GitHub Releases](https://github.com/osvaldowafulua/mufutusoftware/releases)
-2. Ficheiro: **`MUFUTU-Setup.exe`** (bootstrapper) ou **`MUFUTU-*.msi`** (instalação silenciosa IT)
+**Disponível agora (v1.0.5):**
+
+- [MUFUTU-1.0.0-win-x64.zip](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.0-win-x64.zip) — pacote portátil x64 (extrair e executar `MUFUTU.exe`)
+
+**Em breve:** `MUFUTU-Setup.exe` / `.msi` (instalador assinado)
+
+Todas as versões: [GitHub Releases](https://github.com/osvaldowafulua/mufutusoftware/releases)
 
 ## Instalação
 

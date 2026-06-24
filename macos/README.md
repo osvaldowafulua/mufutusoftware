@@ -4,11 +4,13 @@ Cliente **Electron** para macOS (Apple Silicon arm64; releases Intel quando indi
 
 ## Descarregar
 
-1. [GitHub Releases](https://github.com/osvaldowafulua/mufutusoftware/releases)
-2. Ficheiros:
-   - **`MUFUTU-*-arm64.dmg`** — imagem de disco (recomendado)
-   - **`MUFUTU-*-mac.zip`** — arquivo alternativo
-   - **`latest-mac.yml`** — metadados para actualização automática
+**Última versão (v1.0.5):**
+
+- [MUFUTU-1.0.5-arm64.dmg](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.5-arm64.dmg) — recomendado
+- [MUFUTU-1.0.5-arm64.zip](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.5-arm64.zip)
+- [latest-mac.yml](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/latest-mac.yml) — actualização automática
+
+Todas as versões: [GitHub Releases](https://github.com/osvaldowafulua/mufutusoftware/releases)
 
 ## Instalação
 
