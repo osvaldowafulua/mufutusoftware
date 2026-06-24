@@ -1,16 +1,47 @@
 <p align="center">
-  <strong>MUFUTU</strong><br/>
-  <em>Cockpit de operações e gestão de ativos para mineração</em>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/logo-software-white.png" />
+    <source media="(prefers-color-scheme: light)" srcset="assets/brand/logo-software-dark.png" />
+    <img alt="MUFUTU Software" src="assets/brand/logo-software-banner.png" width="420" />
+  </picture>
 </p>
 
 <p align="center">
+  <strong>Cockpit de operações e gestão de ativos para mineração</strong><br/>
+  <sub>CMMS/EAM · Angola · Offline-first · Multi-site MUA · LUC · MIL</sub>
+</p>
+
+<p align="center">
+  <a href="https://github.com/osvaldowafulua/mufutusoftware/stargazers">
+    <img src="https://img.shields.io/github/stars/osvaldowafulua/mufutusoftware?style=for-the-badge&logo=github&label=Stars&color=E8612D" alt="GitHub Stars" />
+  </a>
+  <a href="https://github.com/osvaldowafulua/mufutusoftware/releases">
+    <img src="https://img.shields.io/github/downloads/osvaldowafulua/mufutusoftware/total?style=for-the-badge&logo=download&label=Downloads&color=1565C0" alt="Total Downloads" />
+  </a>
   <a href="https://github.com/osvaldowafulua/mufutusoftware/releases/latest">
-    <img src="https://img.shields.io/github/v/release/osvaldowafulua/mufutusoftware?label=vers%C3%A3o&style=flat-square" alt="Última versão" />
+    <img src="https://img.shields.io/github/v/release/osvaldowafulua/mufutusoftware?style=for-the-badge&label=Release&color=E8612D" alt="Latest Release" />
+  </a>
+  <a href="https://github.com/osvaldowafulua/mufutusoftware/issues">
+    <img src="https://img.shields.io/github/issues/osvaldowafulua/mufutusoftware?style=for-the-badge&color=1565C0" alt="Issues" />
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/licen%C3%A7a-comercial-E8612D?style=for-the-badge" alt="Licença" />
   </a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/osvaldowafulua/mufutusoftware/releases/latest"><strong>⬇ Descarregar última versão</strong></a> ·
+  <a href="https://github.com/osvaldowafulua/mufutusoftware/releases/latest">
+    <img src="https://img.shields.io/badge/⬇_Descarregar-agora-E8612D?style=for-the-badge&logo=github&logoColor=white" alt="Descarregar" />
+  </a>
+  &nbsp;
+  <a href="https://app.mufutu.ao">
+    <img src="https://img.shields.io/badge/Web-app.mufutu.ao-1565C0?style=for-the-badge" alt="Web App" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="#descarregar-agora-v105">Downloads</a> ·
+  <a href="#estatísticas--comunidade">Estatísticas</a> ·
   <a href="#licenças">Licenças</a> ·
   <a href="EULA.md">EULA</a> ·
   <a href="SECURITY.md">Segurança</a>
@@ -28,6 +59,14 @@
 | **Web** | browser | [app.mufutu.ao](https://app.mufutu.ao) |
 
 Verifique integridade com [`checksums.sha256`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/checksums.sha256) antes de instalar.
+
+<p align="center">
+  <img src="https://img.shields.io/badge/macOS-DMG_arm64-000000?style=flat-square&logo=apple&logoColor=white" />
+  <img src="https://img.shields.io/badge/Windows-ZIP_x64-0078D4?style=flat-square&logo=windows&logoColor=white" />
+  <img src="https://img.shields.io/badge/Windows-Setup.exe-em_breve-0078D4?style=flat-square&logo=windows&logoColor=white" />
+  <img src="https://img.shields.io/badge/Android-APK-em_breve-3DDC84?style=flat-square&logo=android&logoColor=white" />
+  <img src="https://img.shields.io/badge/iOS-App_Store-em_breve-000000?style=flat-square&logo=apple&logoColor=white" />
+</p>
 
 ---
 
@@ -201,6 +240,41 @@ mufutusoftware/
 ```
 
 **Binários não vivem no Git** — apenas em [Releases](https://github.com/osvaldowafulua/mufutusoftware/releases).
+
+---
+
+## Estatísticas & comunidade
+
+<p align="center">
+  <a href="https://github.com/osvaldowafulua/mufutusoftware">
+    <img src="https://img.shields.io/github/commit-activity/m/osvaldowafulua/mufutusoftware?style=flat-square&label=commits%2Fmês&color=1565C0" alt="Commits" />
+  </a>
+  <a href="https://github.com/osvaldowafulua/mufutusoftware/pulse">
+    <img src="https://img.shields.io/github/last-commit/osvaldowafulua/mufutusoftware?style=flat-square&color=E8612D" alt="Último commit" />
+  </a>
+  <a href="https://github.com/osvaldowafulua/mufutusoftware/forks">
+    <img src="https://img.shields.io/github/forks/osvaldowafulua/mufutusoftware?style=flat-square&color=1565C0" alt="Forks" />
+  </a>
+  <a href="https://github.com/osvaldowafulua/mufutusoftware/watchers">
+    <img src="https://img.shields.io/github/watchers/osvaldowafulua/mufutusoftware?style=flat-square&color=E8612D" alt="Watchers" />
+  </a>
+</p>
+
+### Star History
+
+<p align="center">
+  <a href="https://star-history.com/#osvaldowafulua/mufutusoftware&Date">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=osvaldowafulua/mufutusoftware&type=Date&theme=dark" />
+      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=osvaldowafulua/mufutusoftware&type=Date" />
+      <img alt="Star History — MUFUTU Software" src="https://api.star-history.com/svg?repos=osvaldowafulua/mufutusoftware&type=Date" width="620" />
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  <sub>Gostou do projecto? Deixa uma <a href="https://github.com/osvaldowafulua/mufutusoftware/stargazers"><strong>⭐ star</strong></a> — ajuda outras equipas mineiras a encontrar o MUFUTU.</sub>
+</p>
 
 ---
 
