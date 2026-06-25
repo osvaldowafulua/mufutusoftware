@@ -21,17 +21,32 @@ public partial class AppShell : Shell
 
     public async Task BootstrapAsync(IServiceProvider services)
     {
-        var session = services.GetRequiredService<IAuthSessionStore>();
-        var runtime = services.GetRequiredService<MauiConnectivityMonitor>();
+        try
+        {
+            var session = services.GetRequiredService<IAuthSessionStore>();
+            var runtime = services.GetRequiredService<MauiConnectivityMonitor>();
 
-        if (await session.HasSessionAsync())
-        {
-            await runtime.StartCampoRuntimeAsync();
-            await GoToAsync("//campo");
+            if (await session.HasSessionAsync())
+            {
+                await runtime.StartCampoRuntimeAsync();
+                await GoToAsync("//campo");
+            }
+            else
+            {
+                await GoToAsync("//login");
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await GoToAsync("//login");
+            System.Diagnostics.Debug.WriteLine($"Bootstrap failed: {ex}");
+            try
+            {
+                await GoToAsync("//login");
+            }
+            catch
+            {
+                // Shell not ready — first route may already be visible
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder.UseMauiApp<App>();
 
+        builder.Services.AddSingleton<IAuthSessionStore, MauiAuthSessionStore>();
         builder.Services.AddSingleton<IDatabasePathProvider, MauiDatabasePathProvider>();
         builder.Services.AddSingleton<MauiConnectivityMonitor>();
         builder.Services.AddSingleton<IConnectivityMonitor>(sp => sp.GetRequiredService<MauiConnectivityMonitor>());
