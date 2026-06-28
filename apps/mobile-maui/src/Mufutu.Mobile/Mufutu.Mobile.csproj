@@ -12,8 +12,8 @@
 
     <ApplicationTitle>MUFUTU</ApplicationTitle>
     <ApplicationId>com.mufutu.mobile</ApplicationId>
-    <ApplicationDisplayVersion>1.0.10</ApplicationDisplayVersion>
-    <ApplicationVersion>10</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0.11</ApplicationDisplayVersion>
+    <ApplicationVersion>11</ApplicationVersion>
 
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">29.0</SupportedOSPlatformVersion>
@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#E8612D" />
-    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#0F1419" BaseSize="128,128" />
+    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#E8612D" BaseSize="128,128" />
   </ItemGroup>
 
   <ItemGroup>
