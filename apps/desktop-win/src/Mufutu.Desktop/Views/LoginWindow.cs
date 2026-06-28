@@ -1,11 +1,15 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Mufutu.Desktop.ViewModels;
 
 namespace Mufutu.Desktop.Views;
 
 public partial class LoginWindow : Window
 {
+    private static readonly SolidColorBrush BrandOrange = new(Color.FromRgb(0xE8, 0x61, 0x2D));
+
     public LoginWindow(LoginViewModel viewModel)
     {
         InitializeComponent();
@@ -16,34 +20,48 @@ public partial class LoginWindow : Window
     {
         Title = "MUFUTU — Entrar";
         Width = 420;
-        Height = 520;
+        Height = 560;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
         ResizeMode = ResizeMode.NoResize;
-        Background = System.Windows.Media.Brushes.White;
+        Background = Brushes.White;
 
-        var root = new StackPanel { Margin = new Thickness(32) };
+        var root = new Grid();
+        root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(180) });
+        root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
-        var title = new TextBlock
+        var header = new Grid { Background = BrandOrange };
+        var headerStack = new StackPanel
         {
-            Text = "MUFUTU",
-            FontSize = 28,
-            FontWeight = FontWeights.Bold,
-            Foreground = new System.Windows.Media.SolidColorBrush(
-                System.Windows.Media.Color.FromRgb(0xE8, 0x61, 0x2D)),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+
+        var logo = new Image
+        {
+            Width = 88,
+            Height = 88,
+            Stretch = Stretch.Uniform,
+            Source = LoadBrandImage("logo-white.png"),
             Margin = new Thickness(0, 0, 0, 8),
         };
-        root.Children.Add(title);
-
-        root.Children.Add(new TextBlock
+        headerStack.Children.Add(logo);
+        headerStack.Children.Add(new TextBlock
         {
             Text = "Gestão mineira · Windows",
-            Margin = new Thickness(0, 0, 0, 24),
+            Foreground = new SolidColorBrush(Color.FromArgb(0xCC, 0xFF, 0xFF, 0xFF)),
+            FontSize = 12,
+            HorizontalAlignment = HorizontalAlignment.Center,
         });
+        header.Children.Add(headerStack);
+        Grid.SetRow(header, 0);
+        root.Children.Add(header);
+
+        var form = new StackPanel { Margin = new Thickness(32, 28, 32, 32) };
 
         var emailBox = new TextBox();
         emailBox.SetBinding(TextBox.TextProperty, new System.Windows.Data.Binding(nameof(LoginViewModel.Email)));
-        root.Children.Add(new TextBlock { Text = "Email" });
-        root.Children.Add(emailBox);
+        form.Children.Add(new TextBlock { Text = "Email" });
+        form.Children.Add(emailBox);
 
         var passBox = new PasswordBox { Margin = new Thickness(0, 4, 0, 0) };
         passBox.PasswordChanged += (_, _) =>
@@ -53,27 +71,57 @@ public partial class LoginWindow : Window
                 vm.Password = passBox.Password;
             }
         };
-        root.Children.Add(new TextBlock { Text = "Palavra-passe", Margin = new Thickness(0, 12, 0, 0) });
-        root.Children.Add(passBox);
+        form.Children.Add(new TextBlock { Text = "Palavra-passe", Margin = new Thickness(0, 12, 0, 0) });
+        form.Children.Add(passBox);
 
         var error = new TextBlock
         {
-            Foreground = System.Windows.Media.Brushes.Firebrick,
+            Foreground = Brushes.Firebrick,
             TextWrapping = TextWrapping.Wrap,
             Margin = new Thickness(0, 8, 0, 0),
         };
         error.SetBinding(TextBlock.TextProperty, new System.Windows.Data.Binding(nameof(LoginViewModel.ErrorMessage)));
-        root.Children.Add(error);
+        form.Children.Add(error);
 
-        var loginBtn = new Button { Content = "Entrar", Margin = new Thickness(0, 16, 0, 0) };
+        var loginBtn = new Button
+        {
+            Content = "Entrar",
+            Margin = new Thickness(0, 16, 0, 0),
+            Background = BrandOrange,
+            Foreground = Brushes.White,
+            FontWeight = FontWeights.SemiBold,
+            Padding = new Thickness(0, 10, 0, 10),
+        };
         loginBtn.SetBinding(Button.CommandProperty, new System.Windows.Data.Binding(nameof(LoginViewModel.LoginCommand)));
         loginBtn.SetBinding(UIElement.IsEnabledProperty, new System.Windows.Data.Binding(nameof(LoginViewModel.IsBusy))
         {
             Converter = new InverseBoolConverter(),
         });
-        root.Children.Add(loginBtn);
+        form.Children.Add(loginBtn);
+
+        Grid.SetRow(form, 1);
+        root.Children.Add(form);
 
         Content = root;
+    }
+
+    private static BitmapImage? LoadBrandImage(string fileName)
+    {
+        try
+        {
+            var uri = new Uri($"pack://application:,,,/Assets/brand/{fileName}", UriKind.Absolute);
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.UriSource = uri;
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.EndInit();
+            image.Freeze();
+            return image;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }
 

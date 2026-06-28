@@ -10,6 +10,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\brand\app-icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +27,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Mufutu.Desktop.Core\Mufutu.Desktop.Core.csproj" />
     <ProjectReference Include="..\Mufutu.Desktop.Licensing\Mufutu.Desktop.Licensing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\brand\*.png" />
   </ItemGroup>
 
 </Project>

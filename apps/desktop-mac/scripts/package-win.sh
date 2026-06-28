@@ -64,6 +64,7 @@ export MUFUTU_WEB_DIR="$WEB"
 node "$ELECTRON/scripts/prepare-electron.mjs" 2>&1 | tee "$LOG/prepare-electron.log"
 cp -rf "$WEB/assets/"* "$ELECTRON/assets/" 2>/dev/null || true
 [[ -d "$WEB/build" ]] && cp -rf "$WEB/build" "$ELECTRON/build" 2>/dev/null || true
+node "$ROOT/scripts/generate-desktop-brand-assets.mjs" 2>&1 | tee -a "$LOG/prepare-electron.log"
 
 if [[ "$SKIP_OBFUSCATE" != "1" ]]; then
   echo "=== Ofuscação ==="

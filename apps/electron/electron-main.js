@@ -67,30 +67,24 @@ function decryptAes256Gcm(payloadB64) {
 function resolveSplashLogo() {
   const candidates = [
     path.join(__dirname, 'assets', 'splash-logo.png'),
-    path.join(__dirname, 'public', 'brand', 'png', 'logo-mark-orange-on-black.png'),
+    path.join(__dirname, 'assets', 'svg', 'splash-mark.svg'),
   ];
-  const manifest = loadManifest();
-  if (manifest?.serverDir) {
-    candidates.push(
-      path.join(manifest.serverDir, 'public', 'brand', 'png', 'logo-mark-orange-on-black.png'),
-    );
-  }
   return candidates.find((p) => fs.existsSync(p));
 }
 
 function createSplashWindow() {
   const logo = resolveSplashLogo();
   splashWindow = new BrowserWindow({
-    width: 440,
-    height: 320,
+    width: 420,
+    height: 420,
     frame: false,
-    transparent: true,
+    transparent: false,
     alwaysOnTop: true,
     center: true,
     resizable: false,
     skipTaskbar: true,
     show: false,
-    backgroundColor: '#00000000',
+    backgroundColor: '#E8612D',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

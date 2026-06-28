@@ -61,6 +61,9 @@ public partial class App : Application
             })
             .Build();
 
+        var splash = new SplashWindow();
+        splash.Show();
+
         await _host.StartAsync();
 
         _ = Task.Run(async () =>
@@ -71,7 +74,10 @@ public partial class App : Application
             await DesktopUpdateUi.CheckOnStartupAsync(updateService, logger, silent: true);
         });
 
+        await Task.Delay(900);
+
         var login = _host.Services.GetRequiredService<LoginWindow>();
+        splash.Close();
         login.Show();
     }
 
