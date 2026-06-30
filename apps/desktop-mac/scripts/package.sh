@@ -56,6 +56,9 @@ export MUFUTU_WEB_DIR="$WEB"
 node "$ELECTRON/scripts/prepare-electron.mjs" 2>&1 | tee "$LOG/prepare-electron.log"
 cp -rf "$WEB/assets/"* "$ELECTRON/assets/" 2>/dev/null || true
 [[ -d "$WEB/build" ]] && cp -rf "$WEB/build" "$ELECTRON/build" 2>/dev/null || true
+if ! command -v rsvg-convert &>/dev/null && command -v brew &>/dev/null; then
+  brew install librsvg 2>&1 | tee -a "$LOG/prepare-electron.log" || true
+fi
 node "$ROOT/scripts/generate-desktop-brand-assets.mjs" 2>&1 | tee -a "$LOG/prepare-electron.log"
 echo "::endgroup::"
 

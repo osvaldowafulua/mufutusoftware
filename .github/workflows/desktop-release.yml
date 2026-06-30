@@ -90,7 +90,7 @@ jobs:
       - name: Package Windows
         shell: pwsh
         run: |
-          & apps/desktop-win/scripts/package.ps1 -Version "${{ steps.version.outputs.version }}" -SkipSign
+          & apps/desktop-win/scripts/package.ps1 -Version "${{ steps.version.outputs.version }}" -SkipSign -SkipObfuscate
 
       - uses: actions/upload-artifact@v4
         with:
