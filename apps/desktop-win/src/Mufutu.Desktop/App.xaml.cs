@@ -4,7 +4,6 @@ using Mufutu.Desktop.Core;
 using Mufutu.Desktop.Core.Configuration;
 using Mufutu.Desktop.Core.Security;
 using Mufutu.Desktop.Core.Updates;
-using Mufutu.Desktop.Security;
 using Mufutu.Desktop.Updates;
 using Mufutu.Desktop.ViewModels;
 using Mufutu.Desktop.Views;
