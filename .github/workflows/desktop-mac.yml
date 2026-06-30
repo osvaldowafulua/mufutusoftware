@@ -28,7 +28,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
       - run: npm install --legacy-peer-deps
       - name: npm audit (high+)
         continue-on-error: true
@@ -84,7 +83,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
 
       - name: Install javascript-obfuscator
         run: npm install --legacy-peer-deps && npm install javascript-obfuscator@4.1.1 --no-save
