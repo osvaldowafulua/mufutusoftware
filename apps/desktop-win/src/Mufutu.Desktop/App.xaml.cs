@@ -2,7 +2,6 @@ using System.IO;
 using System.Windows;
 using Mufutu.Desktop.Core;
 using Mufutu.Desktop.Core.Configuration;
-using Mufutu.Desktop.Core.Security;
 using Mufutu.Desktop.Core.Updates;
 using Mufutu.Desktop.Updates;
 using Mufutu.Desktop.ViewModels;
@@ -43,11 +42,6 @@ public partial class App : Application
                     options.SiteCode = Environment.GetEnvironmentVariable("MUFUTU_SITE_CODE") ?? "MUA";
                     options.PinnedHostSuffixes = ["mufutu.ao", "localhost", "127.0.0.1"];
                 });
-
-                if (OperatingSystem.IsWindows())
-                {
-                    services.AddSingleton<ITokenVault, WindowsCredentialTokenVault>();
-                }
 
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<LoginViewModel>();

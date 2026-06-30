@@ -44,6 +44,7 @@ cd "$WEB"
 rm -f .next/lock 2>/dev/null || true
 npm run icons 2>&1 | tee "$LOG/icons.log" || true
 ELECTRON_BUILD=1 \
+DOCKER_BUILD=1 \
 NEXT_PUBLIC_API_URL=/api \
 NEXT_PUBLIC_APP_URL=http://127.0.0.1:3847 \
 API_INTERNAL_URL="${API_INTERNAL_URL:-https://api.mufutu.ao}" \
