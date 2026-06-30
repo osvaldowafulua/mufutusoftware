@@ -33,7 +33,10 @@ collect_assets
 
 cd "$STAGING"
 shopt -s nullglob
-FILES=(*.dmg *.zip *.exe *.msi latest-mac.yml latest.yml)
+mapfile -t FILES < <(find . -maxdepth 1 -type f \( \
+  -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.msi' \
+  -o -name 'latest-mac.yml' -o -name 'latest.yml' \
+\) -printf '%f\n' | sort -u)
 if [[ ${#FILES[@]} -eq 0 ]]; then
   echo "Nenhum artefacto encontrado em $ASSET_DIR" >&2
   exit 1
