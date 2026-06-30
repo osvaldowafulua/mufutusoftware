@@ -59,6 +59,7 @@ cp -rf "$WEB/assets/"* "$ELECTRON/assets/" 2>/dev/null || true
 if ! command -v rsvg-convert &>/dev/null && command -v brew &>/dev/null; then
   brew install librsvg 2>&1 | tee -a "$LOG/prepare-electron.log" || true
 fi
+python3 -m pip install --user pillow 2>&1 | tee -a "$LOG/prepare-electron.log" || pip3 install pillow 2>&1 | tee -a "$LOG/prepare-electron.log" || true
 node "$ROOT/scripts/generate-desktop-brand-assets.mjs" 2>&1 | tee -a "$LOG/prepare-electron.log"
 echo "::endgroup::"
 
