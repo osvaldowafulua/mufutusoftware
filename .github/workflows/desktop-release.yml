@@ -115,6 +115,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          chmod +x scripts/publish-release.sh
+          chmod +x scripts/publish-mufutusoftware-release.sh
           VERSION="${{ needs.mac.outputs.version }}"
-          bash scripts/publish-release.sh "$VERSION" release-assets
+          bash scripts/publish-mufutusoftware-release.sh "$VERSION" release-assets

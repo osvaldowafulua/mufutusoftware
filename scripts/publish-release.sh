@@ -35,8 +35,8 @@ shasum -a 256 MUFUTU-${VERSION}-arm64.dmg MUFUTU-${VERSION}-arm64.zip > checksum
 
 DMG_HASH=$(shasum -a 256 "MUFUTU-${VERSION}-arm64.dmg" | awk '{print $1}')
 ZIP_HASH=$(shasum -a 256 "MUFUTU-${VERSION}-arm64.zip" | awk '{print $1}')
-DMG_SIZE=$(stat -f%z "MUFUTU-${VERSION}-arm64.dmg")
-ZIP_SIZE=$(stat -f%z "MUFUTU-${VERSION}-arm64.zip")
+DMG_SIZE=$(stat -f%z "MUFUTU-${VERSION}-arm64.dmg" 2>/dev/null || stat -c%s "MUFUTU-${VERSION}-arm64.dmg")
+ZIP_SIZE=$(stat -f%z "MUFUTU-${VERSION}-arm64.zip" 2>/dev/null || stat -c%s "MUFUTU-${VERSION}-arm64.zip")
 
 cat > manifest.json <<EOF
 {
