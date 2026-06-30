@@ -34,6 +34,18 @@ function renderSvg(input, output, size) {
 }
 
 function writeIcoFromPng(pngPath, icoPath) {
+  if (process.platform === 'darwin') {
+    console.log('ℹ️  Skipping .ico on macOS — Electron mac usa icon.icns');
+    return;
+  }
+  if (!has('python3')) {
+    throw new Error('python3 não encontrado — necessário para gerar .ico');
+  }
+  try {
+    execSync('python3 -c "import PIL"', { stdio: 'ignore' });
+  } catch {
+    execSync('python3 -m pip install --user pillow --break-system-packages', { stdio: 'inherit' });
+  }
   execSync(
     `python3 - <<'PY'\nfrom PIL import Image\nimg = Image.open("${pngPath}").convert("RGBA")\nsizes = [(256,256),(128,128),(64,64),(48,48),(32,32),(16,16)]\nimg.save("${icoPath}", format="ICO", sizes=[(s[0], s[1]) for s in sizes])\nPY`,
     { stdio: 'inherit', shell: '/bin/bash' },
@@ -74,10 +86,11 @@ renderSvg(appIconSvg, splashFull, 512);
 renderSvg(appIconSvg, join(winAssets, 'splash.png'), 512);
 renderSvg(splashMarkSvg, join(winAssets, 'logo-white.png'), 256);
 
-writeIcoFromPng(iconPng, join(electronAssets, 'icon.ico'));
-copyFileSync(join(electronAssets, 'icon.ico'), join(winAssets, 'app-icon.ico'));
-
 buildIcns(iconPng, join(electronAssets, 'icon.icns'));
+writeIcoFromPng(iconPng, join(electronAssets, 'icon.ico'));
+if (existsSync(join(electronAssets, 'icon.ico'))) {
+  copyFileSync(join(electronAssets, 'icon.ico'), join(winAssets, 'app-icon.ico'));
+}
 
 console.log('✅ Desktop brand assets gerados');
 console.log('   Electron → apps/electron/assets/{icon.png,icon.ico,icon.icns,splash-logo.png}');
