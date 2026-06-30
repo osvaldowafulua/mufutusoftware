@@ -49,8 +49,21 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Import Apple signing certificate
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          chmod +x apps/desktop-mac/scripts/import-apple-cert.sh
+          apps/desktop-mac/scripts/import-apple-cert.sh
+
       - name: Package macOS
         env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           MUFUTU_CMMS_DIR: ${{ github.workspace }}/mufutu
         run: |
           chmod +x apps/desktop-mac/scripts/*.sh

@@ -74,13 +74,23 @@ echo "::group::electron-builder"
 cd "$ELECTRON"
 npm install --legacy-peer-deps 2>&1 | tee -a "$LOG/electron-npm.log"
 BUILD_ARGS=(-c.extraMetadata.version="$VERSION")
-if [[ -n "${APPLE_CERTIFICATE:-}" ]] && [[ "$SKIP_SIGN" != "1" ]]; then
-  export CSC_LINK="$APPLE_CERTIFICATE"
-  export CSC_KEY_PASSWORD="${APPLE_CERTIFICATE_PASSWORD:-}"
+CAN_SIGN=0
+if [[ "$SKIP_SIGN" != "1" ]] && [[ -n "${APPLE_CERTIFICATE:-}" || "${CSC_IDENTITY_AUTO_DISCOVERY:-}" == "true" ]]; then
+  CAN_SIGN=1
+  if [[ -n "${APPLE_CERTIFICATE:-}" ]] && [[ ! -f "${APPLE_CERTIFICATE}" ]]; then
+    P12="/tmp/mufutu-mac.p12"
+    if [[ ! -f "$P12" ]]; then
+      echo "$APPLE_CERTIFICATE" | base64 --decode > "$P12"
+    fi
+    export CSC_LINK="$P12"
+    export CSC_KEY_PASSWORD="${APPLE_CERTIFICATE_PASSWORD:-}"
+  fi
   export CSC_IDENTITY_AUTO_DISCOVERY="${CSC_IDENTITY_AUTO_DISCOVERY:-true}"
+  echo "Assinatura Apple: activa (notarização se APPLE_ID + APPLE_APP_SPECIFIC_PASSWORD + APPLE_TEAM_ID)"
 else
   export CSC_IDENTITY_AUTO_DISCOVERY=false
   BUILD_ARGS+=(-c.mac.identity=null -c.mac.hardenedRuntime=false)
+  echo "⚠️  Build sem Developer ID — Gatekeeper pode mostrar «app danificada» (ver scripts/macos-unquarantine.sh)"
 fi
 npx electron-builder --mac dmg zip --config electron-builder.json -p never \
   "${BUILD_ARGS[@]}" 2>&1 | tee "$LOG/electron-builder.log"
@@ -92,6 +102,11 @@ if compgen -G "$ELECTRON/dist-electron/*.dmg" > /dev/null; then
   cp -f "$ELECTRON"/dist-electron/*.dmg "$ELECTRON"/dist-electron/*.zip "$OUT/dist/" 2>/dev/null || true
   cp -f "$ELECTRON"/dist-electron/latest-mac.yml "$ELECTRON"/dist-electron/*.blockmap "$OUT/dist/" 2>/dev/null || true
   bash "$ROOT/apps/desktop-mac/scripts/verify-artifact.sh" "$OUT/dist" 2>&1 | tee "$LOG/verify.log"
+  if [[ "$CAN_SIGN" -eq 1 ]]; then
+    echo "signed=true" > "$OUT/dist/signing.env"
+  else
+    echo "signed=false" > "$OUT/dist/signing.env"
+  fi
 else
   echo "❌ Sem DMG/ZIP em $ELECTRON/dist-electron" | tee "$LOG/verify.log"
   exit 1

@@ -62,7 +62,17 @@ Artefactos: `MUFUTU-{version}-arm64.dmg`, `MUFUTU-{version}-arm64.zip`, `latest-
 | Instalação | «Reiniciar para instalar» (`quitAndInstall`) |
 | Feed | Releases GitHub com prefixo `desktop-mac/v*` + `latest-mac.yml` |
 
-Sem assinatura Apple (dev/CI sem `APPLE_CERTIFICATE`), o Gatekeeper pode bloquear — utilizador abre via clique direito → Abrir. Com certificado Developer ID, actualização funciona normalmente.
+Sem assinatura Apple (dev/CI sem secrets `APPLE_*`), o Gatekeeper bloqueia com a mensagem **«app danificada»** — o ficheiro não está corrompido.
+
+**Workaround imediato (pt-AO):**
+
+```bash
+xattr -cr /Applications/MUFUTU.app
+```
+
+Ou clique direito → **Abrir** na primeira execução. Script: `scripts/macos-unquarantine.sh`.
+
+Com **Developer ID + notarização** (`APPLE_CERTIFICATE`, `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, `APPLE_TEAM_ID` em CI), a app abre normalmente e o auto-update funciona sem aviso.
 
 Código: `apps/web/electron-update.js` · config publish em `electron-builder.json`.
 

@@ -92,22 +92,16 @@ jobs:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
         run: |
-          if [ -z "${APPLE_CERTIFICATE:-}" ]; then
-            echo "Sem APPLE_CERTIFICATE — DMG/ZIP sem assinatura Apple"
-            exit 0
-          fi
-          echo "$APPLE_CERTIFICATE" | base64 --decode > /tmp/mufutu-mac.p12
-          security create-keychain -p actions build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p actions build.keychain
-          security import /tmp/mufutu-mac.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k actions build.keychain
-          echo "CSC_IDENTITY_AUTO_DISCOVERY=true" >> "$GITHUB_ENV"
+          chmod +x apps/desktop-mac/scripts/import-apple-cert.sh
+          apps/desktop-mac/scripts/import-apple-cert.sh
 
       - name: Package (DMG + ZIP)
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           MUFUTU_CMMS_DIR: ${{ github.workspace }}/mufutu
         run: |
           chmod +x apps/desktop-mac/scripts/*.sh

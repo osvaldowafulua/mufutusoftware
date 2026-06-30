@@ -27,8 +27,20 @@ git tag desktop-mac/v1.0.0 && git push origin desktop-mac/v1.0.0
 
 ## Assinatura Apple (opcional)
 
-Secrets: `APPLE_CERTIFICATE` (p12 base64), `APPLE_CERTIFICATE_PASSWORD`
+Secrets GitHub (Settings → Secrets → Actions):
 
-Sem certificado Apple, o build gera DMG/ZIP não notarizados (Gatekeeper pode avisar).
+| Secret | Descrição |
+|--------|-----------|
+| `APPLE_CERTIFICATE` | Developer ID Application (.p12) em base64 |
+| `APPLE_CERTIFICATE_PASSWORD` | Password do .p12 |
+| `APPLE_ID` | Apple ID developer |
+| `APPLE_APP_SPECIFIC_PASSWORD` | App-specific password |
+| `APPLE_TEAM_ID` | Team ID (10 chars) |
 
-Ver [`docs/DESKTOP_MAC.md`](../../docs/DESKTOP_MAC.md).
+Sem certificado, o build gera DMG/ZIP **válidos** mas **não notarizados** — o macOS mostra «app danificada» (Gatekeeper). Workaround para utilizadores:
+
+```bash
+xattr -cr /Applications/MUFUTU.app
+```
+
+Ver [`macos/README.md`](../../macos/README.md) e `scripts/macos-unquarantine.sh`.

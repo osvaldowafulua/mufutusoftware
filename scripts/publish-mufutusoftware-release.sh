@@ -45,6 +45,12 @@ fi
 shasum -a 256 "${FILES[@]}" > checksums.sha256 2>/dev/null || true
 
 PLATFORMS_JSON="[]"
+SIGNED=false
+if [[ -f "$ASSET_DIR/signing.env" ]]; then
+  # shellcheck disable=SC1090
+  source "$ASSET_DIR/signing.env"
+  [[ "${signed:-false}" == "true" ]] && SIGNED=true
+fi
 if ls MUFUTU-*-arm64.dmg &>/dev/null; then
   DMG=$(ls MUFUTU-*-arm64.dmg | head -1)
   DMG_HASH=$(shasum -a 256 "$DMG" | awk '{print $1}')
@@ -58,7 +64,7 @@ if ls MUFUTU-*-arm64.dmg &>/dev/null; then
         "filename": "$(basename "$DMG")",
         "sha256": "${DMG_HASH}",
         "sizeBytes": ${DMG_SIZE},
-        "signed": true
+        "signed": ${SIGNED}
       }
     ]
   }
@@ -92,7 +98,21 @@ else
 Distribuição oficial — [mufutusoftware](https://github.com/${REPO}).
 
 Verifique \`checksums.sha256\` antes de instalar.
-Licença: \`MUFUTU-LIC-*\` — licenca@mufutu.ao" \
+Licença: \`MUFUTU-LIC-*\` — licenca@mufutu.ao
+
+### macOS — «App danificada» / Gatekeeper
+
+Se o macOS disser que **MUFUTU está danificado**, o ficheiro **não está corrompido** — é o Gatekeeper a bloquear builds ainda **sem notarização Apple**.
+
+**Solução imediata** (após arrastar para Aplicações):
+
+\`\`\`bash
+xattr -cr /Applications/MUFUTU.app
+\`\`\`
+
+Ou: **clique direito** em MUFUTU → **Abrir** (só na primeira vez).
+
+Script incluído no repositório: \`scripts/macos-unquarantine.sh\`" \
     "${UPLOAD[@]}"
 fi
 
