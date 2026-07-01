@@ -12,8 +12,8 @@
 
     <ApplicationTitle>MUFUTU</ApplicationTitle>
     <ApplicationId>com.mufutu.mobile</ApplicationId>
-    <ApplicationDisplayVersion>1.0.11</ApplicationDisplayVersion>
-    <ApplicationVersion>11</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0.12</ApplicationDisplayVersion>
+    <ApplicationVersion>12</ApplicationVersion>
 
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">29.0</SupportedOSPlatformVersion>

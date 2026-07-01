@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using Mufutu.Desktop.Localization;
 using Mufutu.Desktop.Core.Updates;
 using Mufutu.Desktop.Updates;
 using Mufutu.Desktop.ViewModels;
@@ -22,7 +23,7 @@ public partial class ShellWindow : Window
 
     private void InitializeComponent()
     {
-        Title = "MUFUTU";
+        Title = DesktopLanguage.T("shell_title");
         Width = 1100;
         Height = 720;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -38,12 +39,12 @@ public partial class ShellWindow : Window
             Margin = new Thickness(0),
         };
 
-        nav.Children.Add(MakeNavButton("Dashboard", nameof(ShellViewModel.ShowDashboardCommand)));
-        nav.Children.Add(MakeNavButton("Ordens de trabalho", nameof(ShellViewModel.ShowWorkOrdersCommand)));
-        nav.Children.Add(MakeNavButton("Activos", nameof(ShellViewModel.ShowAssetsCommand)));
+        nav.Children.Add(MakeNavButton(DesktopLanguage.T("nav_dashboard"), nameof(ShellViewModel.ShowDashboardCommand)));
+        nav.Children.Add(MakeNavButton(DesktopLanguage.T("nav_work_orders"), nameof(ShellViewModel.ShowWorkOrdersCommand)));
+        nav.Children.Add(MakeNavButton(DesktopLanguage.T("nav_assets"), nameof(ShellViewModel.ShowAssetsCommand)));
         nav.Children.Add(new Separator { Margin = new Thickness(0, 12, 0, 12) });
-        nav.Children.Add(MakeActionButton("Verificar actualizações", OnCheckUpdates));
-        nav.Children.Add(MakeActionButton("Descarregar última versão", OnOpenReleases));
+        nav.Children.Add(MakeActionButton(DesktopLanguage.T("check_updates"), OnCheckUpdates));
+        nav.Children.Add(MakeActionButton(DesktopLanguage.T("download_latest"), OnOpenReleases));
 
         Grid.SetColumn(nav, 0);
         grid.Children.Add(nav);

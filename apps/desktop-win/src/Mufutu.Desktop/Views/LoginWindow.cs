@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Mufutu.Desktop.Localization;
 using Mufutu.Desktop.ViewModels;
 
 namespace Mufutu.Desktop.Views;
@@ -12,15 +13,16 @@ public partial class LoginWindow : Window
 
     public LoginWindow(LoginViewModel viewModel)
     {
+        DesktopLanguage.Load();
         InitializeComponent();
         DataContext = viewModel;
     }
 
     private void InitializeComponent()
     {
-        Title = "MUFUTU — Entrar";
+        Title = DesktopLanguage.T("login_title");
         Width = 420;
-        Height = 560;
+        Height = 600;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
         ResizeMode = ResizeMode.NoResize;
         Background = Brushes.White;
@@ -47,7 +49,7 @@ public partial class LoginWindow : Window
         headerStack.Children.Add(logo);
         headerStack.Children.Add(new TextBlock
         {
-            Text = "Gestão mineira · Windows",
+            Text = DesktopLanguage.T("login_tagline"),
             Foreground = new SolidColorBrush(Color.FromArgb(0xCC, 0xFF, 0xFF, 0xFF)),
             FontSize = 12,
             HorizontalAlignment = HorizontalAlignment.Center,
@@ -58,9 +60,28 @@ public partial class LoginWindow : Window
 
         var form = new StackPanel { Margin = new Thickness(32, 28, 32, 32) };
 
+        var langBox = new ComboBox { Margin = new Thickness(0, 0, 0, 12) };
+        foreach (var (code, label) in DesktopLanguage.SupportedLocales)
+        {
+            langBox.Items.Add(new ComboBoxItem { Content = label, Tag = code });
+        }
+
+        langBox.SelectedIndex = DesktopLanguage.Current == "en" ? 1 : 0;
+        langBox.SelectionChanged += (_, _) =>
+        {
+            if (langBox.SelectedItem is ComboBoxItem item && item.Tag is string code)
+            {
+                DesktopLanguage.Set(code);
+                Title = DesktopLanguage.T("login_title");
+            }
+        };
+
+        form.Children.Add(new TextBlock { Text = DesktopLanguage.T("language") });
+        form.Children.Add(langBox);
+
         var emailBox = new TextBox();
         emailBox.SetBinding(TextBox.TextProperty, new System.Windows.Data.Binding(nameof(LoginViewModel.Email)));
-        form.Children.Add(new TextBlock { Text = "Email" });
+        form.Children.Add(new TextBlock { Text = DesktopLanguage.T("email"), Margin = new Thickness(0, 8, 0, 0) });
         form.Children.Add(emailBox);
 
         var passBox = new PasswordBox { Margin = new Thickness(0, 4, 0, 0) };
@@ -71,7 +92,7 @@ public partial class LoginWindow : Window
                 vm.Password = passBox.Password;
             }
         };
-        form.Children.Add(new TextBlock { Text = "Palavra-passe", Margin = new Thickness(0, 12, 0, 0) });
+        form.Children.Add(new TextBlock { Text = DesktopLanguage.T("password"), Margin = new Thickness(0, 12, 0, 0) });
         form.Children.Add(passBox);
 
         var error = new TextBlock
@@ -85,7 +106,7 @@ public partial class LoginWindow : Window
 
         var loginBtn = new Button
         {
-            Content = "Entrar",
+            Content = DesktopLanguage.T("sign_in"),
             Margin = new Thickness(0, 16, 0, 0),
             Background = BrandOrange,
             Foreground = Brushes.White,

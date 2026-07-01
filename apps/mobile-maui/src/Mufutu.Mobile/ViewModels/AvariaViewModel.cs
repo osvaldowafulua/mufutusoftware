@@ -11,6 +11,7 @@ public partial class AvariaViewModel : ObservableObject
 {
     private readonly ICampoDataService _data;
     private readonly IAuthSessionStore _session;
+    private readonly ILocalizationService _l10n;
 
     [ObservableProperty]
     private string _siteLabel = "MUA";
@@ -34,22 +35,24 @@ public partial class AvariaViewModel : ObservableObject
     private bool _sent;
 
     [ObservableProperty]
-    private string _sentMessage = FieldCopy.Sent;
+    private string _sentMessage = string.Empty;
 
-    public IReadOnlyList<FaultReason> Reasons => FieldCopy.FaultReasons;
+    public IReadOnlyList<FaultReason> Reasons => _l10n.FaultReasons;
 
     public bool HasPhoto => !string.IsNullOrWhiteSpace(PhotoDataUrl);
 
-    public AvariaViewModel(ICampoDataService data, IAuthSessionStore session)
+    public AvariaViewModel(ICampoDataService data, IAuthSessionStore session, ILocalizationService l10n)
     {
         _data = data;
         _session = session;
+        _l10n = l10n;
+        _sentMessage = l10n.Get("sent");
     }
 
     public async Task InitializeAsync()
     {
         SiteLabel = await _session.GetSiteCodeAsync();
-        UserLabel = (await _session.GetUserNameAsync()) ?? "Técnico";
+        UserLabel = (await _session.GetUserNameAsync()) ?? _l10n.Get("technician");
     }
 
     partial void OnPhotoDataUrlChanged(string? value) => OnPropertyChanged(nameof(HasPhoto));
@@ -92,12 +95,12 @@ public partial class AvariaViewModel : ObservableObject
     {
         if (!HasPhoto)
         {
-            ErrorMessage = FieldCopy.PhotoRequired;
+            ErrorMessage = _l10n.Get("photo_required");
             return;
         }
         if (SelectedReason == null)
         {
-            ErrorMessage = FieldCopy.ChooseReason;
+            ErrorMessage = _l10n.Get("choose_reason");
             return;
         }
 
@@ -141,6 +144,6 @@ public partial class AvariaViewModel : ObservableObject
         PhotoDataUrl = null;
         SelectedReason = null;
         ErrorMessage = null;
-        SentMessage = FieldCopy.Sent;
+        SentMessage = _l10n.Get("sent");
     }
 }

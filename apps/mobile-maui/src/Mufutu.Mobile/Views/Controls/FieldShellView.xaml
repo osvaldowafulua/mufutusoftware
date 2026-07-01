@@ -59,6 +59,7 @@
             BackgroundColor="#1A2332"
             ColumnSpacing="2">
             <Button
+                x:Name="NavHomeBtn"
                 Grid.Column="0"
                 Text="Início"
                 FontSize="10"
@@ -66,6 +67,7 @@
                 TextColor="{Binding Source={x:Reference Root}, Path=NavHomeColor}"
                 Clicked="OnNavHome" />
             <Button
+                x:Name="NavOtsBtn"
                 Grid.Column="1"
                 Text="Trabalhos"
                 FontSize="10"
@@ -73,6 +75,7 @@
                 TextColor="{Binding Source={x:Reference Root}, Path=NavOtsColor}"
                 Clicked="OnNavOts" />
             <Button
+                x:Name="NavAvariaBtn"
                 Grid.Column="2"
                 Text="Avaria"
                 FontSize="10"
@@ -80,6 +83,7 @@
                 TextColor="{Binding Source={x:Reference Root}, Path=NavAvariaColor}"
                 Clicked="OnNavAvaria" />
             <Button
+                x:Name="NavChecklistBtn"
                 Grid.Column="3"
                 Text="Checklist"
                 FontSize="10"
@@ -87,6 +91,7 @@
                 TextColor="{Binding Source={x:Reference Root}, Path=NavChecklistColor}"
                 Clicked="OnNavChecklist" />
             <Button
+                x:Name="NavSyncBtn"
                 Grid.Column="4"
                 Text="Enviar"
                 FontSize="10"

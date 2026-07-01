@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, safeStorage } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, safeStorage, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
@@ -12,6 +12,42 @@ const { buildUpstreamTarget, isLocalHost } = require('./electron-ipv4');
 const isDev = !app.isPackaged && process.env.NODE_ENV === 'development';
 const DESKTOP_PORT = Number(process.env.AYOMANT_PORT || 3847);
 const SPLASH_TIMEOUT_MS = 30_000;
+const DESKTOP_LOCALES = new Set(['pt-AO', 'en']);
+
+function localeFilePath() {
+  return path.join(app.getPath('userData'), 'locale.json');
+}
+
+function readDesktopLocale() {
+  try {
+    const raw = JSON.parse(fs.readFileSync(localeFilePath(), 'utf8'));
+    const loc = raw?.locale;
+    return DESKTOP_LOCALES.has(loc) ? loc : 'pt-AO';
+  } catch {
+    return 'pt-AO';
+  }
+}
+
+function writeDesktopLocale(locale) {
+  const loc = DESKTOP_LOCALES.has(locale) ? locale : 'pt-AO';
+  fs.mkdirSync(path.dirname(localeFilePath()), { recursive: true });
+  fs.writeFileSync(localeFilePath(), JSON.stringify({ locale: loc }));
+  return loc;
+}
+
+async function applyLocaleCookieForUrl(loadUrl, locale) {
+  try {
+    const u = new URL(loadUrl);
+    await session.defaultSession.cookies.set({
+      url: `${u.protocol}//${u.host}`,
+      name: 'mufutu_locale',
+      value: locale,
+      path: '/',
+    });
+  } catch (err) {
+    logDesktop(`locale cookie: ${err}`);
+  }
+}
 
 let mainWindow;
 let splashWindow;
@@ -427,6 +463,9 @@ async function createWindow() {
     revealMainWindow();
   });
 
+  const desktopLocale = readDesktopLocale();
+  await applyLocaleCookieForUrl(loadUrl, desktopLocale);
+
   void mainWindow.loadURL(loadUrl).catch((err) => {
     logDesktop(`loadURL falhou: ${err}`);
     revealMainWindow();
@@ -547,6 +586,19 @@ app.on('before-quit', () => {
 
 ipcMain.handle('get-app-version', () => app.getVersion());
 ipcMain.handle('get-app-name', () => app.getName());
+
+ipcMain.handle('language:get', () => readDesktopLocale());
+ipcMain.handle('language:set', async (_e, lang) => {
+  const loc = writeDesktopLocale(lang);
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    const url = mainWindow.webContents.getURL();
+    if (url.startsWith('http')) {
+      await applyLocaleCookieForUrl(url, loc);
+    }
+    mainWindow.webContents.reload();
+  }
+  return loc;
+});
 
 ipcMain.handle('localData:get', (_e, key) => {
   const vaultPath = path.join(app.getPath('userData'), 'vault', `${key}.enc`);

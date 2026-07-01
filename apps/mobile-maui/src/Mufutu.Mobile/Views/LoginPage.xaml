@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:Mufutu.Mobile.Views"
-    Title="Entrar"
+    Title="{Binding LoginTitle}"
     Shell.NavBarIsVisible="False">
 
     <ScrollView>
@@ -26,18 +26,26 @@
             </Border>
 
             <Label
-                Text="MUFUTU Campo"
+                Text="{Binding LoginHeading}"
                 FontSize="22"
                 FontAttributes="Bold"
                 TextColor="#E8EDF4"
                 HorizontalTextAlignment="Center" />
             <Label
-                Text="Técnicos · mineração Angola"
+                Text="{Binding LoginSubtitle}"
                 FontSize="13"
                 TextColor="#8B9CB3"
                 HorizontalTextAlignment="Center" />
 
-            <Label Text="API" FontSize="12" TextColor="#8B9CB3" Margin="0,12,0,0" />
+            <Label Text="{Binding LanguageLabel}" FontSize="12" TextColor="#8B9CB3" Margin="0,8,0,0" />
+            <Picker
+                ItemsSource="{Binding LocaleOptions}"
+                ItemDisplayBinding="{Binding Label}"
+                SelectedItem="{Binding SelectedLocaleItem}"
+                TextColor="#E8EDF4"
+                BackgroundColor="#1A2332" />
+
+            <Label Text="{Binding ApiLabel}" FontSize="12" TextColor="#8B9CB3" Margin="0,12,0,0" />
             <Entry
                 Text="{Binding ApiUrl}"
                 Placeholder="https://api.mufutu.ao/api"
@@ -45,21 +53,21 @@
                 PlaceholderColor="#5A6B80"
                 BackgroundColor="#1A2332" />
 
-            <Label Text="Site" FontSize="12" TextColor="#8B9CB3" />
+            <Label Text="{Binding SiteLabel}" FontSize="12" TextColor="#8B9CB3" />
             <Entry
                 Text="{Binding SiteCode}"
                 Placeholder="MUA"
                 TextColor="#E8EDF4"
                 BackgroundColor="#1A2332" />
 
-            <Label Text="Email" FontSize="12" TextColor="#8B9CB3" />
+            <Label Text="{Binding EmailLabel}" FontSize="12" TextColor="#8B9CB3" />
             <Entry
                 Text="{Binding Email}"
                 Keyboard="Email"
                 TextColor="#E8EDF4"
                 BackgroundColor="#1A2332" />
 
-            <Label Text="Palavra-passe" FontSize="12" TextColor="#8B9CB3" />
+            <Label Text="{Binding PasswordLabel}" FontSize="12" TextColor="#8B9CB3" />
             <Entry
                 Text="{Binding Password}"
                 IsPassword="True"
@@ -73,7 +81,7 @@
                 IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
 
             <Button
-                Text="Entrar"
+                Text="{Binding SignInLabel}"
                 Command="{Binding LoginCommand}"
                 BackgroundColor="#1565C0"
                 TextColor="White"

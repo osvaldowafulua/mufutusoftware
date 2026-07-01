@@ -12,6 +12,7 @@ public partial class OtsViewModel : ObservableObject
 {
     private readonly ICampoDataService _data;
     private readonly IAuthSessionStore _session;
+    private readonly ILocalizationService _l10n;
 
     [ObservableProperty]
     private string _siteLabel = "MUA";
@@ -30,16 +31,17 @@ public partial class OtsViewModel : ObservableObject
 
     public ObservableCollection<WorkOrderItem> Items { get; } = [];
 
-    public OtsViewModel(ICampoDataService data, IAuthSessionStore session)
+    public OtsViewModel(ICampoDataService data, IAuthSessionStore session, ILocalizationService l10n)
     {
         _data = data;
         _session = session;
+        _l10n = l10n;
     }
 
     public async Task InitializeAsync()
     {
         SiteLabel = await _session.GetSiteCodeAsync();
-        UserLabel = (await _session.GetUserNameAsync()) ?? "Técnico";
+        UserLabel = (await _session.GetUserNameAsync()) ?? _l10n.Get("technician");
         await LoadAsync();
     }
 
@@ -60,7 +62,7 @@ public partial class OtsViewModel : ObservableObject
             Items.Clear();
             foreach (var wo in list)
             {
-                Items.Add(WorkOrderItem.From(wo));
+                Items.Add(WorkOrderItem.From(wo, _l10n));
             }
             if (!_data.IsOnline && Items.Count == 0)
             {
@@ -138,22 +140,23 @@ public sealed partial class WorkOrderItem : ObservableObject
     [ObservableProperty]
     private string _statusLabel = string.Empty;
 
-    public string ActionLabel => StatusKey switch
-    {
-        "approved" => FieldCopy.Start,
-        "in_progress" => FieldCopy.Finish,
-        _ => string.Empty,
-    };
+    public string ActionLabel { get; init; } = string.Empty;
 
     public bool CanAct => StatusKey is "approved" or "in_progress";
 
-    public static WorkOrderItem From(WorkOrderDto dto) => new()
+    public static WorkOrderItem From(WorkOrderDto dto, ILocalizationService l10n) => new()
     {
         Id = dto.Id ?? string.Empty,
         Number = dto.Number ?? "—",
         Title = dto.Title ?? "Trabalho",
         AssetName = dto.Asset?.Name ?? dto.Asset?.Code ?? "Equipamento",
         StatusKey = dto.Status ?? "approved",
-        StatusLabel = FieldCopy.WoStatus.GetValueOrDefault(dto.Status ?? "", dto.Status ?? ""),
+        StatusLabel = l10n.WoStatus(dto.Status),
+        ActionLabel = dto.Status switch
+        {
+            "approved" => l10n.Get("start"),
+            "in_progress" => l10n.Get("finish"),
+            _ => string.Empty,
+        },
     };
 }

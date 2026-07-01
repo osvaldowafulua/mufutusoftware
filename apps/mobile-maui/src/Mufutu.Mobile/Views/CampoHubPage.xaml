@@ -44,7 +44,7 @@
                     </Grid>
 
                     <Button
-                        Text="Minhas OTs"
+                        Text="{Binding MyWorkLabel}"
                         Command="{Binding GoOtsCommand}"
                         HeightRequest="56"
                         CornerRadius="12"
@@ -53,7 +53,7 @@
                         BorderColor="#2A3548"
                         BorderWidth="1" />
                     <Button
-                        Text="Reportar avaria"
+                        Text="{Binding ReportFaultLabel}"
                         Command="{Binding GoAvariaCommand}"
                         HeightRequest="56"
                         CornerRadius="12"
@@ -62,7 +62,7 @@
                         BorderColor="#2A3548"
                         BorderWidth="1" />
                     <Button
-                        Text="Checklist"
+                        Text="{Binding ChecklistLabel}"
                         Command="{Binding GoChecklistCommand}"
                         HeightRequest="56"
                         CornerRadius="12"
@@ -71,7 +71,7 @@
                         BorderColor="#2A3548"
                         BorderWidth="1" />
                     <Button
-                        Text="Enviar dados"
+                        Text="{Binding SyncLabel}"
                         Command="{Binding GoSyncCommand}"
                         HeightRequest="56"
                         CornerRadius="12"

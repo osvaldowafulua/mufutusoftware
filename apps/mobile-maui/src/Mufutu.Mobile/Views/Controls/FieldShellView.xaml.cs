@@ -1,4 +1,4 @@
-using Mufutu.Mobile.Views;
+using Mufutu.Mobile.Core.Services;
 
 namespace Mufutu.Mobile.Views.Controls;
 
@@ -22,6 +22,8 @@ public partial class FieldShellView : ContentView
 
     private static readonly Color Active = Color.FromArgb("#5BA8E8");
     private static readonly Color Inactive = Color.FromArgb("#8B9CB3");
+
+    private ILocalizationService? _l10n;
 
     public View? Body
     {
@@ -64,6 +66,38 @@ public partial class FieldShellView : ContentView
         InitializeComponent();
         BindingContext = this;
         UpdateNavColors();
+    }
+
+    protected override void OnHandlerChanged()
+    {
+        base.OnHandlerChanged();
+        if (Handler?.MauiContext?.Services.GetService(typeof(ILocalizationService)) is ILocalizationService l10n)
+        {
+            if (_l10n != null)
+            {
+                _l10n.LanguageChanged -= OnLanguageChanged;
+            }
+
+            _l10n = l10n;
+            _l10n.LanguageChanged += OnLanguageChanged;
+            ApplyNavLabels();
+        }
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e) => ApplyNavLabels();
+
+    private void ApplyNavLabels()
+    {
+        if (_l10n == null)
+        {
+            return;
+        }
+
+        NavHomeBtn.Text = _l10n.Get("nav_home");
+        NavOtsBtn.Text = _l10n.Get("nav_work");
+        NavAvariaBtn.Text = _l10n.Get("nav_fault");
+        NavChecklistBtn.Text = _l10n.Get("nav_checklist");
+        NavSyncBtn.Text = _l10n.Get("nav_sync");
     }
 
     private static void OnActiveRouteChanged(BindableObject bindable, object _, object __)

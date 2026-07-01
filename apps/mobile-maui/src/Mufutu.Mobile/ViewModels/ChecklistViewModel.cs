@@ -11,6 +11,7 @@ public partial class ChecklistViewModel : ObservableObject
     private const string PrefsKey = "mufutu_campo_checklist";
 
     private readonly IAuthSessionStore _session;
+    private readonly ILocalizationService _l10n;
 
     [ObservableProperty]
     private string _siteLabel = "MUA";
@@ -21,19 +22,21 @@ public partial class ChecklistViewModel : ObservableObject
     [ObservableProperty]
     private ChecklistTemplate? _selectedTemplate;
 
-    public IReadOnlyList<ChecklistTemplate> Templates => FieldCopy.ChecklistTemplates;
+    public IReadOnlyList<ChecklistTemplate> Templates => _l10n.ChecklistTemplates;
 
     public List<ChecklistRow> Rows { get; } = [];
 
-    public ChecklistViewModel(IAuthSessionStore session)
+    public ChecklistViewModel(IAuthSessionStore session, ILocalizationService l10n)
     {
         _session = session;
+        _l10n = l10n;
+        _l10n.LanguageChanged += (_, _) => OnPropertyChanged(nameof(Templates));
     }
 
     public async Task InitializeAsync()
     {
         SiteLabel = await _session.GetSiteCodeAsync();
-        UserLabel = (await _session.GetUserNameAsync()) ?? "Técnico";
+        UserLabel = (await _session.GetUserNameAsync()) ?? _l10n.Get("technician");
         SelectedTemplate = Templates.FirstOrDefault();
         LoadRows();
     }

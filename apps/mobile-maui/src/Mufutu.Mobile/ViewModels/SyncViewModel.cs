@@ -20,6 +20,7 @@ public partial class SyncViewModel : ObservableObject
     private readonly ICampoSyncEngine _sync;
     private readonly ICampoOfflineStore _store;
     private readonly MauiConnectivityMonitor _runtime;
+    private readonly ILocalizationService _l10n;
 
     [ObservableProperty]
     private string _siteLabel = "MUA";
@@ -47,7 +48,8 @@ public partial class SyncViewModel : ObservableObject
         ICampoDataService data,
         ICampoSyncEngine sync,
         ICampoOfflineStore store,
-        MauiConnectivityMonitor runtime)
+        MauiConnectivityMonitor runtime,
+        ILocalizationService l10n)
     {
         _probe = probe;
         _session = session;
@@ -57,6 +59,7 @@ public partial class SyncViewModel : ObservableObject
         _sync = sync;
         _store = store;
         _runtime = runtime;
+        _l10n = l10n;
         _sync.ProgressChanged += (_, _) => _ = RefreshPendingAsync();
         _network.ConnectivityChanged += (_, _) => _ = RefreshPendingAsync();
     }
@@ -64,8 +67,8 @@ public partial class SyncViewModel : ObservableObject
     public async Task InitializeAsync()
     {
         SiteLabel = await _session.GetSiteCodeAsync();
-        UserLabel = (await _session.GetUserNameAsync()) ?? "Técnico";
-        StatusText = _network.IsInternetAvailable ? FieldCopy.Online : FieldCopy.Offline;
+        UserLabel = (await _session.GetUserNameAsync()) ?? _l10n.Get("technician");
+        StatusText = _network.IsInternetAvailable ? _l10n.Get("online") : _l10n.Get("offline");
         await RefreshPendingAsync();
     }
 
@@ -90,7 +93,7 @@ public partial class SyncViewModel : ObservableObject
         {
             if (!_network.IsInternetAvailable)
             {
-                StatusText = FieldCopy.Offline;
+                StatusText = _l10n.Get("offline");
                 DetailText = "Sem rede — dados guardados localmente";
                 return;
             }
@@ -122,7 +125,7 @@ public partial class SyncViewModel : ObservableObject
             StatusText = result.Status switch
             {
                 ConnectivityProbeStatus.Success => "API ligada",
-                ConnectivityProbeStatus.NoNetwork => FieldCopy.Offline,
+                ConnectivityProbeStatus.NoNetwork => _l10n.Get("offline"),
                 _ => "Falha na ligação",
             };
             var pending = await _data.GetPendingCountAsync();
