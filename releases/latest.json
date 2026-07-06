@@ -1,19 +1,24 @@
 {
   "product": "MUFUTU",
-  "version": "1.0.18",
-  "tag": "v1.0.18",
+  "version": "1.0.16",
+  "tag": "v1.0.16",
   "channel": "stable",
-  "releasedAt": "2026-07-06T00:00:00Z",
+  "releasedAt": "2026-06-30T22:54:22Z",
   "cmmsCompatibility": "1.1.2",
   "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/latest",
   "platforms": {
     "macos": {
-      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.18/MUFUTU-1.0.18-arm64.dmg",
-      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.18/MUFUTU-1.0.18-arm64.zip"
+      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.16/MUFUTU-1.0.16-arm64.dmg",
+      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.16/MUFUTU-1.0.16-arm64.zip"
     },
     "windows": {
-      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.18/MUFUTU-Setup-1.0.18-x64.exe",
-      "note": "Use o instalador .exe — não o ZIP portátil"
+      "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.16/MUFUTU-1.0.16-win-x64.zip",
+      "installerLegacy": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.6/MUFUTU-Setup-1.0.6-x64.exe",
+      "note": "ZIP 1.0.16 = WPF actual; Setup 1.0.6 = Electron legado"
+    },
+    "android": {
+      "apk": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.12/com.mufutu.mobile-Signed.apk",
+      "tag": "mobile-maui/v1.0.12"
     },
     "web": "https://app.mufutu.ao"
   }

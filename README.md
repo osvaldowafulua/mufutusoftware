@@ -43,7 +43,7 @@
 </p>
 
 <p align="center">
-  <a href="#descarregar-agora-v105">Downloads</a> ·
+  <a href="#descarregar-agora">Downloads</a> ·
   <a href="#estatísticas--comunidade">Estatísticas</a> ·
   <a href="#licenças">Licenças</a> ·
   <a href="EULA.md">EULA</a> ·
@@ -54,13 +54,16 @@
 
 ## Descarregar agora
 
+Últimos binários publicados em [GitHub Releases](https://github.com/osvaldowafulua/mufutusoftware/releases). Compatível com CMMS **v1.1.2** ([app.mufutu.ao](https://app.mufutu.ao)).
+
 | Plataforma | Instalador oficial | Notas |
 |------------|-------------------|--------|
-| **Windows** | [`MUFUTU-Setup-1.0.6-x64.exe`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.6/MUFUTU-Setup-1.0.6-x64.exe) | Assistente de instalação — **use este** |
-| **macOS** | [`MUFUTU-1.0.5-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.5/MUFUTU-1.0.5-arm64.dmg) | Arrastar para Aplicações |
-| **Web** | [app.mufutu.ao](https://app.mufutu.ao) | Sem instalador |
+| **Windows** | [`MUFUTU-1.0.16-win-x64.zip`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.16/MUFUTU-1.0.16-win-x64.zip) | Portátil — extrair e executar `MUFUTU.exe`. Instalador `.exe` legado: [v1.0.6](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.6/MUFUTU-Setup-1.0.6-x64.exe) |
+| **macOS** | [`MUFUTU-1.0.16-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.16/MUFUTU-1.0.16-arm64.dmg) | Arrastar para Aplicações · Gatekeeper: `xattr -cr /Applications/MUFUTU.app` |
+| **Android** | [`MUFUTU Campo 1.0.12`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.12/com.mufutu.mobile-Signed.apk) | APK assinado · técnicos / modo campo |
+| **Web** | [app.mufutu.ao](https://app.mufutu.ao) | CMMS completo — sem instalador |
 
-> **Não use o ZIP Windows** (`MUFUTU-*-win-x64.zip`) — é versão **portátil** para testes. O utilizador final deve instalar com **`MUFUTU-Setup-*.exe`**. Ver [windows/INSTALAR.md](windows/INSTALAR.md).
+> **Windows:** prefira o **ZIP 1.0.16** (cliente WPF actual). O `MUFUTU-Setup-*.exe` mais recente no repositório é **1.0.6** (Electron legado). Ver [windows/INSTALAR.md](windows/INSTALAR.md).
 
 Verifique integridade com `checksums.sha256` em cada release.
 
@@ -88,10 +91,10 @@ GitHub/
 ```
 
 ```bash
-# macOS DMG
-npm run build:mac -- 1.0.6
+# macOS DMG (versão = tag do release)
+npm run build:mac -- 1.0.16
 # ou
-bash apps/desktop-mac/scripts/package.sh 1.0.6
+bash apps/desktop-mac/scripts/package.sh 1.0.16
 ```
 
 ---
