@@ -2,7 +2,7 @@
 
 | Clientes (mufutusoftware) | CMMS/API (mufutu) | Notas |
 | --------------------------- | ----------------- | ----- |
-| **Desktop 1.0.18** | **≥ 1.1.2** | Login holding multi-tenant, disponibilidade, i18n web |
+| **Desktop 1.0.19** | **≥ 1.1.2** | Login holding multi-tenant, disponibilidade, i18n web |
 | **Mobile MAUI 1.0.13** | **≥ 1.1.2** | Mesma API; configurar URL correcta no login |
 | Desktop 1.0.16 | ≥ 1.1.0 | i18n desktop pt/en |
 | Mobile 1.0.12 | ≥ 1.1.0 | i18n pt/en/de |

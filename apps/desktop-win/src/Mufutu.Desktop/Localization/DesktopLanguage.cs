@@ -1,5 +1,7 @@
 namespace Mufutu.Desktop.Localization;
 
+using System.IO;
+
 public static class DesktopLanguage
 {
     private const string PrefPath = "desktop-language.txt";

@@ -59,7 +59,7 @@
 | Plataforma | Instalador oficial | Notas |
 |------------|-------------------|--------|
 | **Windows** | [`MUFUTU-1.0.16-win-x64.zip`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.16/MUFUTU-1.0.16-win-x64.zip) | Portátil — extrair e executar `MUFUTU.exe`. Instalador `.exe` legado: [v1.0.6](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.6/MUFUTU-Setup-1.0.6-x64.exe) |
-| **macOS** | [`MUFUTU-1.0.16-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.16/MUFUTU-1.0.16-arm64.dmg) | Arrastar para Aplicações · Gatekeeper: `xattr -cr /Applications/MUFUTU.app` |
+| **macOS** | [`MUFUTU-1.0.19-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.19/MUFUTU-1.0.19-arm64.dmg) | Arrastar para Aplicações · Gatekeeper: `xattr -cr /Applications/MUFUTU.app` · Luachimo: API `sml.api.mufutu.ao` |
 | **Android** | [`MUFUTU Campo 1.0.12`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.12/com.mufutu.mobile-Signed.apk) | APK assinado · técnicos / modo campo |
 | **Web** | [app.mufutu.ao](https://app.mufutu.ao) | CMMS completo — sem instalador |
 
