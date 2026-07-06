@@ -1,18 +1,18 @@
 {
   "product": "MUFUTU",
-  "version": "1.0.17",
-  "tag": "v1.0.17",
+  "version": "1.0.18",
+  "tag": "v1.0.18",
   "channel": "stable",
   "releasedAt": "2026-07-06T00:00:00Z",
   "cmmsCompatibility": "1.1.2",
   "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/latest",
   "platforms": {
     "macos": {
-      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.17/MUFUTU-1.0.17-arm64.dmg",
-      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.17/MUFUTU-1.0.17-arm64.zip"
+      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.18/MUFUTU-1.0.18-arm64.dmg",
+      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.18/MUFUTU-1.0.18-arm64.zip"
     },
     "windows": {
-      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.17/MUFUTU-Setup-1.0.17-x64.exe",
+      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.18/MUFUTU-Setup-1.0.18-x64.exe",
       "note": "Use o instalador .exe — não o ZIP portátil"
     },
     "web": "https://app.mufutu.ao"

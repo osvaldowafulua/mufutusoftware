@@ -1,6 +1,6 @@
 {
   "name": "@mufutu/electron",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "private": true,
   "description": "MUFUTU Desktop — shell Electron (UI compilada a partir do CMMS mufutu)",
   "main": "electron-main.js",
