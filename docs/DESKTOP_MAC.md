@@ -82,8 +82,8 @@ O cliente desktop **não** inclui a API NestJS local. O servidor Next.js embebid
 
 | Configuração | Onde |
 |--------------|------|
-| URL API (subsidiária) | `~/Library/Application Support/MUFUTU/api-config.json` → `{ "apiOrigin": "https://luc.api.mufutu.ao" }` |
-| Variável ambiente | `MUFUTU_API_URL=https://luc.api.mufutu.ao` antes de abrir a app |
+| URL API (subsidiária) | `~/Library/Application Support/MUFUTU/api-config.json` → `{ "apiOrigin": "https://sml.api.mufutu.ao" }` |
+| Variável ambiente | `MUFUTU_API_URL=https://sml.api.mufutu.ao` antes de abrir a app |
 | Logs | `~/Library/Application Support/MUFUTU/desktop.log` |
 
 Reconstruir DMG após alterações ao pipeline: `apps/desktop-mac/scripts/package.sh`.

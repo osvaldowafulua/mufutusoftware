@@ -7,7 +7,7 @@ Acesso via navegador — **não requer instalador** deste repositório.
 | Ambiente | URL |
 |----------|-----|
 | Holding MUA | [https://app.mufutu.ao](https://app.mufutu.ao) |
-| Subsidiária | `https://{slug}.app.mufutu.ao` (ex.: `luc.app.mufutu.ao`) |
+| Subsidiária | `https://{slug}.app.mufutu.ao` (ex.: `sml.app.mufutu.ao` — Luachimo) |
 
 ## PWA — Modo Campo
 

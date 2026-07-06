@@ -89,7 +89,7 @@ UI Next.js corre em porta interna (`MUFUTU_INTERNAL_PORT`, default 3848); só o 
 
 | Origem | Ficheiro / var |
 |--------|----------------|
-| Subsidiária LUC | `~/Library/Application Support/MUFUTU/api-config.json` → `{ "apiOrigin": "https://luc.api.mufutu.ao" }` |
+| Subsidiária SML (Luachimo) | `~/Library/Application Support/MUFUTU/api-config.json` → `{ "apiOrigin": "https://sml.api.mufutu.ao" }` |
 | Ambiente | `MUFUTU_API_URL` ou `API_INTERNAL_URL` antes de abrir a app |
 | Fallback | `https://api.mufutu.ao` (se API local :6000 não responder) |
 

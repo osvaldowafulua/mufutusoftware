@@ -12,7 +12,7 @@
 | Destino | URL API (clientes nativos) | Quem pode entrar |
 | ------- | ------------------------ | ---------------- |
 | **Holding** | `https://api.mufutu.ao/api` | Qualquer utilizador de tenant **activo** (MUA, LUC, MIL…) |
-| **Subsidiária isolada** | `https://luc.api.mufutu.ao/api` (ex. LUC) | Só utilizadores desse tenant |
+| **Subsidiária isolada** | `https://sml.api.mufutu.ao/api` (Luachimo/SML) | Só utilizadores desse tenant |
 | **Web embebida (Electron)** | Proxy interno → `api.mufutu.ao` ou `api-config.json` | Igual à stack configurada no build |
 
 O cliente **não** escolhe tenant no ecrã de login — a API resolve pelo `user.tenantId` após autenticação.

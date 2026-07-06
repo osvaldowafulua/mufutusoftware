@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Cockpit de operações e gestão de ativos para mineração</strong><br/>
-  <sub>CMMS/EAM · Angola · Offline-first · Multi-site MUA · LUC · MIL</sub><br/>
+  <sub>CMMS/EAM · Angola · Offline-first · Multi-site MUA · SML · MIL</sub><br/>
   <sub>MUFUTU é marca da <strong>Smart Cloud, Lda</strong></sub>
 </p>
 
@@ -108,7 +108,7 @@ operações mineiras em Angola. Integra num único ambiente:
 - **Activos** — frota pesada (CAT, Komatsu, Bell…), fichas técnicas e QR
 - **Operações** — combustível, paragens, disponibilidade, logística
 - **Modo Campo** — interface simplificada para técnicos (PWA e mobile)
-- **Multi-site** — MUA, LUC, MIL e tenants dedicados por subsidiária
+- **Multi-site** — MUA, SML (Luachimo), MIL e tenants dedicados por subsidiária
 - **Offline-first** — trabalho em frente sem rede, sincronização automática
 
 A aplicação web principal está disponível em **[app.mufutu.ao](https://app.mufutu.ao)**.
