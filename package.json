@@ -1,6 +1,6 @@
 {
   "name": "mufutusoftware",
-  "version": "1.0.15",
+  "version": "1.0.17",
   "private": true,
   "description": "MUFUTU — clientes desktop/mobile e distribuição pública",
   "workspaces": [

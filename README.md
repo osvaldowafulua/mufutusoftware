@@ -71,7 +71,9 @@ Este repositório é o **código-fonte e distribuição** dos clientes nativos M
 | Repositório | Conteúdo |
 |-------------|----------|
 | **mufutusoftware** (aqui) | Desktop Win/Mac, Electron, mobile, Releases |
-| **mufutu** (privado) | CMMS web + API — sem instaladores |
+| **mufutu** (privado) | CMMS web + API **v1.1.2** — sem instaladores |
+
+Compatibilidade: [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md)
 
 > Binários (`.dmg`, `.exe`) **não** vão em commits — só em [Releases](https://github.com/osvaldowafulua/mufutusoftware/releases).
 
@@ -188,7 +190,7 @@ Chaves revogadas deixam de funcionar na próxima validação online.
 | **Desktop macOS** | App dedicada com actualização automática |
 | **Campo / Mobile** | OTs, avaria com foto, checklist — optimizado para touchscreen |
 | **Segurança** | Binários assinados, ofuscados em produção, sem segredos no cliente |
-| **Multi-tenant** | Ligação ao tenant correcto (`app.mufutu.ao` ou subdomínio da empresa) |
+| **Multi-tenant** | Holding (`api.mufutu.ao`) — login com qualquer tenant activo (CMMS ≥ 1.1.2); subsidiária isolada usa `{slug}.api.mufutu.ao` |
 
 A versão **web** continua a ser a referência para gestão completa (relatórios, admin,
 configuração). Os clientes nativos focam **execução em campo e offline**.
