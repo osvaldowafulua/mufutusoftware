@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mufutu.Desktop.Core.Api;
+using Mufutu.Desktop.Core.Offline;
 using Mufutu.Desktop.Views;
 
 namespace Mufutu.Desktop.ViewModels;
@@ -87,7 +88,7 @@ public partial class ShellViewModel : ObservableObject
 
 public partial class DashboardViewModel : ObservableObject
 {
-    private readonly IMufutuApiClient _api;
+    private readonly IDesktopSyncService _data;
 
     [ObservableProperty]
     private int _totalAssets;
@@ -101,9 +102,9 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty]
     private string _statusMessage = "A carregar…";
 
-    public DashboardViewModel(IMufutuApiClient api)
+    public DashboardViewModel(IDesktopSyncService data)
     {
-        _api = api;
+        _data = data;
         _ = LoadAsync();
     }
 
@@ -111,7 +112,13 @@ public partial class DashboardViewModel : ObservableObject
     {
         try
         {
-            var summary = await _api.GetDashboardSummaryAsync();
+            var summary = await _data.GetDashboardSummaryAsync();
+            if (summary == null)
+            {
+                StatusMessage = "Sem dados — sincronize com rede";
+                return;
+            }
+
             TotalAssets = summary.TotalAssets;
             OpenWorkOrders = summary.OpenWorkOrders;
             PendingRequests = summary.PendingRequests;
@@ -126,7 +133,7 @@ public partial class DashboardViewModel : ObservableObject
 
 public partial class WorkOrdersViewModel : ObservableObject
 {
-    private readonly IMufutuApiClient _api;
+    private readonly IDesktopSyncService _data;
 
     [ObservableProperty]
     private IReadOnlyList<Core.Api.Models.WorkOrderDto> _items = Array.Empty<Core.Api.Models.WorkOrderDto>();
@@ -134,9 +141,9 @@ public partial class WorkOrdersViewModel : ObservableObject
     [ObservableProperty]
     private string _statusMessage = "A carregar…";
 
-    public WorkOrdersViewModel(IMufutuApiClient api)
+    public WorkOrdersViewModel(IDesktopSyncService data)
     {
-        _api = api;
+        _data = data;
         _ = LoadAsync();
     }
 
@@ -144,9 +151,8 @@ public partial class WorkOrdersViewModel : ObservableObject
     {
         try
         {
-            var page = await _api.GetWorkOrdersAsync();
-            Items = page.Data;
-            StatusMessage = $"{page.Total} ordens";
+            Items = await _data.GetWorkOrdersAsync();
+            StatusMessage = $"{Items.Count} ordens";
         }
         catch (Exception ex)
         {
@@ -157,7 +163,7 @@ public partial class WorkOrdersViewModel : ObservableObject
 
 public partial class AssetsViewModel : ObservableObject
 {
-    private readonly IMufutuApiClient _api;
+    private readonly IDesktopSyncService _data;
 
     [ObservableProperty]
     private IReadOnlyList<Core.Api.Models.AssetDto> _items = Array.Empty<Core.Api.Models.AssetDto>();
@@ -165,9 +171,9 @@ public partial class AssetsViewModel : ObservableObject
     [ObservableProperty]
     private string _statusMessage = "A carregar…";
 
-    public AssetsViewModel(IMufutuApiClient api)
+    public AssetsViewModel(IDesktopSyncService data)
     {
-        _api = api;
+        _data = data;
         _ = LoadAsync();
     }
 
@@ -175,9 +181,8 @@ public partial class AssetsViewModel : ObservableObject
     {
         try
         {
-            var page = await _api.GetAssetsAsync();
-            Items = page.Data;
-            StatusMessage = $"{page.Total} activos";
+            Items = await _data.GetAssetsAsync();
+            StatusMessage = $"{Items.Count} activos";
         }
         catch (Exception ex)
         {

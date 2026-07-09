@@ -11,7 +11,7 @@
 | 1 | **APK Android nunca abre** (trava na splash) | Arranque constrói as 7 páginas de uma vez + AOT/trimming em Release + zero captura de erros (impossível diagnosticar no terreno) | Correcções aplicadas — validar no dispositivo |
 | 2 | **Windows perdeu o Setup instalável** (só ZIP) | Build WiX falhava sempre em CI: `ComponentGroup AppFiles` nunca foi definido, o projecto MSI compilava também o `Bundle.wxs` (globbing), faltava a extensão BAL — e o fallback silencioso publicava só o ZIP | Corrigido — validar no CI |
 | 3 | **macOS abre "segunda app"** além da principal | O servidor Next.js embebido é lançado com `spawn` do próprio binário; se `ELECTRON_RUN_AS_NODE` se perde, nasce uma 2.ª instância GUI | Guarda aplicada — validar no dispositivo |
-| 4 | **Sem armazenamento geral local** (dados repetidos, offline fraco) | Clientes puxam listas completas sempre; não há sync delta ("só o que mudou") | Arquitectura definida — Fase 2 |
+| 4 | **Sem armazenamento geral local** (dados repetidos, offline fraco) | Clientes puxam listas completas sempre; não há sync delta ("só o que mudou") | ✅ Motor implementado no mobile e desktop (ver Fase 2) — falta API `updatedSince` no CMMS e Service Worker no web |
 | 5 | **Logos desactualizados** | — | ✅ Feito (SVG novos + cor `#EB5E28` em todas as apps) |
 | 6 | **GitHub desorganizado / sem mapa mental** | — | ✅ Feito (docs + mapa mental Mermaid) |
 
@@ -74,6 +74,17 @@
 
 Objectivo: **todas as apps descarregam o conjunto completo de dados do tenant uma
 vez, e depois só pedem o que mudou** — funcionam igual online e offline.
+
+> **Estado: motor cliente implementado e testado** (mobile MAUI Core + desktop WPF Core):
+> - **Push primeiro, pull depois** (`SyncAllAsync`): a fila offline é enviada antes de descarregar.
+> - **Dedupe no cliente**: só reescreve registos cujo conteúdo mudou (comparação por JSON no mobile, hash SHA-256 no desktop) — "não buscar dados já existentes salvo se houver algo novo".
+> - **Local-wins para pendentes**: alterações feitas offline nunca são esmagadas pelo pull até o servidor as aceitar.
+> - **Prune autoritativo** em pull completo: o que desapareceu do servidor sai da cache local (pendentes preservados).
+> - **Cursores `sync_cursors` prontos**: quando o CMMS 1.2 expuser `updatedSince`, basta ligar `ServerSupportsDeltaSync=true` — o cliente já envia o cursor com sobreposição de 5 min.
+> - **Desktop**: cache de OTs, activos e dashboard **encriptada em repouso** (AES-GCM) em `%LocalAppData%\MUFUTU\offline.db`; ViewModels servem sempre da cache (funcionam offline).
+> - Cobertura: 9 testes novos (5 mobile + 4 desktop), incluindo prova de encriptação em repouso.
+>
+> Falta (depende do repo `mufutu`): endpoint `updatedSince`/soft-delete na API e Service Worker + IndexedDB no web/Electron.
 
 ### 2.1 Contrato de API (repo `mufutu`, CMMS ≥ 1.2)
 - Cada entidade sync-ável expõe `GET /api/{entidade}?updatedSince={cursor}&limit={n}`:

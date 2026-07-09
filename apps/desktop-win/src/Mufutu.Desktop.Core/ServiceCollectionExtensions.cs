@@ -1,6 +1,7 @@
 using Mufutu.Desktop.Core.Api;
 using Mufutu.Desktop.Core.Configuration;
 using Mufutu.Desktop.Core.Crypto;
+using Mufutu.Desktop.Core.Offline;
 using Mufutu.Desktop.Core.Security;
 using Mufutu.Desktop.Core.Updates;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,6 +51,17 @@ public static class ServiceCollectionExtensions
             var options = sp.GetRequiredService<IOptions<MufutuClientOptions>>().Value;
             return MufutuHttpClientFactory.CreateHandler(options);
         });
+
+        // Armazenamento geral local: base SQLite encriptada em %LocalAppData%\MUFUTU
+        services.AddSingleton(sp =>
+        {
+            var dir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "MUFUTU");
+            var key = sp.GetRequiredService<SecureStorageService>().GetOrCreateMasterKey();
+            return new OfflineStore(Path.Combine(dir, "offline.db"), key);
+        });
+        services.AddTransient<IDesktopSyncService, DesktopSyncService>();
 
         services.AddHttpClient<IDesktopUpdateService, GitHubDesktopUpdateService>(client =>
         {

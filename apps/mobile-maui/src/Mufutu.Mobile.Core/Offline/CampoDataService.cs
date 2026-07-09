@@ -48,17 +48,18 @@ public sealed class CampoDataService : ICampoDataService
     {
         await _store.EnsureInitializedAsync();
 
+        // Armazenamento geral local: a cache é a fonte de verdade. Online,
+        // sincroniza primeiro (push + pull com dedupe) e serve da cache —
+        // offline serve directamente da cache. Comportamento idêntico nos dois modos.
         if (IsOnline)
         {
             try
             {
-                var live = await _api.GetMyWorkOrdersAsync(ct);
-                await _store.UpsertWorkOrdersAsync(live);
-                return live;
+                await _sync.SyncAllAsync(ct);
             }
             catch
             {
-                // fallback cache
+                // cache local continua válida
             }
         }
 
@@ -153,7 +154,7 @@ public sealed class CampoDataService : ICampoDataService
     }
 
     public Task<SyncResult> SyncNowAsync(CancellationToken ct = default) =>
-        _sync.ProcessQueueAsync(ct);
+        _sync.SyncAllAsync(ct);
 
     public Task<int> GetPendingCountAsync() => _store.GetPendingCountAsync();
 }

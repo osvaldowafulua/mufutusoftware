@@ -119,7 +119,7 @@ public sealed class MauiConnectivityMonitor : IConnectivityMonitor, IDisposable
 
         try
         {
-            await _sync.ProcessQueueAsync();
+            await _sync.SyncAllAsync();
             await _notifications.RefreshAsync();
         }
         catch
