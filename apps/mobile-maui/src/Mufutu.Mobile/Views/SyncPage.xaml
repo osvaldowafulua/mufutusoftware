@@ -20,12 +20,12 @@
                 <Label
                     Text="{Binding PendingCount, StringFormat='Pendentes: {0}'}"
                     FontSize="14"
-                    TextColor="#E8612D" />
+                    TextColor="#EB5E28" />
 
                 <Button
                     Text="Enviar agora"
                     Command="{Binding SyncNowCommand}"
-                    BackgroundColor="#E8612D"
+                    BackgroundColor="#EB5E28"
                     TextColor="White"
                     HeightRequest="48"
                     CornerRadius="10" />

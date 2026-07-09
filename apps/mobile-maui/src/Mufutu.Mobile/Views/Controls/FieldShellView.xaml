@@ -17,7 +17,7 @@
                 WidthRequest="36"
                 HeightRequest="36"
                 StrokeThickness="0"
-                BackgroundColor="#E8612D"
+                BackgroundColor="#EB5E28"
                 StrokeShape="RoundRectangle 8">
                 <Label
                     Text="M"

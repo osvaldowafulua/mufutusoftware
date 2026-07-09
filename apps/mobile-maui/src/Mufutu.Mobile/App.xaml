@@ -8,7 +8,7 @@
             <conv:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
             <conv:InvertedBoolConverter x:Key="InvertedBoolConverter" />
             <conv:NotNullConverter x:Key="NotNullConverter" />
-            <Color x:Key="MufutuBrandOrange">#E8612D</Color>
+            <Color x:Key="MufutuBrandOrange">#EB5E28</Color>
             <Color x:Key="MufutuPrimary">#1565C0</Color>
             <Color x:Key="PageBackground">#0F1419</Color>
             <Color x:Key="CardBackground">#1A222D</Color>

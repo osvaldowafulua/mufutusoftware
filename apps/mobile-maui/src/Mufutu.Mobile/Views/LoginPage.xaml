@@ -13,7 +13,7 @@
                 WidthRequest="56"
                 HeightRequest="56"
                 StrokeThickness="0"
-                BackgroundColor="#E8612D"
+                BackgroundColor="#EB5E28"
                 HorizontalOptions="Center"
                 StrokeShape="RoundRectangle 12">
                 <Label

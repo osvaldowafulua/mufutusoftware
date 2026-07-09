@@ -23,9 +23,23 @@
     <CodesignProvision Condition="'$(CI)' == 'true'">-</CodesignProvision>
   </PropertyGroup>
 
+  <!-- Android Release: AOT perfilado desligado — JIT puro é mais fiável no arranque
+       (crashes na splash em alguns dispositivos). Custo: arranque ligeiramente mais lento. -->
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' and '$(Configuration)' == 'Release'">
+    <RunAOTCompilation>false</RunAOTCompilation>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+  </PropertyGroup>
+
+  <!-- Build de diagnóstico: dotnet publish -p:MufutuDiag=true
+       Desliga o trimming/linker para isolar crashes de arranque causados por código removido. -->
+  <PropertyGroup Condition="'$(MufutuDiag)' == 'true' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <PublishTrimmed>false</PublishTrimmed>
+    <AndroidLinkMode>None</AndroidLinkMode>
+  </PropertyGroup>
+
   <ItemGroup>
-    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#E8612D" />
-    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#E8612D" BaseSize="128,128" />
+    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#EB5E28" />
+    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#EB5E28" BaseSize="128,128" />
   </ItemGroup>
 
   <ItemGroup>

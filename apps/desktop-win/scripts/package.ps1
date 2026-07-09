@@ -7,7 +7,8 @@ param(
   [string]$Configuration = "Release",
   [string]$Version = "1.0.0",
   [switch]$SkipSign,
-  [switch]$SkipObfuscate
+  [switch]$SkipObfuscate,
+  [switch]$AllowZipFallback
 )
 
 $ErrorActionPreference = "Stop"
@@ -27,10 +28,12 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host "::endgroup::"
 
 Write-Host "::group::dotnet publish"
+# Self-contained: o runtime .NET vai dentro do instalador — máquinas de mina
+# sem internet não conseguem descarregar o runtime no primeiro arranque.
 dotnet publish src\Mufutu.Desktop\Mufutu.Desktop.csproj `
   -c $Configuration `
   -r win-x64 `
-  --self-contained false `
+  --self-contained true `
   -p:Version=$Version `
   -o $PublishDir 2>&1 | Tee-Object (Join-Path $LogDir "publish.log")
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -55,12 +58,12 @@ if (-not $SkipObfuscate) {
 Write-Host "::group::WiX installer"
 dotnet tool install --global wix --version 5.0.2 2>$null
 Push-Location (Join-Path $Root "installer\wix")
-dotnet build Mufutu.Package.wixproj -c $Configuration -p:PublishDir=$PublishDir 2>&1 | Tee-Object (Join-Path $LogDir "wix-msi.log")
-dotnet build Mufutu.Bundle.wixproj -c $Configuration 2>&1 | Tee-Object (Join-Path $LogDir "wix-bundle.log")
+dotnet build Mufutu.Package.wixproj -c $Configuration -p:PublishDir=$PublishDir -p:Version=$Version 2>&1 | Tee-Object (Join-Path $LogDir "wix-msi.log")
+dotnet build Mufutu.Bundle.wixproj -c $Configuration -p:Version=$Version 2>&1 | Tee-Object (Join-Path $LogDir "wix-bundle.log")
 $msi = Get-ChildItem -Recurse -Filter "*.msi" | Select-Object -First 1
 $exe = Get-ChildItem -Recurse -Filter "MUFUTU-Setup.exe" | Select-Object -First 1
-if ($msi) { Copy-Item $msi.FullName -Destination $InstallerDir -Force }
-if ($exe) { Copy-Item $exe.FullName -Destination $InstallerDir -Force }
+if ($msi) { Copy-Item $msi.FullName -Destination (Join-Path $InstallerDir "MUFUTU-$Version-x64.msi") -Force }
+if ($exe) { Copy-Item $exe.FullName -Destination (Join-Path $InstallerDir "MUFUTU-Setup-$Version-x64.exe") -Force }
 Pop-Location
 Write-Host "::endgroup::"
 
@@ -87,13 +90,20 @@ if (-not $SkipSign) {
 }
 
 Write-Host "::group::Verificação de integridade"
-$artifacts = @(Get-ChildItem $InstallerDir -Include *.exe,*.msi -Recurse | ForEach-Object { $_.FullName })
-if ($artifacts.Count -eq 0) {
-  # Fallback: empacotar publish dir como zip se WiX falhar
-  $zip = Join-Path $InstallerDir "MUFUTU-$Version-win-x64.zip"
-  Compress-Archive -Path (Join-Path $PublishDir "*") -DestinationPath $zip -Force
-  $artifacts = @($zip)
+# ZIP portátil publica sempre (IT/testes) — o Setup.exe é o artefacto principal
+$zip = Join-Path $InstallerDir "MUFUTU-$Version-win-x64.zip"
+Compress-Archive -Path (Join-Path $PublishDir "*") -DestinationPath $zip -Force
+
+$setup = @(Get-ChildItem $InstallerDir -Recurse -Include *.exe,*.msi | ForEach-Object { $_.FullName })
+if ($setup.Count -eq 0) {
+  if ($AllowZipFallback) {
+    Write-Warning "WiX não produziu Setup/MSI — a publicar apenas o ZIP (fallback autorizado)."
+  } else {
+    Write-Error "WiX não produziu MUFUTU-Setup — ver $LogDir\wix-msi.log e $LogDir\wix-bundle.log."
+    exit 1
+  }
 }
+$artifacts = @(Get-ChildItem $InstallerDir -Recurse -Include *.exe,*.msi,*.zip | ForEach-Object { $_.FullName })
 & (Join-Path $Root "scripts\verify-artifact.ps1") -Artifacts $artifacts
 Write-Host "::endgroup::"
 

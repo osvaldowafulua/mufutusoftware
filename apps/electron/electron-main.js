@@ -9,6 +9,14 @@ const labelsBridge = require('./electron-labels-bridge');
 const connectivityBridge = require('./electron-connectivity-bridge');
 const { buildUpstreamTarget, isLocalHost } = require('./electron-ipv4');
 
+// Guarda: o servidor Next.js embebido é lançado via spawn do próprio binário com
+// ELECTRON_RUN_AS_NODE. Se essa variável se perder (ofuscação/ambiente), o filho
+// arranca como segunda app GUI no Dock do macOS — sair imediatamente nesse caso.
+if (process.env.MUFUTU_SERVER_CHILD === '1' && !process.env.ELECTRON_RUN_AS_NODE) {
+  app.quit();
+  process.exit(0);
+}
+
 const isDev = !app.isPackaged && process.env.NODE_ENV === 'development';
 const DESKTOP_PORT = Number(process.env.AYOMANT_PORT || 3847);
 const SPLASH_TIMEOUT_MS = 30_000;
@@ -120,7 +128,7 @@ function createSplashWindow() {
     resizable: false,
     skipTaskbar: true,
     show: false,
-    backgroundColor: '#E8612D',
+    backgroundColor: '#EB5E28',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -342,6 +350,7 @@ async function startEmbeddedServer() {
   const serverEnv = {
     ...process.env,
     ELECTRON_RUN_AS_NODE: '1',
+    MUFUTU_SERVER_CHILD: '1',
     NODE_ENV: 'production',
     PORT: String(port),
     HOSTNAME: '127.0.0.1',
@@ -440,7 +449,7 @@ async function createWindow() {
           `<!DOCTYPE html><html lang="pt-AO"><head><meta charset="utf-8"/><title>MUFUTU</title><style>
             body{font-family:Inter,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:var(--bg,#f5f7fa);color:#1a1a1a}
             .box{max-width:420px;padding:32px;text-align:center}
-            h1{font-size:22px;margin:0 0 12px;color:#E8612D}
+            h1{font-size:22px;margin:0 0 12px;color:#EB5E28}
             p{margin:0 0 20px;line-height:1.5;color:#555}
             button{padding:12px 24px;border:none;border-radius:10px;background:#1565C0;color:#fff;font-weight:700;font-size:14px;cursor:pointer}
           </style></head><body><div class="box"><h1>MUFUTU</h1><p>Não foi possível iniciar o servidor local.</p><p style="font-size:13px">Instale a versão 1.0.3 ou superior e tente novamente.</p><button onclick="location.reload()">Tentar novamente</button></div></body></html>`,
