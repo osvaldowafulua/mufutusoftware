@@ -38,6 +38,7 @@
 
 ### macOS
 - Guarda no `electron-main.js`: se o processo filho do servidor arrancar como GUI (env `MUFUTU_SERVER_CHILD` sem `ELECTRON_RUN_AS_NODE`), sai imediatamente — sem segunda app no Dock.
+- **App nativa, não browser**: DevTools totalmente removidas em produção (menu + `devTools: false` em todas as janelas); links externos abrem no browser do sistema em vez de janelas Electron; navegação para fora do servidor local bloqueada; menu macOS profissional (Ficheiro/Editar/Ver/Janela/Ajuda em pt). A UI corre **sempre** do servidor local embebido — nunca de um site remoto.
 
 ### GitHub
 - [`docs/MAPA-MENTAL.md`](MAPA-MENTAL.md) (Mermaid, renderizado pelo GitHub), este plano, índice de docs e README reorganizado.

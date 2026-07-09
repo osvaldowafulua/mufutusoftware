@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, safeStorage, session } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, safeStorage, session, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
@@ -132,6 +132,7 @@ function createSplashWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      devTools: false,
     },
   });
   const query = logo ? { logo: encodeURIComponent(`file://${logo}`) } : {};
@@ -424,11 +425,47 @@ async function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
+      // App nativa: DevTools só existem em desenvolvimento
+      devTools: isDev,
       preload: path.join(__dirname, 'preload.js'),
     },
     icon,
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     show: false,
+  });
+
+  // App nativa, não browser: links externos abrem no browser do sistema;
+  // janelas internas (impressão/PDF) abrem limpas, sem menu nem DevTools.
+  const isInternalUrl = (url) =>
+    url.startsWith('http://127.0.0.1') ||
+    url.startsWith('http://localhost') ||
+    url.startsWith('data:') ||
+    url.startsWith('blob:') ||
+    url.startsWith('about:');
+
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (!isInternalUrl(url)) {
+      void shell.openExternal(url);
+      return { action: 'deny' };
+    }
+    return {
+      action: 'allow',
+      overrideBrowserWindowOptions: {
+        autoHideMenuBar: true,
+        webPreferences: {
+          nodeIntegration: false,
+          contextIsolation: true,
+          devTools: isDev,
+        },
+      },
+    };
+  });
+
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    if (!isInternalUrl(url)) {
+      event.preventDefault();
+      void shell.openExternal(url);
+    }
   });
 
   let loadUrl;
@@ -538,11 +575,12 @@ function createMenu() {
       label: 'Ver',
       submenu: [
         {
-          label: 'Recarregar',
+          label: 'Actualizar',
           accelerator: accel('R'),
           click: () => mainWindow?.reload(),
         },
-        { role: 'toggleDevTools' },
+        // DevTools nunca aparecem em produção — app nativa, não browser
+        ...(isDev ? [{ role: 'toggleDevTools' }] : []),
         { type: 'separator' },
         { role: 'resetZoom' },
         { role: 'zoomIn' },
@@ -551,6 +589,7 @@ function createMenu() {
         { role: 'togglefullscreen' },
       ],
     },
+    ...(isMac ? [{ role: 'windowMenu', label: 'Janela' }] : []),
     {
       label: 'Ajuda',
       submenu: [
