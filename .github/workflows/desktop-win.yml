@@ -18,7 +18,7 @@ permissions:
 
 env:
   DOTNET_VERSION: '8.0.x'
-  DESKTOP_WIN_DIR: apps/desktop-win
+  DESKTOP_WIN_DIR: mufutu/apps/desktop-win
 
 jobs:
   build-test:
@@ -26,6 +26,13 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout código-fonte (mufutu — privado)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
@@ -63,6 +70,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout código-fonte (mufutu — privado)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
+
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
@@ -91,6 +105,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout código-fonte (mufutu — privado)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
@@ -117,6 +138,13 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout código-fonte (mufutu — privado)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
 
       - name: Resolve version
         id: version

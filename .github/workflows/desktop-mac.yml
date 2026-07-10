@@ -25,19 +25,25 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Checkout CMMS (mufutu — privado)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: npm install --legacy-peer-deps
+      - run: npm install --legacy-peer-deps --prefix mufutu/apps/electron
       - name: npm audit (high+)
         continue-on-error: true
         run: |
-          mkdir -p apps/desktop-mac
-          npm audit --audit-level=high 2>&1 | tee apps/desktop-mac/audit.log
+          mkdir -p audit-logs
+          npm audit --audit-level=high --prefix mufutu/apps/electron 2>&1 | tee audit-logs/desktop-mac-audit.log
       - uses: actions/upload-artifact@v4
         with:
           name: desktop-mac-sast-log
-          path: apps/desktop-mac/audit.log
+          path: audit-logs/desktop-mac-audit.log
           retention-days: 30
 
   codeql:
@@ -45,13 +51,20 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Checkout CMMS (mufutu — privado)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
       - uses: github/codeql-action/init@v3
         with:
           languages: javascript-typescript
+          source-root: mufutu/apps/electron
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: npm install --legacy-peer-deps -w @mufutu/electron 2>/dev/null || npm install --legacy-peer-deps --prefix apps/electron
+      - run: npm install --legacy-peer-deps --prefix mufutu/apps/electron
       - uses: github/codeql-action/analyze@v3
 
   package-sign:
@@ -92,8 +105,8 @@ jobs:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
         run: |
-          chmod +x apps/desktop-mac/scripts/import-apple-cert.sh
-          apps/desktop-mac/scripts/import-apple-cert.sh
+          chmod +x mufutu/apps/desktop-mac/scripts/import-apple-cert.sh
+          mufutu/apps/desktop-mac/scripts/import-apple-cert.sh
 
       - name: Package (DMG + ZIP)
         env:
@@ -102,17 +115,16 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          MUFUTU_CMMS_DIR: ${{ github.workspace }}/mufutu
         run: |
-          chmod +x apps/desktop-mac/scripts/*.sh
-          apps/desktop-mac/scripts/package.sh "${{ steps.version.outputs.version }}"
+          chmod +x mufutu/apps/desktop-mac/scripts/*.sh
+          mufutu/apps/desktop-mac/scripts/package.sh "${{ steps.version.outputs.version }}"
 
       - uses: actions/upload-artifact@v4
         with:
           name: mufutu-desktop-mac
           path: |
-            apps/desktop-mac/artifacts/dist/**
-            apps/desktop-mac/artifacts/logs/**
+            mufutu/apps/desktop-mac/artifacts/dist/**
+            mufutu/apps/desktop-mac/artifacts/logs/**
           retention-days: 90
 
   pentest-basic:
