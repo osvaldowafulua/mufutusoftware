@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, safeStorage, session, shell } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, safeStorage, session, shell, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
@@ -8,6 +8,7 @@ const https = require('https');
 const labelsBridge = require('./electron-labels-bridge');
 const connectivityBridge = require('./electron-connectivity-bridge');
 const { buildUpstreamTarget, isLocalHost } = require('./electron-ipv4');
+const { checkVersionGate } = require('./electron-version-gate');
 
 // Guarda: o servidor Next.js embebido é lançado via spawn do próprio binário com
 // ELECTRON_RUN_AS_NODE. Se essa variável se perder (ofuscação/ambiente), o filho
@@ -616,7 +617,42 @@ if (!gotTheLock) {
   });
 }
 
+async function enforceVersionGate() {
+  const result = await checkVersionGate(app.getVersion());
+  logDesktop(`Version gate: ${result.status} (instalada ${app.getVersion()})`);
+
+  if (result.status !== 'update-required') {
+    return false;
+  }
+
+  const response = dialog.showMessageBoxSync({
+    type: 'warning',
+    title: 'Actualização obrigatória — MUFUTU',
+    message: 'É necessária uma versão mais recente do MUFUTU',
+    detail:
+      `A sua versão (${app.getVersion()}) é anterior à mínima suportada (${result.minimumVersion}). ` +
+      `Descarregue a versão ${result.latestVersion || result.minimumVersion} para continuar.` +
+      (result.note ? `\n\n${result.note}` : ''),
+    buttons: ['Descarregar actualização', 'Sair'],
+    defaultId: 0,
+    cancelId: 1,
+    noLink: true,
+  });
+
+  if (response === 0 && result.downloadUrl) {
+    void shell.openExternal(result.downloadUrl);
+  }
+
+  app.quit();
+  return true;
+}
+
 app.whenReady().then(async () => {
+  const blocked = await enforceVersionGate();
+  if (blocked) {
+    return;
+  }
+
   await createWindow();
   createMenu();
   app.on('activate', async () => {

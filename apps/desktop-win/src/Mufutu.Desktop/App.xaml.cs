@@ -59,6 +59,19 @@ public partial class App : Application
 
         await _host.StartAsync();
 
+        // Gate obrigatório: só bloqueia quando confirma versão abaixo da mínima —
+        // sem rede ou manifesto indisponível, o arranque offline continua normal.
+        var gate = _host.Services.GetRequiredService<IVersionGateService>();
+        var gateLogger = _host.Services.GetRequiredService<ILogger<App>>();
+        var gateResult = await CheckVersionGateSafelyAsync(gate, gateLogger);
+
+        if (gateResult.Status == VersionGateStatus.UpdateRequired)
+        {
+            splash.Close();
+            new ForceUpdateWindow(gateResult).Show();
+            return;
+        }
+
         _ = Task.Run(async () =>
         {
             await Task.Delay(TimeSpan.FromSeconds(6));
@@ -72,6 +85,20 @@ public partial class App : Application
         var login = _host.Services.GetRequiredService<LoginWindow>();
         splash.Close();
         login.Show();
+    }
+
+    private static async Task<VersionGateResult> CheckVersionGateSafelyAsync(IVersionGateService gate, ILogger logger)
+    {
+        try
+        {
+            return await gate.CheckAsync();
+        }
+        catch (Exception ex)
+        {
+            // Defesa extra: mesmo com esta falha inesperada, nunca bloquear o arranque
+            logger.LogWarning(ex, "Version gate falhou de forma inesperada — a continuar arranque normal");
+            return new VersionGateResult { Status = VersionGateStatus.CheckFailed };
+        }
     }
 
     protected override async void OnExit(ExitEventArgs e)

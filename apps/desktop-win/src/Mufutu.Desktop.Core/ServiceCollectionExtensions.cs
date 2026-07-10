@@ -70,6 +70,12 @@ public static class ServiceCollectionExtensions
             client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/vnd.github+json");
         });
 
+        services.AddHttpClient<IVersionGateService, VersionGateService>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(10);
+            client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "MUFUTU-Desktop-Windows");
+        });
+
         return services;
     }
 }

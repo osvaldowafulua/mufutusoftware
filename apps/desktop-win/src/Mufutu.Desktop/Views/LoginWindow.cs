@@ -9,7 +9,7 @@ namespace Mufutu.Desktop.Views;
 
 public partial class LoginWindow : Window
 {
-    private static readonly SolidColorBrush BrandOrange = new(Color.FromRgb(0xE8, 0x61, 0x2D));
+    private static readonly SolidColorBrush BrandOrange = new(Color.FromRgb(0xEB, 0x5E, 0x28));
 
     public LoginWindow(LoginViewModel viewModel)
     {

@@ -58,6 +58,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SyncPage>();
         builder.Services.AddTransient<NotificationsViewModel>();
         builder.Services.AddTransient<NotificationsPage>();
+        builder.Services.AddTransient<UpdateRequiredPage>();
 
         builder.Services.AddSingleton<AppShell>();
 

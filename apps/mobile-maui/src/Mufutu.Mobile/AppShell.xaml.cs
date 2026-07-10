@@ -1,4 +1,6 @@
+using Microsoft.Maui.ApplicationModel;
 using Mufutu.Mobile.Core.Services;
+using Mufutu.Mobile.Core.Updates;
 using Mufutu.Mobile.Services;
 using Mufutu.Mobile.Views;
 
@@ -20,12 +22,18 @@ public partial class AppShell : Shell
         Items.Add(new ShellContent { Title = "Checklist", ContentTemplate = new DataTemplate(() => services.GetRequiredService<ChecklistPage>()), Route = "checklist" });
         Items.Add(new ShellContent { Title = "Notificações", ContentTemplate = new DataTemplate(() => services.GetRequiredService<NotificationsPage>()), Route = "notifications" });
         Items.Add(new ShellContent { Title = "Enviar", ContentTemplate = new DataTemplate(() => services.GetRequiredService<SyncPage>()), Route = "sync" });
+        Items.Add(new ShellContent { Title = "Actualizar", ContentTemplate = new DataTemplate(() => services.GetRequiredService<UpdateRequiredPage>()), Route = "update-required" });
     }
 
     public async Task BootstrapAsync(IServiceProvider services)
     {
         try
         {
+            if (await IsBlockedByUpdateGateAsync(services))
+            {
+                return;
+            }
+
             var session = services.GetRequiredService<IAuthSessionStore>();
             var runtime = services.GetRequiredService<MauiConnectivityMonitor>();
 
@@ -54,6 +62,42 @@ public partial class AppShell : Shell
         }
 
         await ReportPreviousCrashAsync();
+    }
+
+    /// <summary>
+    /// Bloqueia o arranque só quando confirma positivamente que a versão instalada
+    /// está abaixo da mínima aceite. Sem rede/manifesto indisponível, devolve false
+    /// e o arranque offline continua normal — nunca prende um técnico sem sinal.
+    /// </summary>
+    private async Task<bool> IsBlockedByUpdateGateAsync(IServiceProvider services)
+    {
+        try
+        {
+            var gate = services.GetRequiredService<IUpdateGateService>();
+            var current = AppInfo.Current.VersionString;
+            var result = await gate.CheckAsync(current);
+
+            if (result.Status != UpdateGateStatus.UpdateRequired)
+            {
+                return false;
+            }
+
+            var query = new Dictionary<string, object>
+            {
+                ["current"] = current,
+                ["minimum"] = result.MinimumVersion ?? "—",
+                ["latest"] = result.LatestVersion ?? result.MinimumVersion ?? "—",
+                ["url"] = Uri.EscapeDataString(result.DownloadUrl ?? string.Empty),
+                ["notes"] = Uri.EscapeDataString(result.Notes ?? string.Empty),
+            };
+            await GoToAsync("//update-required", query);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            CrashLog.Write("UpdateGate", ex);
+            return false;
+        }
     }
 
     private async Task ReportPreviousCrashAsync()

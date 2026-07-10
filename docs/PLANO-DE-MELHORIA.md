@@ -1,7 +1,7 @@
 # Super Plano de Melhoria — MUFUTU Software
 
 > Plano de estabilização e evolução dos clientes nativos MUFUTU (Windows, macOS,
-> Android/iOS) e da distribuição via GitHub. Actualizado a **2026-07-09**.
+> Android/iOS) e da distribuição via GitHub. Actualizado a **2026-07-10**.
 > Mapa geral do produto: [MAPA-MENTAL.md](MAPA-MENTAL.md).
 
 ## Sumário executivo
@@ -14,6 +14,7 @@
 | 4 | **Sem armazenamento geral local** (dados repetidos, offline fraco) | Clientes puxam listas completas sempre; não há sync delta ("só o que mudou") | ✅ Motor implementado no mobile e desktop (ver Fase 2) — falta API `updatedSince` no CMMS e Service Worker no web |
 | 5 | **Logos desactualizados** | — | ✅ Feito (SVG novos + cor `#EB5E28` em todas as apps) |
 | 6 | **GitHub desorganizado / sem mapa mental** | — | ✅ Feito (docs + mapa mental Mermaid) |
+| 7 | **Sem mecanismo de actualização obrigatória** | Nenhuma plataforma bloqueava versões antigas; mobile não tinha sequer verificação de update | ✅ "Version gate" implementado nas 3 plataformas (ver Fase 0) |
 
 ---
 
@@ -42,6 +43,14 @@
 
 ### GitHub
 - [`docs/MAPA-MENTAL.md`](MAPA-MENTAL.md) (Mermaid, renderizado pelo GitHub), este plano, índice de docs e README reorganizado.
+
+### Actualização obrigatória — "version gate" (todas as plataformas)
+- **Fonte única**: [`releases/latest.json`](../releases/latest.json), lido via `raw.githubusercontent.com/.../main/releases/latest.json` no arranque de cada cliente. Tem `latestVersion` e `minimumVersion` **por plataforma** (macOS, Windows, Android).
+- **Bloqueio real**: se a versão instalada estiver abaixo de `minimumVersion`, o cliente mostra um ecrã que só permite descarregar a actualização — sem forma de contornar (Windows: `ForceUpdateWindow` sem botão fechar; macOS: diálogo bloqueante antes de qualquer janela abrir; Android: `UpdateRequiredPage`, back button bloqueado).
+- **Nunca bloqueia por falta de rede**: manifesto indisponível/timeout → `CheckFailed` → arranque continua normal. Isto é inegociável dado o offline-first — um técnico sem sinal no terreno nunca pode ficar preso.
+- **Alavanca operacional**: para forçar todas as instalações antigas a actualizar, basta subir `minimumVersion` no manifesto e fazer commit para `main` — **não é preciso publicar um release novo**, entra em vigor no próximo arranque com rede.
+- **Implementação**: `VersionGateService` (Windows Core), `electron-version-gate.js` (macOS), `UpdateGateService` (Mobile Core) — todos com comparação semver própria e testados (Windows: 5 testes; Mobile: 5 testes; macOS: 4 cenários via script Node). O optional "update available" (não bloqueante) já existente em cada plataforma foi mantido tal como estava.
+- **Versões bumped nesta PR**: Desktop 1.0.19 → **1.0.20**, Mobile MAUI 1.0.13 → **1.0.14** — prontas para o próximo `git tag` + release real. O manifesto aponta deliberadamente para os últimos releases **reais** (1.0.19 desktop / 1.0.13 mobile) até esses novos releases serem publicados — nunca para uma versão que ainda não existe no GitHub Releases.
 
 ---
 
