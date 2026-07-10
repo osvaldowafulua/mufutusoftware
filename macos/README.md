@@ -86,5 +86,3 @@ Secrets GitHub necessários para builds assinados e notarizados:
 | `APPLE_TEAM_ID` | Team ID (10 caracteres) |
 
 Sem estes secrets, o CI gera builds válidos mas o Gatekeeper exige o workaround acima.
-
-Ver [`docs/DESKTOP_MAC.md`](../docs/DESKTOP_MAC.md).

@@ -1,8 +1,7 @@
 # MUFUTU — Android
 
-Cliente **.NET MAUI** (`apps/mobile-maui/`) para técnicos e supervisores em campo.
-
-> Guia completo: [docs/MOBILE_MAUI.md](../docs/MOBILE_MAUI.md) · Stub legado React Native em `apps/mobile/`.
+Cliente **.NET MAUI** para técnicos e supervisores em campo. Código-fonte no
+repositório privado `mufutu`.
 
 ## Descarregar
 

@@ -45,7 +45,6 @@
 <p align="center">
   <a href="#descarregar-agora">Downloads</a> ·
   <a href="docs/MAPA-MENTAL.md">Mapa Mental</a> ·
-  <a href="docs/PLANO-DE-MELHORIA.md">Plano de Melhoria</a> ·
   <a href="docs/README.md">Documentação</a> ·
   <a href="#licenças">Licenças</a> ·
   <a href="EULA.md">EULA</a> ·
@@ -66,7 +65,7 @@
 | **Web** | [app.mufutu.ao](https://app.mufutu.ao) | CMMS completo — sem instalador |
 
 > **Windows:** prefira o **ZIP 1.0.16/1.0.19** (cliente WPF actual). O `MUFUTU-Setup-*.exe` mais recente no repositório é **1.0.6** (Electron legado). Ver [windows/INSTALAR.md](windows/INSTALAR.md).
-> O pipeline do **Setup instalável WPF** (WiX/MSI) foi corrigido — o próximo release `desktop-win/v*` volta a publicar `MUFUTU-Setup-{versão}-x64.exe` com atalhos e desinstalação normal ([plano](docs/PLANO-DE-MELHORIA.md)).
+> O pipeline do **Setup instalável WPF** (WiX/MSI) foi corrigido — o próximo release `desktop-win/v*` volta a publicar `MUFUTU-Setup-{versão}-x64.exe` com atalhos e desinstalação normal.
 
 Verifique integridade com `checksums.sha256` em cada release.
 
@@ -98,19 +97,13 @@ Compatibilidade: [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md)
 
 ## Build local
 
-Requer o CMMS ao lado desta pasta:
-
-```
-GitHub/
-  mufutu/          ← privado (apps/web)
-  mufutusoftware/  ← este repo
-```
+O código-fonte dos clientes nativos (Windows, macOS, Mobile) vive no
+repositório privado `mufutu` — este repositório público só distribui
+binários compilados. Ver [`POLITICA_REPOSITORIOS.md`](docs/POLITICA_REPOSITORIOS.md).
 
 ```bash
-# macOS DMG (versão = tag do release)
-npm run build:mac -- 1.0.16
-# ou
-bash apps/desktop-mac/scripts/package.sh 1.0.16
+# dentro do clone de mufutu (privado)
+bash apps/desktop-mac/scripts/package.sh 1.0.20
 ```
 
 ---
@@ -247,24 +240,19 @@ mufutusoftware/
 ├── README.md          ← está aqui
 ├── EULA.md            ← termos de utilização
 ├── SECURITY.md        ← integridade e reporte de vulnerabilidades
-├── apps/
-│   ├── desktop-win/   ← cliente WPF Windows (+ instalador WiX)
-│   ├── electron/      ← shell Electron (macOS/Windows)
-│   ├── desktop-mac/   ← scripts de build/assinatura macOS
-│   └── mobile-maui/   ← cliente .NET MAUI (Android/iOS)
-├── docs/              ← mapa mental, plano de melhoria, guias técnicos
+├── docs/              ← mapa mental, compatibilidade, política de repositórios
 ├── assets/brand/      ← identidade visual (SVG oficiais + derivados)
-├── scripts/           ← publicação de releases e geração de assets
+├── scripts/           ← publicação de releases
 ├── windows/           ← guia Windows
 ├── macos/             ← guia macOS
 ├── android/           ← guia Android
 ├── ios/               ← guia iOS
 ├── web/               ← PWA e acesso browser
-├── releases/          ← exemplo de manifesto público (sem segredos)
+├── releases/          ← manifesto público (version gate, sem segredos)
 └── checksums/         ← instruções de verificação
 ```
 
-**Binários não vivem no Git** — apenas em [Releases](https://github.com/osvaldowafulua/mufutusoftware/releases).
+**Binários e código-fonte não vivem aqui** — binários só em [Releases](https://github.com/osvaldowafulua/mufutusoftware/releases); código-fonte dos clientes nativos no repositório privado `mufutu` (ver [`POLITICA_REPOSITORIOS.md`](docs/POLITICA_REPOSITORIOS.md)).
 
 ---
 
