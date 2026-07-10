@@ -2,19 +2,8 @@
   "name": "mufutusoftware",
   "version": "1.0.20",
   "private": true,
-  "description": "MUFUTU — clientes desktop/mobile e distribuição pública",
-  "workspaces": [
-    "apps/electron",
-    "apps/mobile"
-  ],
+  "description": "MUFUTU — distribuição pública de releases (código-fonte no repositório privado mufutu)",
   "scripts": {
-    "build:mac": "bash apps/desktop-mac/scripts/package.sh",
-    "build:win": "bash apps/desktop-mac/scripts/package-win.sh",
-    "build:desktop-win": "dotnet build apps/desktop-win/Mufutu.sln -c Release",
-    "build:mobile-maui:android": "bash apps/mobile-maui/scripts/package-android.sh",
-    "test:mobile-maui": "dotnet test apps/mobile-maui/tests/Mufutu.Mobile.Tests/Mufutu.Mobile.Tests.csproj -c Release",
-    "test:desktop-win": "dotnet test apps/desktop-win/tests/Mufutu.Desktop.Tests/Mufutu.Desktop.Tests.csproj -c Release",
-    "brand:desktop": "node scripts/generate-desktop-brand-assets.mjs",
     "publish:release": "bash scripts/publish-release.sh"
   },
   "engines": {

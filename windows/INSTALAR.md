@@ -45,8 +45,8 @@ O instalador é gerado no **GitHub Actions** (runner Windows). Peça ao administ
 1. Configurar secret `MUFUTU_CMMS_CHECKOUT_TOKEN` no repo
 2. Correr workflow **Windows Electron Installer (NSIS)** versão `1.0.6`
 
-Ou num **PC Windows** com os repos `mufutu` + `mufutusoftware` lado a lado:
+Ou num **PC Windows**, dentro do clone do repositório privado `mufutu`:
 ```powershell
-cd mufutusoftware
+cd mufutu
 bash apps/desktop-mac/scripts/package-win.sh 1.0.6
 ```

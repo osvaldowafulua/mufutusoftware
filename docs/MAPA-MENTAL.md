@@ -76,14 +76,12 @@ flowchart LR
 
 ## Ligações rápidas
 
-| Ramo | Onde está no repositório |
-|------|--------------------------|
-| Cliente Windows (WPF) | [`apps/desktop-win/`](../apps/desktop-win/) |
-| Cliente macOS (Electron) | [`apps/electron/`](../apps/electron/) + [`apps/desktop-mac/`](../apps/desktop-mac/) |
-| Mobile Android/iOS (MAUI) | [`apps/mobile-maui/`](../apps/mobile-maui/) |
-| Workflows CI/CD | [`.github/workflows/`](../.github/workflows/) |
+| Ramo | Onde está |
+|------|-----------|
+| Cliente Windows (WPF), macOS (Electron), Mobile (MAUI) — código-fonte | `apps/desktop-win/`, `apps/electron/`, `apps/mobile-maui/` no repositório privado `mufutu` |
+| Workflows CI/CD (fazem checkout do `mufutu`) | [`.github/workflows/`](../.github/workflows/) |
 | Identidade visual | [`assets/brand/`](../assets/brand/) |
-| Guias por plataforma | [`windows/`](../windows/) · [`macos/`](../macos/) · [`android/`](../android/) · [`ios/`](../ios/) · [`web/`](../web/) |
+| Guias de instalação por plataforma | [`windows/`](../windows/) · [`macos/`](../macos/) · [`android/`](../android/) · [`ios/`](../ios/) · [`web/`](../web/) |
 | Licenciamento e EULA | [`EULA.md`](../EULA.md) · [`LICENSE`](../LICENSE) |
 | Segurança | [`SECURITY.md`](../SECURITY.md) |
-| Plano de melhoria | [`PLANO-DE-MELHORIA.md`](PLANO-DE-MELHORIA.md) |
+| Política de repositórios (público vs privado) | [`POLITICA_REPOSITORIOS.md`](POLITICA_REPOSITORIOS.md) |

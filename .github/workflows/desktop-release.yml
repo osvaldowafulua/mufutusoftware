@@ -54,8 +54,8 @@ jobs:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
         run: |
-          chmod +x apps/desktop-mac/scripts/import-apple-cert.sh
-          apps/desktop-mac/scripts/import-apple-cert.sh
+          chmod +x mufutu/apps/desktop-mac/scripts/import-apple-cert.sh
+          mufutu/apps/desktop-mac/scripts/import-apple-cert.sh
 
       - name: Package macOS
         env:
@@ -64,16 +64,15 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          MUFUTU_CMMS_DIR: ${{ github.workspace }}/mufutu
         run: |
-          chmod +x apps/desktop-mac/scripts/*.sh
-          apps/desktop-mac/scripts/package.sh "${{ steps.version.outputs.version }}"
+          chmod +x mufutu/apps/desktop-mac/scripts/*.sh
+          mufutu/apps/desktop-mac/scripts/package.sh "${{ steps.version.outputs.version }}"
 
       - uses: actions/upload-artifact@v4
         with:
           name: desktop-mac-assets
           path: |
-            apps/desktop-mac/artifacts/dist/**
+            mufutu/apps/desktop-mac/artifacts/dist/**
           retention-days: 30
 
   win:
@@ -83,6 +82,13 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout código-fonte (mufutu — privado)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
 
       - name: Resolve version
         id: version
@@ -103,13 +109,13 @@ jobs:
       - name: Package Windows
         shell: pwsh
         run: |
-          & apps/desktop-win/scripts/package.ps1 -Version "${{ steps.version.outputs.version }}" -SkipSign -SkipObfuscate
+          & mufutu/apps/desktop-win/scripts/package.ps1 -Version "${{ steps.version.outputs.version }}" -SkipSign -SkipObfuscate
 
       - uses: actions/upload-artifact@v4
         with:
           name: desktop-win-assets
           path: |
-            apps/desktop-win/artifacts/installer/**
+            mufutu/apps/desktop-win/artifacts/installer/**
           retention-days: 30
 
   release:

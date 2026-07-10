@@ -24,9 +24,11 @@ Cor de marca: **#EB5E28** (laranja MUFUTU) · Cinza de apoio: **#8C8C8C**
 
 ## Assets das aplicações (derivados)
 
-- **Electron/macOS** — `apps/electron/assets/svg/{app-icon,splash-mark}.svg` → `npm run brand:desktop` gera `icon.png/.icns/.ico` e splash.
-- **WPF/Windows** — `apps/desktop-win/src/Mufutu.Desktop/Assets/brand/` (gerado pelo mesmo script).
-- **MAUI/Android+iOS** — `apps/mobile-maui/src/Mufutu.Mobile/Resources/{AppIcon,Splash}/*.svg` (o build MAUI rasteriza).
+O código-fonte das apps nativas (Electron, WPF, MAUI) vive no repositório
+privado `mufutu`, com a sua própria cópia destes SVG oficiais em
+`apps/electron/assets/svg/` — usada por `scripts/generate-desktop-brand-assets.mjs`
+para gerar os ícones de cada plataforma. Ao actualizar o logo, replicar as
+mudanças de `svg/` também nesse repositório.
 
 **MUFUTU** é marca registada da **Smart Cloud, Lda**.
 
