@@ -3,8 +3,15 @@
     <OutputName>MUFUTU</OutputName>
     <OutputType>Package</OutputType>
     <Platform>x64</Platform>
+    <!-- ICE requer Windows; o conteúdo é validado pelo verify-artifact.ps1 -->
+    <SuppressValidation>true</SuppressValidation>
+    <!-- O publish é feito pelo package.ps1; recebemos o resultado por -p:PublishDir -->
+    <DefineConstants Condition="'$(PublishDir)' != ''">$(DefineConstants);PublishDir=$(PublishDir)</DefineConstants>
+    <DefineConstants Condition="'$(Version)' != ''">$(DefineConstants);Version=$(Version)</DefineConstants>
+    <!-- Sem globbing: senão o Bundle.wxs era compilado aqui também e partia o build -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Mufutu.Desktop\Mufutu.Desktop.csproj" Publish="true" />
+    <Compile Include="Package.wxs" />
   </ItemGroup>
 </Project>

@@ -8,7 +8,10 @@ public interface ICampoOfflineStore
 {
     Task EnsureInitializedAsync();
     Task<int> GetPendingCountAsync();
-    Task UpsertWorkOrdersAsync(IEnumerable<WorkOrderDto> items);
+    Task<PullStats> UpsertWorkOrdersAsync(IEnumerable<WorkOrderDto> items);
+    Task<int> PruneWorkOrdersNotInAsync(IReadOnlyCollection<string> keepIds);
+    Task<string?> GetSyncCursorAsync(string entityType);
+    Task SetSyncCursorAsync(string entityType, string cursor);
     Task<IReadOnlyList<CachedWorkOrder>> GetWorkOrdersAsync();
     Task UpdateWorkOrderStatusLocalAsync(string id, string status);
     Task MarkWorkOrderSyncedAsync(string id, string status);
@@ -86,6 +89,11 @@ public sealed class CampoOfflineStore : ICampoOfflineStore, IDisposable
                     timestamp TEXT,
                     read INTEGER NOT NULL DEFAULT 0
                 );
+                CREATE TABLE IF NOT EXISTS sync_cursors (
+                    entity_type TEXT PRIMARY KEY,
+                    cursor TEXT NOT NULL,
+                    last_synced_at TEXT NOT NULL
+                );
                 """);
         }
         finally
@@ -102,13 +110,47 @@ public sealed class CampoOfflineStore : ICampoOfflineStore, IDisposable
         return Convert.ToInt32(await cmd.ExecuteScalarAsync());
     }
 
-    public async Task UpsertWorkOrdersAsync(IEnumerable<WorkOrderDto> items)
+    public async Task<PullStats> UpsertWorkOrdersAsync(IEnumerable<WorkOrderDto> items)
     {
         await EnsureInitializedAsync();
+        var stats = new PullStats();
+
+        await using var tx = (SqliteTransaction)await _connection!.BeginTransactionAsync();
         foreach (var wo in items)
         {
             if (string.IsNullOrWhiteSpace(wo.Id))
             {
+                continue;
+            }
+
+            var json = JsonSerializer.Serialize(wo);
+
+            // Dedupe: só escreve o que mudou; alterações locais pendentes nunca
+            // são esmagadas por dados do servidor (local-wins até o push aceitar).
+            string? existingJson = null;
+            string? existingSyncStatus = null;
+            await using (var check = _connection.CreateCommand())
+            {
+                check.Transaction = tx;
+                check.CommandText = "SELECT json, sync_status FROM work_orders WHERE id=$id";
+                check.Parameters.AddWithValue("$id", wo.Id);
+                await using var reader = await check.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    existingJson = reader.GetString(0);
+                    existingSyncStatus = reader.GetString(1);
+                }
+            }
+
+            if (existingSyncStatus == "pending")
+            {
+                stats.PreservedLocal++;
+                continue;
+            }
+
+            if (existingJson == json)
+            {
+                stats.Unchanged++;
                 continue;
             }
 
@@ -120,17 +162,78 @@ public sealed class CampoOfflineStore : ICampoOfflineStore, IDisposable
                 Status = wo.Status ?? "approved",
                 Priority = wo.Priority ?? "medium",
                 AssetName = wo.Asset?.Name ?? wo.Asset?.Code ?? "Equipamento",
-                Json = JsonSerializer.Serialize(wo),
+                Json = json,
                 SyncStatus = "synced",
                 LastModified = DateTime.UtcNow,
             };
-            await UpsertWorkOrderAsync(cached);
+            await UpsertWorkOrderAsync(cached, tx);
+
+            if (existingJson == null)
+            {
+                stats.Added++;
+            }
+            else
+            {
+                stats.Updated++;
+            }
         }
+
+        await tx.CommitAsync();
+        return stats;
     }
 
-    private async Task UpsertWorkOrderAsync(CachedWorkOrder wo)
+    public async Task<int> PruneWorkOrdersNotInAsync(IReadOnlyCollection<string> keepIds)
+    {
+        await EnsureInitializedAsync();
+
+        // Varre só linhas sincronizadas — pendentes locais nunca são removidas.
+        await using var cmd = _connection!.CreateCommand();
+        if (keepIds.Count == 0)
+        {
+            cmd.CommandText = "DELETE FROM work_orders WHERE sync_status='synced'";
+        }
+        else
+        {
+            var placeholders = string.Join(",", keepIds.Select((_, i) => $"$p{i}"));
+            cmd.CommandText = $"DELETE FROM work_orders WHERE sync_status='synced' AND id NOT IN ({placeholders})";
+            var index = 0;
+            foreach (var id in keepIds)
+            {
+                cmd.Parameters.AddWithValue($"$p{index++}", id);
+            }
+        }
+
+        return await cmd.ExecuteNonQueryAsync();
+    }
+
+    public async Task<string?> GetSyncCursorAsync(string entityType)
+    {
+        await EnsureInitializedAsync();
+        await using var cmd = _connection!.CreateCommand();
+        cmd.CommandText = "SELECT cursor FROM sync_cursors WHERE entity_type=$type";
+        cmd.Parameters.AddWithValue("$type", entityType);
+        return await cmd.ExecuteScalarAsync() as string;
+    }
+
+    public async Task SetSyncCursorAsync(string entityType, string cursor)
+    {
+        await EnsureInitializedAsync();
+        await using var cmd = _connection!.CreateCommand();
+        cmd.CommandText = """
+            INSERT INTO sync_cursors (entity_type, cursor, last_synced_at)
+            VALUES ($type, $cursor, $now)
+            ON CONFLICT(entity_type) DO UPDATE SET cursor=$cursor, last_synced_at=$now
+            """;
+        cmd.Parameters.AddWithValue("$type", entityType);
+        cmd.Parameters.AddWithValue("$cursor", cursor);
+        cmd.Parameters.AddWithValue("$now", DateTimeOffset.UtcNow.ToString("O"));
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    private async Task UpsertWorkOrderAsync(CachedWorkOrder wo, SqliteTransaction tx)
     {
         await using var cmd = _connection!.CreateCommand();
+        cmd.Transaction = tx;
         cmd.CommandText = """
             INSERT INTO work_orders (id, number, title, status, priority, asset_name, json, sync_status, last_modified)
             VALUES ($id, $number, $title, $status, $priority, $asset, $json, $sync, $mod)
@@ -346,7 +449,7 @@ public sealed class CampoOfflineStore : ICampoOfflineStore, IDisposable
     public async Task ClearAllAsync()
     {
         await EnsureInitializedAsync();
-        await ExecuteAsync("DELETE FROM work_orders; DELETE FROM sync_queue; DELETE FROM notifications;");
+        await ExecuteAsync("DELETE FROM work_orders; DELETE FROM sync_queue; DELETE FROM notifications; DELETE FROM sync_cursors;");
     }
 
     private async Task ExecuteAsync(string sql)

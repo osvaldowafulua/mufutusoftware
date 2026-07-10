@@ -203,19 +203,9 @@ public sealed class GitHubDesktopUpdateService : IDesktopUpdateService
         return null;
     }
 
-    private static bool IsRemoteNewer(string remote, string current)
-    {
-        if (Version.TryParse(NormalizeVersion(remote), out var remoteVersion)
-            && Version.TryParse(NormalizeVersion(current), out var currentVersion))
-        {
-            return remoteVersion > currentVersion;
-        }
+    private static bool IsRemoteNewer(string remote, string current) => SemVerCompare.IsNewer(remote, current);
 
-        return string.Compare(remote, current, StringComparison.OrdinalIgnoreCase) > 0;
-    }
-
-    private static string NormalizeVersion(string value) =>
-        value.Split('-')[0];
+    private static string NormalizeVersion(string value) => SemVerCompare.Normalize(value);
 
     private sealed class GitHubRelease
     {

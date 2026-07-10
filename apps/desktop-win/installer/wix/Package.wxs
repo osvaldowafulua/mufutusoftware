@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <?ifndef Version ?>
+    <?define Version = "1.0.0" ?>
+  <?endif?>
+  <?ifndef PublishDir ?>
+    <?define PublishDir = "..\..\artifacts\publish" ?>
+  <?endif?>
+
   <Package
     Name="MUFUTU"
     Manufacturer="Smart Cloud, Lda"
-    Version="!(bind FileVersion.MUFUTU.exe)"
+    Version="$(var.Version)"
     UpgradeCode="A3F8C2E1-9B4D-4F6A-8C1E-2D5F7A9B3C4E"
     Scope="perMachine">
     <MajorUpgrade DowngradeErrorMessage="Uma versão mais recente do MUFUTU já está instalada." />
@@ -11,10 +18,37 @@
 
     <Feature Id="MainFeature" Title="MUFUTU Desktop" Level="1">
       <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="AppShortcuts" />
     </Feature>
 
     <StandardDirectory Id="ProgramFiles64Folder">
       <Directory Id="INSTALLFOLDER" Name="MUFUTU" />
     </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="MufutuMenuFolder" Name="MUFUTU" />
+    </StandardDirectory>
+    <StandardDirectory Id="DesktopFolder" />
+
+    <!-- Conteúdo: tudo o que o dotnet publish produziu (recebido via -p:PublishDir) -->
+    <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
+      <Files Include="$(var.PublishDir)\**" />
+    </ComponentGroup>
+
+    <!-- Atalhos: Menu Iniciar + Ambiente de trabalho -->
+    <Component Id="AppShortcuts" Directory="MufutuMenuFolder" Guid="7C2B9E14-3A5D-4E8F-B1C6-9D0A2F4E6B83">
+      <Shortcut Id="StartMenuMufutu"
+                Name="MUFUTU"
+                Description="MUFUTU — CMMS/EAM para operações mineiras"
+                Target="[INSTALLFOLDER]MUFUTU.exe"
+                WorkingDirectory="INSTALLFOLDER" />
+      <Shortcut Id="DesktopMufutu"
+                Directory="DesktopFolder"
+                Name="MUFUTU"
+                Description="MUFUTU — CMMS/EAM para operações mineiras"
+                Target="[INSTALLFOLDER]MUFUTU.exe"
+                WorkingDirectory="INSTALLFOLDER" />
+      <RemoveFolder Id="RemoveMufutuMenuFolder" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\Smart Cloud\MUFUTU" Name="shortcuts" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
   </Package>
 </Wix>

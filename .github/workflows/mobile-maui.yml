@@ -7,6 +7,10 @@ on:
         description: 'Versão semver (ex: 1.0.0)'
         required: false
         default: '1.0.0'
+      diagnostico:
+        description: 'Build diagnóstico (sem trimming) para isolar crash de arranque'
+        required: false
+        default: 'false'
   push:
     tags:
       - 'mobile-maui/v*'
@@ -98,6 +102,7 @@ jobs:
             -f net8.0-android -c Release `
             -p:ApplicationDisplayVersion=${{ steps.ver.outputs.version }} `
             -p:AndroidPackageFormat=apk `
+            -p:MufutuDiag=${{ github.event.inputs.diagnostico || 'false' }} `
             -o artifacts/android
 
       - uses: actions/upload-artifact@v4

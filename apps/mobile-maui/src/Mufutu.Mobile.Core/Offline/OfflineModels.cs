@@ -51,3 +51,17 @@ public static class OfflineOperations
     public const string StatusChange = "statusChange";
     public const string Create = "create";
 }
+
+/// <summary>
+/// Resultado de um pull para o armazenamento local: quantas linhas entraram,
+/// mudaram, já estavam iguais (não reescritas) ou foram preservadas por terem
+/// alterações locais pendentes.
+/// </summary>
+public sealed class PullStats
+{
+    public int Added { get; set; }
+    public int Updated { get; set; }
+    public int Unchanged { get; set; }
+    public int PreservedLocal { get; set; }
+    public int Removed { get; set; }
+}

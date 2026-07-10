@@ -98,10 +98,10 @@ public partial class SyncViewModel : ObservableObject
                 return;
             }
 
-            var result = await _sync.ProcessQueueAsync();
+            var result = await _sync.SyncAllAsync();
             await RefreshPendingAsync();
-            StatusText = result.Remaining == 0 ? "Sincronizado" : "Parcial";
-            DetailText = $"Enviados: {result.Processed} · Erros: {result.Errors} · Pendentes: {result.Remaining}";
+            StatusText = result.Remaining == 0 && result.PullOk ? "Sincronizado" : "Parcial";
+            DetailText = $"Enviados: {result.Processed} · Recebidos: {result.Pulled} · Sem alterações: {result.Unchanged} · Erros: {result.Errors} · Pendentes: {result.Remaining}";
         }
         finally
         {

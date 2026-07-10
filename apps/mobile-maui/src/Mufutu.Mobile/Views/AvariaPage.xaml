@@ -69,7 +69,7 @@
                             Text="Enviar"
                             Command="{Binding SendCommand}"
                             IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-                            BackgroundColor="#E8612D"
+                            BackgroundColor="#EB5E28"
                             TextColor="White"
                             HeightRequest="52"
                             CornerRadius="10" />

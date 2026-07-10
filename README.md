@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="MUFUTU Software" src="assets/brand/logo-software-horizontal.png" width="520" />
+  <img alt="MUFUTU Software" src="assets/brand/svg/logo-branco-fundo-laranja.svg" width="520" />
 </p>
 
 <p align="center">
@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/osvaldowafulua/mufutusoftware/stargazers">
-    <img src="assets/brand/icon-orange.png" alt="MUFUTU" width="64" />
+    <img src="assets/brand/svg/favicon.svg" alt="MUFUTU" width="64" />
   </a>
 </p>
 
@@ -44,7 +44,9 @@
 
 <p align="center">
   <a href="#descarregar-agora">Downloads</a> ·
-  <a href="#estatísticas--comunidade">Estatísticas</a> ·
+  <a href="docs/MAPA-MENTAL.md">Mapa Mental</a> ·
+  <a href="docs/PLANO-DE-MELHORIA.md">Plano de Melhoria</a> ·
+  <a href="docs/README.md">Documentação</a> ·
   <a href="#licenças">Licenças</a> ·
   <a href="EULA.md">EULA</a> ·
   <a href="SECURITY.md">Segurança</a>
@@ -60,12 +62,26 @@
 |------------|-------------------|--------|
 | **Windows** | [`MUFUTU-1.0.16-win-x64.zip`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.16/MUFUTU-1.0.16-win-x64.zip) | Portátil — extrair e executar `MUFUTU.exe`. Instalador `.exe` legado: [v1.0.6](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.6/MUFUTU-Setup-1.0.6-x64.exe) |
 | **macOS** | [`MUFUTU-1.0.19-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.19/MUFUTU-1.0.19-arm64.dmg) | Arrastar para Aplicações · Gatekeeper: `xattr -cr /Applications/MUFUTU.app` · Luachimo: API `sml.api.mufutu.ao` |
-| **Android** | [`MUFUTU Campo 1.0.12`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.12/com.mufutu.mobile-Signed.apk) | APK assinado · técnicos / modo campo |
+| **Android** | [`MUFUTU Campo 1.0.13`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.13/com.mufutu.mobile-Signed.apk) | APK assinado · técnicos / modo campo |
 | **Web** | [app.mufutu.ao](https://app.mufutu.ao) | CMMS completo — sem instalador |
 
-> **Windows:** prefira o **ZIP 1.0.16** (cliente WPF actual). O `MUFUTU-Setup-*.exe` mais recente no repositório é **1.0.6** (Electron legado). Ver [windows/INSTALAR.md](windows/INSTALAR.md).
+> **Windows:** prefira o **ZIP 1.0.16/1.0.19** (cliente WPF actual). O `MUFUTU-Setup-*.exe` mais recente no repositório é **1.0.6** (Electron legado). Ver [windows/INSTALAR.md](windows/INSTALAR.md).
+> O pipeline do **Setup instalável WPF** (WiX/MSI) foi corrigido — o próximo release `desktop-win/v*` volta a publicar `MUFUTU-Setup-{versão}-x64.exe` com atalhos e desinstalação normal ([plano](docs/PLANO-DE-MELHORIA.md)).
 
 Verifique integridade com `checksums.sha256` em cada release.
+
+### Actualização obrigatória (version gate)
+
+Windows, macOS e Android verificam no arranque o manifesto público
+[`releases/latest.json`](releases/latest.json). Se a versão instalada estiver
+abaixo de `minimumVersion` da sua plataforma, o arranque **é bloqueado** com um
+ecrã que só permite descarregar a actualização — sem forma de contornar. Sem
+rede ou manifesto indisponível, o bloqueio **nunca** activa (não quebra o uso
+offline-first no terreno).
+
+Para forçar todas as instalações antigas a actualizar: suba `minimumVersion`
+da plataforma em `releases/latest.json` e faça commit para `main` — entra em
+vigor no próximo arranque com rede, sem publicar um release novo.
 
 ---
 
@@ -231,6 +247,14 @@ mufutusoftware/
 ├── README.md          ← está aqui
 ├── EULA.md            ← termos de utilização
 ├── SECURITY.md        ← integridade e reporte de vulnerabilidades
+├── apps/
+│   ├── desktop-win/   ← cliente WPF Windows (+ instalador WiX)
+│   ├── electron/      ← shell Electron (macOS/Windows)
+│   ├── desktop-mac/   ← scripts de build/assinatura macOS
+│   └── mobile-maui/   ← cliente .NET MAUI (Android/iOS)
+├── docs/              ← mapa mental, plano de melhoria, guias técnicos
+├── assets/brand/      ← identidade visual (SVG oficiais + derivados)
+├── scripts/           ← publicação de releases e geração de assets
 ├── windows/           ← guia Windows
 ├── macos/             ← guia macOS
 ├── android/           ← guia Android
@@ -248,7 +272,7 @@ mufutusoftware/
 
 <p align="center">
   <a href="https://github.com/osvaldowafulua/mufutusoftware">
-    <img src="assets/brand/icon-orange.png" alt="MUFUTU" width="56" />
+    <img src="assets/brand/svg/favicon.svg" alt="MUFUTU" width="56" />
   </a>
 </p>
 

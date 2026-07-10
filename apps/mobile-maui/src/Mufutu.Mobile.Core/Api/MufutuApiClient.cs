@@ -105,7 +105,10 @@ public sealed class MufutuApiClient
         return payload;
     }
 
-    public async Task<IReadOnlyList<WorkOrderDto>> GetMyWorkOrdersAsync(CancellationToken ct = default)
+    public Task<IReadOnlyList<WorkOrderDto>> GetMyWorkOrdersAsync(CancellationToken ct = default) =>
+        GetMyWorkOrdersAsync(null, ct);
+
+    public async Task<IReadOnlyList<WorkOrderDto>> GetMyWorkOrdersAsync(string? updatedSince, CancellationToken ct = default)
     {
         var userId = await _session.GetUserIdAsync();
         var baseUrl = _settings.ApiBaseUrl.TrimEnd('/');
@@ -113,6 +116,11 @@ public sealed class MufutuApiClient
         if (!string.IsNullOrWhiteSpace(userId))
         {
             url += $"&assignedTechnicianId={Uri.EscapeDataString(userId)}";
+        }
+        if (!string.IsNullOrWhiteSpace(updatedSince))
+        {
+            // Delta sync (CMMS ≥ 1.2); versões anteriores ignoram o parâmetro
+            url += $"&updatedSince={Uri.EscapeDataString(updatedSince)}";
         }
 
         using var res = await SendAuthorizedAsync(() => _http.GetAsync(url, ct), ct);
