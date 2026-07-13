@@ -25,4 +25,5 @@ O cliente **não** escolhe tenant no ecrã de login — a API resolve pelo `user
 | macOS Electron | `https://api.mufutu.ao` (proxy) | `~/Library/Application Support/MUFUTU/api-config.json` |
 | Mobile MAUI | Campo editável no login | Guardado em preferências |
 
-Ver também [DESKTOP_CONNECTIVITY.md](./DESKTOP_CONNECTIVITY.md) e [MOBILE_MAUI.md](./MOBILE_MAUI.md).
+Documentação detalhada de conectividade e do cliente mobile vive junto do
+código-fonte no repositório privado `mufutu`.

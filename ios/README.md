@@ -1,8 +1,7 @@
 # MUFUTU — iOS
 
-Cliente **.NET MAUI** (`apps/mobile-maui/`) para iPhone e iPad (técnicos em campo).
-
-> Guia completo: [docs/MOBILE_MAUI.md](../docs/MOBILE_MAUI.md)
+Cliente **.NET MAUI** para iPhone e iPad (técnicos em campo). Código-fonte no
+repositório privado `mufutu`.
 
 ## Descarregar
 

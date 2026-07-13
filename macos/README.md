@@ -13,7 +13,7 @@ Cliente **Electron** para macOS (Apple Silicon arm64).
 ## Instalação
 
 1. Abra o `.dmg` e arraste **MUFUTU** para **Aplicações**.
-2. Na primeira execução, o macOS pode bloquear — ver secção **Gatekeeper** abaixo.
+2. Dentro do mesmo `.dmg`, dê duplo clique em **"Instalar MUFUTU — clique aqui"** (ver secção **Gatekeeper** abaixo — não precisa de Terminal).
 3. Login no tenant da sua empresa.
 
 ## Gatekeeper — «App danificada»
@@ -24,9 +24,13 @@ Mensagem típica:
 
 **Isto não significa ficheiro corrompido.** O macOS bloqueia apps descarregadas da Internet que ainda **não têm assinatura Developer ID + notarização Apple** (releases actuais do GitHub).
 
-### Solução imediata
+**Nota:** ao contrário do aviso mais brando de "programador não identificado", esta mensagem específica **não** é contornável com clique-direito → Abrir — a Apple só aceita `xattr -cr` (ou notarização real) para este caso.
 
-Após instalar em `/Applications/MUFUTU.app`:
+### Solução imediata — sem Terminal
+
+Dentro do `.dmg`, depois de arrastar o MUFUTU para Aplicações, dê **duplo clique** em **"Instalar MUFUTU — clique aqui"**. O macOS vai perguntar se quer mesmo abrir este ficheiro (só na primeira vez) — escolha **Abrir**. O script remove a quarentena automaticamente e abre o MUFUTU.
+
+### Alternativa — via Terminal
 
 ```bash
 xattr -cr /Applications/MUFUTU.app
@@ -40,8 +44,6 @@ curl -fsSL https://raw.githubusercontent.com/osvaldowafulua/mufutusoftware/main/
 chmod +x scripts/macos-unquarantine.sh
 ./scripts/macos-unquarantine.sh
 ```
-
-**Alternativa:** clique direito em MUFUTU → **Abrir** (apenas na primeira vez).
 
 ### ZIP vs DMG
 
@@ -67,7 +69,7 @@ O cliente usa `electron-updater` com metadados `latest-mac.yml` do release ofici
 
 | Sintoma | Solução |
 |---------|---------|
-| «App danificada» | `xattr -cr /Applications/MUFUTU.app` ou clique direito → Abrir |
+| «App danificada» | Duplo clique em "Instalar MUFUTU — clique aqui" dentro do `.dmg`, ou `xattr -cr /Applications/MUFUTU.app` |
 | Ecrã em branco | Confirme URL do tenant e rede |
 | Checksum diferente | Re-descarregue do [Release oficial](https://github.com/osvaldowafulua/mufutusoftware/releases) |
 
@@ -86,5 +88,3 @@ Secrets GitHub necessários para builds assinados e notarizados:
 | `APPLE_TEAM_ID` | Team ID (10 caracteres) |
 
 Sem estes secrets, o CI gera builds válidos mas o Gatekeeper exige o workaround acima.
-
-Ver [`docs/DESKTOP_MAC.md`](../docs/DESKTOP_MAC.md).

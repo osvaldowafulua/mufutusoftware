@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="MUFUTU Software" src="assets/brand/logo-software-horizontal.png" width="520" />
+  <img alt="MUFUTU Software" src="assets/brand/svg/logo-branco-fundo-laranja.svg" width="520" />
 </p>
 
 <p align="center">
@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/osvaldowafulua/mufutusoftware/stargazers">
-    <img src="assets/brand/icon-orange.png" alt="MUFUTU" width="64" />
+    <img src="assets/brand/svg/favicon.svg" alt="MUFUTU" width="64" />
   </a>
 </p>
 
@@ -44,7 +44,8 @@
 
 <p align="center">
   <a href="#descarregar-agora">Downloads</a> ·
-  <a href="#estatísticas--comunidade">Estatísticas</a> ·
+  <a href="docs/MAPA-MENTAL.md">Mapa Mental</a> ·
+  <a href="docs/README.md">Documentação</a> ·
   <a href="#licenças">Licenças</a> ·
   <a href="EULA.md">EULA</a> ·
   <a href="SECURITY.md">Segurança</a>
@@ -58,14 +59,27 @@
 
 | Plataforma | Instalador oficial | Notas |
 |------------|-------------------|--------|
-| **Windows** | [`MUFUTU-1.0.16-win-x64.zip`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.16/MUFUTU-1.0.16-win-x64.zip) | Portátil — extrair e executar `MUFUTU.exe`. Instalador `.exe` legado: [v1.0.6](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.6/MUFUTU-Setup-1.0.6-x64.exe) |
-| **macOS** | [`MUFUTU-1.0.19-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.19/MUFUTU-1.0.19-arm64.dmg) | Arrastar para Aplicações · Gatekeeper: `xattr -cr /Applications/MUFUTU.app` · Luachimo: API `sml.api.mufutu.ao` |
-| **Android** | [`MUFUTU Campo 1.0.12`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.12/com.mufutu.mobile-Signed.apk) | APK assinado · técnicos / modo campo |
+| **Windows** | [`MUFUTU-Setup-1.0.20-x64.exe`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.20/MUFUTU-Setup-1.0.20-x64.exe) | Instalador WiX — Program Files, atalhos, desinstalar em Definições. ZIP portátil: [1.0.20](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.20/MUFUTU-1.0.20-win-x64.zip) |
+| **macOS** | [`MUFUTU-1.0.20-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.20/MUFUTU-1.0.20-arm64.dmg) | Arrastar para Aplicações · Gatekeeper: `xattr -cr /Applications/MUFUTU.app` · Luachimo: API `sml.api.mufutu.ao` |
+| **Android** | [`MUFUTU Campo 1.0.14`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.14/com.mufutu.mobile-Signed.apk) | APK assinado · técnicos / modo campo |
 | **Web** | [app.mufutu.ao](https://app.mufutu.ao) | CMMS completo — sem instalador |
 
-> **Windows:** prefira o **ZIP 1.0.16** (cliente WPF actual). O `MUFUTU-Setup-*.exe` mais recente no repositório é **1.0.6** (Electron legado). Ver [windows/INSTALAR.md](windows/INSTALAR.md).
+Ver [windows/INSTALAR.md](windows/INSTALAR.md) para o guia completo.
 
 Verifique integridade com `checksums.sha256` em cada release.
+
+### Actualização obrigatória (version gate)
+
+Windows, macOS e Android verificam no arranque o manifesto público
+[`releases/latest.json`](releases/latest.json). Se a versão instalada estiver
+abaixo de `minimumVersion` da sua plataforma, o arranque **é bloqueado** com um
+ecrã que só permite descarregar a actualização — sem forma de contornar. Sem
+rede ou manifesto indisponível, o bloqueio **nunca** activa (não quebra o uso
+offline-first no terreno).
+
+Para forçar todas as instalações antigas a actualizar: suba `minimumVersion`
+da plataforma em `releases/latest.json` e faça commit para `main` — entra em
+vigor no próximo arranque com rede, sem publicar um release novo.
 
 ---
 
@@ -82,19 +96,13 @@ Compatibilidade: [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md)
 
 ## Build local
 
-Requer o CMMS ao lado desta pasta:
-
-```
-GitHub/
-  mufutu/          ← privado (apps/web)
-  mufutusoftware/  ← este repo
-```
+O código-fonte dos clientes nativos (Windows, macOS, Mobile) vive no
+repositório privado `mufutu` — este repositório público só distribui
+binários compilados. Ver [`POLITICA_REPOSITORIOS.md`](docs/POLITICA_REPOSITORIOS.md).
 
 ```bash
-# macOS DMG (versão = tag do release)
-npm run build:mac -- 1.0.16
-# ou
-bash apps/desktop-mac/scripts/package.sh 1.0.16
+# dentro do clone de mufutu (privado)
+bash apps/desktop-mac/scripts/package.sh 1.0.20
 ```
 
 ---
@@ -231,16 +239,19 @@ mufutusoftware/
 ├── README.md          ← está aqui
 ├── EULA.md            ← termos de utilização
 ├── SECURITY.md        ← integridade e reporte de vulnerabilidades
+├── docs/              ← mapa mental, compatibilidade, política de repositórios
+├── assets/brand/      ← identidade visual (SVG oficiais + derivados)
+├── scripts/           ← publicação de releases
 ├── windows/           ← guia Windows
 ├── macos/             ← guia macOS
 ├── android/           ← guia Android
 ├── ios/               ← guia iOS
 ├── web/               ← PWA e acesso browser
-├── releases/          ← exemplo de manifesto público (sem segredos)
+├── releases/          ← manifesto público (version gate, sem segredos)
 └── checksums/         ← instruções de verificação
 ```
 
-**Binários não vivem no Git** — apenas em [Releases](https://github.com/osvaldowafulua/mufutusoftware/releases).
+**Binários e código-fonte não vivem aqui** — binários só em [Releases](https://github.com/osvaldowafulua/mufutusoftware/releases); código-fonte dos clientes nativos no repositório privado `mufutu` (ver [`POLITICA_REPOSITORIOS.md`](docs/POLITICA_REPOSITORIOS.md)).
 
 ---
 
@@ -248,7 +259,7 @@ mufutusoftware/
 
 <p align="center">
   <a href="https://github.com/osvaldowafulua/mufutusoftware">
-    <img src="assets/brand/icon-orange.png" alt="MUFUTU" width="56" />
+    <img src="assets/brand/svg/favicon.svg" alt="MUFUTU" width="56" />
   </a>
 </p>
 

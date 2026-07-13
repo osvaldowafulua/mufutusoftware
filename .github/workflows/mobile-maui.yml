@@ -7,6 +7,10 @@ on:
         description: 'Versão semver (ex: 1.0.0)'
         required: false
         default: '1.0.0'
+      diagnostico:
+        description: 'Build diagnóstico (sem trimming) para isolar crash de arranque'
+        required: false
+        default: 'false'
   push:
     tags:
       - 'mobile-maui/v*'
@@ -17,7 +21,7 @@ permissions:
 
 env:
   DOTNET_VERSION: '8.0.404'
-  MOBILE_MAUI_DIR: apps/mobile-maui
+  MOBILE_MAUI_DIR: mufutu/apps/mobile-maui
   CI: true
 
 jobs:
@@ -26,6 +30,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout código-fonte (mufutu — privado)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -60,6 +71,13 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout código-fonte (mufutu — privado)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -98,6 +116,7 @@ jobs:
             -f net8.0-android -c Release `
             -p:ApplicationDisplayVersion=${{ steps.ver.outputs.version }} `
             -p:AndroidPackageFormat=apk `
+            -p:MufutuDiag=${{ github.event.inputs.diagnostico || 'false' }} `
             -o artifacts/android
 
       - uses: actions/upload-artifact@v4
@@ -112,6 +131,13 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout código-fonte (mufutu — privado)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
 
       - uses: actions/setup-dotnet@v4
         with:

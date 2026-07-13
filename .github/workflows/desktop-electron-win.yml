@@ -48,17 +48,15 @@ jobs:
 
       - name: Build instalador NSIS
         shell: bash
-        env:
-          MUFUTU_CMMS_DIR: ${{ github.workspace }}/mufutu
         run: |
-          chmod +x apps/desktop-mac/scripts/package-win.sh
-          apps/desktop-mac/scripts/package-win.sh "${{ steps.ver.outputs.version }}"
+          chmod +x mufutu/apps/desktop-mac/scripts/package-win.sh
+          mufutu/apps/desktop-mac/scripts/package-win.sh "${{ steps.ver.outputs.version }}"
 
       - uses: actions/upload-artifact@v4
         with:
           name: mufutu-win-installer
           path: |
-            apps/desktop-win/artifacts/installer/**
+            mufutu/apps/desktop-win/artifacts/installer/**
           retention-days: 14
 
       - name: Publicar no GitHub Release
@@ -68,7 +66,7 @@ jobs:
         run: |
           VER="${{ steps.ver.outputs.version }}"
           TAG="v${VER}"
-          DIR="apps/desktop-win/artifacts/installer"
+          DIR="mufutu/apps/desktop-win/artifacts/installer"
           NOTES="Instalador Windows MUFUTU-Setup-${VER}-x64.exe — assistente de instalacao (Program Files, atalhos, desinstalar em Definicoes)."
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" &>/dev/null; then
             gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "$DIR"/*

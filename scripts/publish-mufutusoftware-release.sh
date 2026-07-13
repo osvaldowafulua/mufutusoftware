@@ -90,29 +90,40 @@ UPLOAD=( "${FILES[@]}" checksums.sha256 manifest.json )
 if gh release view "$TAG" --repo "$REPO" &>/dev/null; then
   gh release upload "$TAG" --repo "$REPO" --clobber "${UPLOAD[@]}"
 else
-  gh release create "$TAG" \
-    --repo "$REPO" \
-    --title "MUFUTU ${VERSION}" \
-    --notes "## MUFUTU ${VERSION}
+  # Notas geradas para ficheiro via heredoc com delimitador entre plicas
+  # ('NOTES_EOF') — o corpo fica 100% literal, sem o bash a interpretar
+  # crases/$/aspas. Passar isto inline como argumento de --notes já
+  # partiu a release (várias crases escapadas na mesma string confundiam
+  # o parser do bash e cortavam "MUFUTU" para fora, passando-o ao gh como
+  # se fosse um ficheiro — "no matches found for `MUFUTU`").
+  NOTES_FILE="release-notes.md"
+  sed "s|__VERSION__|${VERSION}|g; s|__REPO__|${REPO}|g" > "$NOTES_FILE" <<'NOTES_EOF'
+## MUFUTU __VERSION__
 
-Distribuição oficial — [mufutusoftware](https://github.com/${REPO}).
+Distribuição oficial — [mufutusoftware](https://github.com/__REPO__).
 
-Verifique \`checksums.sha256\` antes de instalar.
-Licença: \`MUFUTU-LIC-*\` — licenca@mufutu.ao
+Verifique `checksums.sha256` antes de instalar.
+Licença: `MUFUTU-LIC-*` — licenca@mufutu.ao
 
 ### macOS — «App danificada» / Gatekeeper
 
-Se o macOS disser que **MUFUTU está danificado**, o ficheiro **não está corrompido** — é o Gatekeeper a bloquear builds ainda **sem notarização Apple**.
+Se o macOS disser que **MUFUTU está danificado**, o ficheiro **não está corrompido** — é o Gatekeeper a bloquear builds ainda **sem notarização Apple**. Clique-direito → Abrir **não** contorna esta mensagem específica.
 
-**Solução imediata** (após arrastar para Aplicações):
+**Solução imediata — sem Terminal:** dentro do `.dmg`, depois de arrastar o MUFUTU para Aplicações, dê duplo clique em **"Instalar MUFUTU — clique aqui"** (o macOS pede confirmação só na primeira vez — escolha Abrir).
 
-\`\`\`bash
+**Alternativa via Terminal:**
+
+```bash
 xattr -cr /Applications/MUFUTU.app
-\`\`\`
+```
 
-Ou: **clique direito** em MUFUTU → **Abrir** (só na primeira vez).
+Script incluído no repositório: `scripts/macos-unquarantine.sh`
+NOTES_EOF
 
-Script incluído no repositório: \`scripts/macos-unquarantine.sh\`" \
+  gh release create "$TAG" \
+    --repo "$REPO" \
+    --title "MUFUTU ${VERSION}" \
+    --notes-file "$NOTES_FILE" \
     "${UPLOAD[@]}"
 fi
 
