@@ -106,10 +106,27 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Import code signing certificate
+        shell: pwsh
+        env:
+          WIN_CODESIGN_PFX: ${{ secrets.WIN_CODESIGN_PFX }}
+          WIN_CODESIGN_PASSWORD: ${{ secrets.WIN_CODESIGN_PASSWORD }}
+        run: |
+          $certDir = "mufutu/apps/desktop-win/scripts/certs"
+          New-Item -ItemType Directory -Force -Path $certDir | Out-Null
+          if ($env:WIN_CODESIGN_PFX) {
+            [IO.File]::WriteAllBytes("$certDir/mufutu-codesign.pfx", [Convert]::FromBase64String($env:WIN_CODESIGN_PFX))
+          } else {
+            Write-Host "WIN_CODESIGN_PFX não configurado — gerar self-signed"
+            & "mufutu/apps/desktop-win/scripts/generate-selfsigned-cert.ps1"
+          }
+
       - name: Package Windows
         shell: pwsh
+        env:
+          WIN_CODESIGN_PASSWORD: ${{ secrets.WIN_CODESIGN_PASSWORD }}
         run: |
-          & mufutu/apps/desktop-win/scripts/package.ps1 -Version "${{ steps.version.outputs.version }}" -SkipSign -SkipObfuscate
+          & mufutu/apps/desktop-win/scripts/package.ps1 -Version "${{ steps.version.outputs.version }}"
 
       - uses: actions/upload-artifact@v4
         with:
