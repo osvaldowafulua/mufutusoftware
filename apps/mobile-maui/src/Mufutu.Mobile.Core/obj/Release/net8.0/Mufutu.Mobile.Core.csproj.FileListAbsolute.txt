@@ -1,0 +1,13 @@
+/Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui/src/Mufutu.Mobile.Core/bin/Release/net8.0/Mufutu.Mobile.Core.deps.json
+/Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui/src/Mufutu.Mobile.Core/bin/Release/net8.0/Mufutu.Mobile.Core.dll
+/Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui/src/Mufutu.Mobile.Core/bin/Release/net8.0/Mufutu.Mobile.Core.pdb
+/Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui/src/Mufutu.Mobile.Core/obj/Release/net8.0/Mufutu.Mobile.Core.csproj.AssemblyReference.cache
+/Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui/src/Mufutu.Mobile.Core/obj/Release/net8.0/Mufutu.Mobile.Core.GeneratedMSBuildEditorConfig.editorconfig
+/Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui/src/Mufutu.Mobile.Core/obj/Release/net8.0/Mufutu.Mobile.Core.AssemblyInfoInputs.cache
+/Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui/src/Mufutu.Mobile.Core/obj/Release/net8.0/Mufutu.Mobile.Core.AssemblyInfo.cs
+/Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui/src/Mufutu.Mobile.Core/obj/Release/net8.0/Mufutu.Mobile.Core.csproj.CoreCompileInputs.cache
+/Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui/src/Mufutu.Mobile.Core/obj/Release/net8.0/Mufutu.Mobile.Core.sourcelink.json
+/Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui/src/Mufutu.Mobile.Core/obj/Release/net8.0/Mufutu.Mobile.Core.dll
+/Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui/src/Mufutu.Mobile.Core/obj/Release/net8.0/refint/Mufutu.Mobile.Core.dll
+/Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui/src/Mufutu.Mobile.Core/obj/Release/net8.0/Mufutu.Mobile.Core.pdb
+/Users/fluadigital/Documents/GitHub/mufutusoftware/apps/mobile-maui/src/Mufutu.Mobile.Core/obj/Release/net8.0/ref/Mufutu.Mobile.Core.dll
