@@ -25,11 +25,11 @@
       "note": "Setup instalável (WiX/MSI) restaurado em 1.0.20 — atalhos e desinstalação normal em Definições."
     },
     "android": {
-      "latestVersion": "1.0.14",
-      "minimumVersion": "1.0.13",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.14/com.mufutu.mobile-Signed.apk",
-      "apk": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.14/com.mufutu.mobile-Signed.apk",
-      "tag": "mobile-maui/v1.0.14"
+      "latestVersion": "1.0.16",
+      "minimumVersion": "1.0.16",
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.16/com.mufutu.mobile-Signed.apk",
+      "apk": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.16/com.mufutu.mobile-Signed.apk",
+      "tag": "mobile-maui/v1.0.16"
     },
     "web": {
       "latestVersion": "rolling",
