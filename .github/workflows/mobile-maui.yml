@@ -107,17 +107,52 @@ jobs:
             echo "version=${{ github.event.inputs.version || '1.0.0' }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Build & publish APK
+      - name: Build & publicar APK
         working-directory: ${{ env.MOBILE_MAUI_DIR }}
         shell: pwsh
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           dotnet nuget locals all --clear
+
+          # Descodificar keystore se estiver configurado nos Secrets
+          $signArgs = @()
+          if ($env:KEYSTORE_B64) {
+            $ksPath = "$env:RUNNER_TEMP\mufutu.keystore"
+            [IO.File]::WriteAllBytes($ksPath, [Convert]::FromBase64String($env:KEYSTORE_B64))
+            $signArgs = @(
+              "-p:AndroidKeyStore=true",
+              "-p:AndroidSigningKeyStore=$ksPath",
+              "-p:AndroidSigningStorePass=$env:KEYSTORE_PASSWORD",
+              "-p:AndroidSigningKeyAlias=$env:KEY_ALIAS",
+              "-p:AndroidSigningKeyPass=$env:KEY_PASSWORD"
+            )
+          } else {
+            Write-Warning "ANDROID_KEYSTORE_B64 nao configurado - APK sera assinado com chave de debug"
+          }
+
           dotnet publish src/Mufutu.Mobile/Mufutu.Mobile.csproj `
             -f net8.0-android -c Release `
             -p:ApplicationDisplayVersion=${{ steps.ver.outputs.version }} `
             -p:AndroidPackageFormat=apk `
             -p:MufutuDiag=${{ github.event.inputs.diagnostico || 'false' }} `
+            @signArgs `
             -o artifacts/android
+
+      - name: Renomear APK com versao
+        working-directory: ${{ env.MOBILE_MAUI_DIR }}
+        shell: bash
+        run: |
+          VER="${{ steps.ver.outputs.version }}"
+          for apk in artifacts/android/*.apk; do
+            [ -f "$apk" ] || continue
+            dir=$(dirname "$apk")
+            mv "$apk" "${dir}/com.mufutu.mobile-Signed.apk" 2>/dev/null || true
+          done
+          ls -la artifacts/android/ || true
 
       - uses: actions/upload-artifact@v4
         with:
