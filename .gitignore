@@ -15,14 +15,21 @@
 **/mac-*/
 
 apps/desktop-mac/artifacts/
-apps/desktop-win/artifacts/
-apps/electron/dist-electron/
-apps/electron/electron-app/
-apps/electron/.electron-obfuscate-backup/
 apps/mobile/android/app/build/
 apps/mobile/ios/build/
 apps/mobile/ios/Pods/
 staging/
+
+# Código-fonte migrado para o repositório privado mufutu (2026-07-10) —
+# nunca deve voltar a existir aqui, mesmo por acidente a partir de um
+# clone local desactualizado. Ver docs/POLITICA_REPOSITORIOS.md.
+apps/desktop-win/
+apps/electron/
+apps/mobile-maui/
+
+# Build output .NET/Node — nunca commitar
+bin/
+obj/
 
 # Chaves
 *.pfx
