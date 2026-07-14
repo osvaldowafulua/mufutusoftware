@@ -265,7 +265,7 @@ mufutusoftware/
 
 <p align="center">
   <a href="https://github.com/osvaldowafulua/mufutusoftware">
-    <img src="https://img.shields.io/github/commit-activity/m/osvaldowafulua/mufutusoftware?style=flat-square&label=commits%2Fmês&color=1565C0" alt="Commits" />
+    <img src="https://img.shields.io/github/commit-activity/m/osvaldowafulua/mufutusoftware?style=flat-square&label=commits&color=1565C0" alt="Commits" />
   </a>
   <a href="https://github.com/osvaldowafulua/mufutusoftware/pulse">
     <img src="https://img.shields.io/github/last-commit/osvaldowafulua/mufutusoftware?style=flat-square&color=E8612D" alt="Último commit" />
@@ -276,22 +276,6 @@ mufutusoftware/
   <a href="https://github.com/osvaldowafulua/mufutusoftware/watchers">
     <img src="https://img.shields.io/github/watchers/osvaldowafulua/mufutusoftware?style=flat-square&color=E8612D" alt="Watchers" />
   </a>
-</p>
-
-### Star History
-
-<p align="center">
-  <a href="https://star-history.com/#osvaldowafulua/mufutusoftware&Date">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=osvaldowafulua/mufutusoftware&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=osvaldowafulua/mufutusoftware&type=Date" />
-      <img alt="Star History — MUFUTU Software" src="https://api.star-history.com/svg?repos=osvaldowafulua/mufutusoftware&type=Date" width="620" />
-    </picture>
-  </a>
-</p>
-
-<p align="center">
-  <sub>Gostou do projecto? Deixa uma <a href="https://github.com/osvaldowafulua/mufutusoftware/stargazers"><strong>⭐ star</strong></a> — ajuda outras equipas mineiras a encontrar o MUFUTU.</sub>
 </p>
 
 ---
