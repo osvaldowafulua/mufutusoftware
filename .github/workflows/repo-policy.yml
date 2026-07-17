@@ -1,0 +1,47 @@
+name: Política do repositório
+
+# Este repositório é público e distribui apenas binários/documentação — o
+# código-fonte dos clientes vive no repositório privado mufutu (ver
+# docs/POLITICA_REPOSITORIOS.md). Já aconteceu um push de um clone local
+# desactualizado ressuscitar as pastas de código inteiras (commits "n"/"uit",
+# limpos na PR #14); o .gitignore protege contra "git add" acidental, mas um
+# "git add -f" ou um clone antigo passam-lhe ao lado. Este check é a rede
+# final: falha o CI se código-fonte voltar a aparecer na árvore.
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  sem-codigo-fonte:
+    name: Sem código-fonte de clientes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verificar pastas proibidas
+        run: |
+          proibidas=(
+            apps/desktop-win
+            apps/electron
+            apps/mobile-maui
+            apps/desktop-mac/scripts
+            apps/mobile
+            apps/desktop
+          )
+          falhou=0
+          for d in "${proibidas[@]}"; do
+            if [ -e "$d" ]; then
+              echo "::error::'$d' não pode existir no repositório público — o código-fonte vive no repositório privado mufutu (docs/POLITICA_REPOSITORIOS.md). Provavelmente um push a partir de um clone desactualizado."
+              falhou=1
+            fi
+          done
+          if find . -type d \( -name bin -o -name obj \) -not -path './.git/*' | grep -q .; then
+            echo "::error::Pastas bin/ ou obj/ (build output .NET) encontradas na árvore — nunca devem ser commitadas."
+            falhou=1
+          fi
+          exit $falhou
