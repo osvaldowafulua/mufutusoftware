@@ -46,10 +46,11 @@ shasum -a 256 "${FILES[@]}" > checksums.sha256 2>/dev/null || true
 
 PLATFORMS_JSON="[]"
 SIGNED=false
-if [[ -f "$ASSET_DIR/signing.env" ]]; then
-  # shellcheck disable=SC1090
-  source "$ASSET_DIR/signing.env"
-  [[ "${signed:-false}" == "true" ]] && SIGNED=true
+# Parsing explícito, nunca "source": o signing.env vem de um artefacto de CI —
+# executá-lo como shell daria execução de código arbitrário com o token de
+# release a quem conseguisse influenciar o artefacto.
+if [[ -f "$ASSET_DIR/signing.env" ]] && grep -qx 'signed=true' "$ASSET_DIR/signing.env"; then
+  SIGNED=true
 fi
 if ls MUFUTU-*-arm64.dmg &>/dev/null; then
   DMG=$(ls MUFUTU-*-arm64.dmg | head -1)

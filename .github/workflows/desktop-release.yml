@@ -117,8 +117,8 @@ jobs:
           if ($env:WIN_CODESIGN_PFX) {
             [IO.File]::WriteAllBytes("$certDir/mufutu-codesign.pfx", [Convert]::FromBase64String($env:WIN_CODESIGN_PFX))
           } else {
-            Write-Host "WIN_CODESIGN_PFX não configurado — gerar self-signed"
-            & "mufutu/apps/desktop-win/scripts/generate-selfsigned-cert.ps1"
+            # Sem secret: o package.ps1 gera self-signed com password aleatória
+            Write-Host "WIN_CODESIGN_PFX não configurado — package.ps1 usa self-signed"
           }
 
       - name: Package Windows
@@ -139,7 +139,9 @@ jobs:
     name: GitHub Release
     needs: [mac, win]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/desktop/') || github.event_name == 'workflow_dispatch'
+    # SÓ com tag: um workflow_dispatch é um build de teste e não pode publicar
+    # release real (esta condição já quase publicou releases por engano).
+    if: startsWith(github.ref, 'refs/tags/desktop/')
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4

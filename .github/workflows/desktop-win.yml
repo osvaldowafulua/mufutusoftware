@@ -175,8 +175,8 @@ jobs:
           if ($env:WIN_CODESIGN_PFX) {
             [IO.File]::WriteAllBytes("$certDir/mufutu-codesign.pfx", [Convert]::FromBase64String($env:WIN_CODESIGN_PFX))
           } else {
-            Write-Host "WIN_CODESIGN_PFX não configurado — gerar self-signed"
-            & "${{ env.DESKTOP_WIN_DIR }}/scripts/generate-selfsigned-cert.ps1"
+            # Sem secret: o package.ps1 gera self-signed com password aleatória
+            Write-Host "WIN_CODESIGN_PFX não configurado — package.ps1 usa self-signed"
           }
 
       - name: Package build
