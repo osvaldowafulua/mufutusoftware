@@ -170,12 +170,27 @@ jobs:
         run: |
           set -euo pipefail
           APK=artifacts/android/com.mufutu.mobile-Signed.apk
-          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
-          echo "apksigner: $APKSIGNER"
-          # Falha o build se o APK não estiver assinado: sem isto, um APK sem
-          # assinatura era publicado e só se descobria ao tentar instalar.
-          "$APKSIGNER" verify --print-certs "$APK"
-          echo "✓ APK assinado e verificado"
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+          # Este job corre em windows-latest: aqui o executável é
+          # apksigner.bat, não apksigner — procurar os dois (a primeira versão
+          # deste passo procurava só "apksigner" e falhava com exit 127).
+          APKSIGNER=$(find "$SDK/build-tools" \( -name 'apksigner.bat' -o -name 'apksigner' \) -type f 2>/dev/null | sort -V | tail -1)
+
+          if [ -n "$APKSIGNER" ]; then
+            echo "apksigner: $APKSIGNER"
+            "$APKSIGNER" verify --print-certs "$APK"
+            echo "✓ APK assinado e verificado (apksigner)"
+          else
+            # Sem apksigner: verificação mínima mas real — um APK sem
+            # assinatura v1 não traz META-INF/*.RSA|DSA|EC nem MANIFEST.MF,
+            # que foi exactamente o defeito publicado na 1.0.17.
+            echo "::warning::apksigner não encontrado em $SDK — verificação por conteúdo"
+            if ! unzip -l "$APK" | grep -qE 'META-INF/.*\.(RSA|DSA|EC)$'; then
+              echo "::error::APK sem bloco de assinatura — não seria instalável"
+              exit 1
+            fi
+            echo "✓ APK contém bloco de assinatura"
+          fi
 
       - uses: actions/upload-artifact@v4
         with:
