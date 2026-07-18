@@ -172,11 +172,18 @@ jobs:
         run: |
           $certDir = "${{ env.DESKTOP_WIN_DIR }}/scripts/certs"
           New-Item -ItemType Directory -Force -Path $certDir | Out-Null
-          if ($env:WIN_CODESIGN_PFX) {
+          # O certificado só é instalado quando AMBOS os secrets existem: um PFX
+          # sem a sua password é inutilizável (não abre), e escrevê-lo à mesma
+          # fazia o package.ps1 abortar o build por não conseguir assinar.
+          # Sem os dois, o package.ps1 gera um self-signed descartável — o
+          # instalador sai na mesma (com o aviso normal do SmartScreen).
+          if ($env:WIN_CODESIGN_PFX -and $env:WIN_CODESIGN_PASSWORD) {
             [IO.File]::WriteAllBytes("$certDir/mufutu-codesign.pfx", [Convert]::FromBase64String($env:WIN_CODESIGN_PFX))
+            Write-Host "Certificado de assinatura instalado"
+          } elseif ($env:WIN_CODESIGN_PFX) {
+            Write-Host "::warning::WIN_CODESIGN_PFX existe mas falta WIN_CODESIGN_PASSWORD — a assinar com self-signed. Configure a password para usar o certificado real."
           } else {
-            # Sem secret: o package.ps1 gera self-signed com password aleatória
-            Write-Host "WIN_CODESIGN_PFX não configurado — package.ps1 usa self-signed"
+            Write-Host "Sem certificado configurado — package.ps1 usa self-signed"
           }
 
       - name: Package build

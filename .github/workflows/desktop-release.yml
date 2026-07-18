@@ -114,11 +114,15 @@ jobs:
         run: |
           $certDir = "mufutu/apps/desktop-win/scripts/certs"
           New-Item -ItemType Directory -Force -Path $certDir | Out-Null
-          if ($env:WIN_CODESIGN_PFX) {
+          # Ver nota em desktop-win.yml: PFX sem password é inutilizável e
+          # abortava o build. Só instala quando ambos existem.
+          if ($env:WIN_CODESIGN_PFX -and $env:WIN_CODESIGN_PASSWORD) {
             [IO.File]::WriteAllBytes("$certDir/mufutu-codesign.pfx", [Convert]::FromBase64String($env:WIN_CODESIGN_PFX))
+            Write-Host "Certificado de assinatura instalado"
+          } elseif ($env:WIN_CODESIGN_PFX) {
+            Write-Host "::warning::WIN_CODESIGN_PFX existe mas falta WIN_CODESIGN_PASSWORD — a assinar com self-signed."
           } else {
-            # Sem secret: o package.ps1 gera self-signed com password aleatória
-            Write-Host "WIN_CODESIGN_PFX não configurado — package.ps1 usa self-signed"
+            Write-Host "Sem certificado configurado — package.ps1 usa self-signed"
           }
 
       - name: Package Windows
