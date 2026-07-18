@@ -142,17 +142,40 @@ jobs:
             @signArgs `
             -o artifacts/android
 
-      - name: Renomear APK com versao
+      - name: Selecionar APK assinado
         working-directory: ${{ env.MOBILE_MAUI_DIR }}
         shell: bash
         run: |
-          VER="${{ steps.ver.outputs.version }}"
-          for apk in artifacts/android/*.apk; do
-            [ -f "$apk" ] || continue
-            dir=$(dirname "$apk")
-            mv "$apk" "${dir}/com.mufutu.mobile-Signed.apk" 2>/dev/null || true
-          done
-          ls -la artifacts/android/ || true
+          set -euo pipefail
+          cd artifacts/android
+          ls -la
+
+          # O dotnet publish gera DOIS ficheiros: com.mufutu.mobile.apk (sem
+          # assinatura) e com.mufutu.mobile-Signed.apk (assinado). O ciclo
+          # antigo renomeava os dois para o mesmo nome e, por ordem alfabética,
+          # o NÃO-assinado ficava em último e sobrescrevia o assinado — o APK
+          # publicado saía sem assinatura e o Android recusava instalá-lo
+          # ("não foi possível instalar"). Aqui ficamos só com o assinado e
+          # apagamos o resto.
+          if [ ! -f com.mufutu.mobile-Signed.apk ]; then
+            echo "::error::Não existe APK assinado — verifique os secrets ANDROID_KEYSTORE_*"
+            exit 1
+          fi
+          find . -maxdepth 1 -name '*.apk' ! -name 'com.mufutu.mobile-Signed.apk' -delete
+          ls -la
+
+      - name: Verificar assinatura do APK
+        working-directory: ${{ env.MOBILE_MAUI_DIR }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=artifacts/android/com.mufutu.mobile-Signed.apk
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
+          echo "apksigner: $APKSIGNER"
+          # Falha o build se o APK não estiver assinado: sem isto, um APK sem
+          # assinatura era publicado e só se descobria ao tentar instalar.
+          "$APKSIGNER" verify --print-certs "$APK"
+          echo "✓ APK assinado e verificado"
 
       - uses: actions/upload-artifact@v4
         with:
