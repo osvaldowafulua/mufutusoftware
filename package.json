@@ -1,6 +1,6 @@
 {
   "name": "mufutusoftware",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "private": true,
   "description": "MUFUTU — distribuição pública de releases (código-fonte no repositório privado mufutu)",
   "scripts": {
