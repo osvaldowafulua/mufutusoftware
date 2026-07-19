@@ -59,9 +59,9 @@
 
 | Plataforma | Instalador oficial | Notas |
 |------------|-------------------|--------|
-| **Windows** | [`MUFUTU-Setup-1.0.24-x64.exe`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.24/MUFUTU-Setup-1.0.24-x64.exe) | Assistente completo (logo, EULA, escolha de pasta) — Program Files, atalhos, desinstalar em Definições. ZIP portátil: [1.0.24](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.24/MUFUTU-1.0.24-win-x64.zip) |
-| **macOS** | [`MUFUTU-1.0.24-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.24/MUFUTU-1.0.24-arm64.dmg) | Arrastar para Aplicações · duplo clique em **«Instalar MUFUTU — clique aqui»** dentro do DMG (sem Terminal) · Luachimo: API `sml.api.mufutu.ao` |
-| **Android** | [`MUFUTU Campo 1.0.17`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.17/com.mufutu.mobile-Signed.apk) | APK assinado · técnicos / modo campo |
+| **Windows** | [`MUFUTU-Setup-1.0.29-x64.exe`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.29/MUFUTU-Setup-1.0.29-x64.exe) | Assistente completo (logo, EULA, escolha de pasta) — Program Files, atalhos, desinstalar em Definições. ZIP portátil: [1.0.29](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.29/MUFUTU-1.0.29-win-x64.zip) |
+| **macOS** | [`MUFUTU-1.0.29-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.29/MUFUTU-1.0.29-arm64.dmg) | Arrastar para Aplicações · duplo clique em **«Instalar MUFUTU — clique aqui»** dentro do DMG (sem Terminal) · Luachimo: API `sml.api.mufutu.ao` |
+| **Android** | [`MUFUTU Campo 1.0.19`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.19/com.mufutu.mobile-Signed.apk) | APK assinado · técnicos / modo campo |
 | **Web** | [app.mufutu.ao](https://app.mufutu.ao) | CMMS completo — sem instalador |
 
 Ver [windows/INSTALAR.md](windows/INSTALAR.md) para o guia completo.
@@ -102,7 +102,7 @@ binários compilados. Ver [`POLITICA_REPOSITORIOS.md`](docs/POLITICA_REPOSITORIO
 
 ```bash
 # dentro do clone de mufutu (privado)
-bash apps/desktop-mac/scripts/package.sh 1.0.24
+bash apps/desktop-mac/scripts/package.sh 1.0.29
 ```
 
 ---

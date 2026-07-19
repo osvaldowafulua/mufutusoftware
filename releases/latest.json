@@ -1,36 +1,36 @@
 {
   "product": "MUFUTU",
-  "version": "1.0.24",
-  "tag": "v1.0.24",
+  "version": "1.0.29",
+  "tag": "v1.0.29",
   "channel": "stable",
-  "releasedAt": "2026-07-18T07:30:00Z",
+  "releasedAt": "2026-07-18T11:44:07Z",
   "cmmsCompatibility": "1.1.2",
   "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/latest",
   "_comment": "Fonte de verdade do 'version gate': os clientes (Windows, macOS, Android) leem este ficheiro via raw.githubusercontent.com/.../main/releases/latest.json no arranque. (1) Para OBRIGAR a actualizar instalações antigas: suba 'minimumVersion' da plataforma e faça commit para main — não é preciso publicar um release novo, entra em vigor no próximo arranque com rede. (2) Depois de publicar um release novo de verdade (tag + assets no GitHub Releases), actualize 'latestVersion' e 'downloadUrl' aqui para apontar para os ficheiros reais — nunca aponte para uma versão que ainda não foi publicada.",
   "platforms": {
     "macos": {
-      "latestVersion": "1.0.24",
+      "latestVersion": "1.0.29",
       "minimumVersion": "1.0.16",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.24/MUFUTU-1.0.24-arm64.dmg",
-      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.24/MUFUTU-1.0.24-arm64.dmg",
-      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.24/MUFUTU-1.0.24-arm64.zip",
-      "note": "Instalador sem Terminal incluído no DMG; login já não abre no browser do sistema (1.0.24)."
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.29/MUFUTU-1.0.29-arm64.dmg",
+      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.29/MUFUTU-1.0.29-arm64.dmg",
+      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.29/MUFUTU-1.0.29-arm64.zip",
+      "note": "Login corrigido (credenciais rejeitadas) e servidor local identificado como MUFUTU."
     },
     "windows": {
-      "latestVersion": "1.0.24",
+      "latestVersion": "1.0.29",
       "minimumVersion": "1.0.16",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.24/MUFUTU-Setup-1.0.24-x64.exe",
-      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.24/MUFUTU-Setup-1.0.24-x64.exe",
-      "msi": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.24/MUFUTU-1.0.24-x64.msi",
-      "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.24/MUFUTU-1.0.24-win-x64.zip",
-      "note": "Assistente completo (logo, EULA, escolha de pasta) desde 1.0.21; crash de arranque corrigido em 1.0.23."
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.29/MUFUTU-Setup-1.0.29-x64.exe",
+      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.29/MUFUTU-Setup-1.0.29-x64.exe",
+      "msi": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.29/MUFUTU-1.0.29-x64.msi",
+      "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.29/MUFUTU-1.0.29-win-x64.zip",
+      "note": "Assistente completo; instalação conclui (InstallFolder corrigido em 1.0.26)."
     },
     "android": {
-      "latestVersion": "1.0.17",
+      "latestVersion": "1.0.19",
       "minimumVersion": "1.0.16",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.17/com.mufutu.mobile-Signed.apk",
-      "apk": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.17/com.mufutu.mobile-Signed.apk",
-      "tag": "mobile-maui/v1.0.17"
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.19/com.mufutu.mobile-Signed.apk",
+      "apk": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.19/com.mufutu.mobile-Signed.apk",
+      "tag": "mobile-maui/v1.0.19"
     },
     "web": {
       "latestVersion": "rolling",
