@@ -59,10 +59,11 @@
 
 | Plataforma | Instalador oficial | Notas |
 |------------|-------------------|--------|
-| **Windows** | [`MUFUTU-Setup-1.0.29-x64.exe`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.29/MUFUTU-Setup-1.0.29-x64.exe) | Assistente completo (logo, EULA, escolha de pasta) — Program Files, atalhos, desinstalar em Definições. ZIP portátil: [1.0.29](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.29/MUFUTU-1.0.29-win-x64.zip) |
-| **macOS** | [`MUFUTU-1.0.29-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.29/MUFUTU-1.0.29-arm64.dmg) | Arrastar para Aplicações · duplo clique em **«Instalar MUFUTU — clique aqui»** dentro do DMG (sem Terminal) · Luachimo: API `sml.api.mufutu.ao` |
-| **Android** | [`MUFUTU Campo 1.0.19`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.19/com.mufutu.mobile-Signed.apk) | APK assinado · técnicos / modo campo |
-| **Web** | [app.mufutu.ao](https://app.mufutu.ao) | CMMS completo — sem instalador |
+| **Windows** | [`MUFUTU-Setup-1.0.31-x64.exe`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-Setup-1.0.31-x64.exe) | Assistente completo — Program Files, atalhos, desinstalar. MSI: [1.0.31](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-1.0.31-x64.msi) · ZIP: [1.0.31](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-1.0.31-win-x64.zip) |
+| **macOS** | [`MUFUTU-1.0.31-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-1.0.31-arm64.dmg) | Arrastar para Aplicações · **«Instalar MUFUTU — clique aqui»** no DMG · Luachimo: `sml.api.mufutu.ao` |
+| **Android** | Flutter Campo (`apps/mobile-flutter`) — build local / Releases futuros | **Caminho primário** · offline-first + PIN · API `sml.api.mufutu.ao` |
+| **Android (legado)** | [`MUFUTU Campo MAUI 1.0.20`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.20/com.mufutu.mobile-Signed.apk) | .NET MAUI — manutenção até cutover Flutter |
+| **Web** | [app.mufutu.ao](https://app.mufutu.ao) · [sml.app.mufutu.ao](https://sml.app.mufutu.ao) | CMMS completo — sem instalador |
 
 Ver [windows/INSTALAR.md](windows/INSTALAR.md) para o guia completo.
 
@@ -102,7 +103,7 @@ binários compilados. Ver [`POLITICA_REPOSITORIOS.md`](docs/POLITICA_REPOSITORIO
 
 ```bash
 # dentro do clone de mufutu (privado)
-bash apps/desktop-mac/scripts/package.sh 1.0.29
+bash apps/desktop-mac/scripts/package.sh 1.0.31
 ```
 
 ---
