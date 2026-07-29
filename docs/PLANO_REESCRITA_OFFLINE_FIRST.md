@@ -15,7 +15,7 @@ O que existe hoje funciona, mas cresceu por camadas e paga juros técnicos:
 | Problema | Custo actual |
 | --- | --- |
 | **4 clientes com código próprio** (Next.js web, WPF Windows, Electron macOS, .NET MAUI) | a mesma funcionalidade é escrita 2–4 vezes; correcções aplicam-se a uns e não a outros |
-| **Offline "por cima"** (Dexie + fila no web, SQLite no MAUI, nada no desktop) | regras de conflito diferentes por cliente; o que funciona no telemóvel falha no PC |
+| **Offline "por cima"** (Dexie + fila no web, SQLite no MAUI; Electron partilha Dexie IndexedDB durable em `userData` — ver `mufutu/docs/DESKTOP_OFFLINE_TELEMETRY.md`) | regras de conflito diferentes por cliente; o que funciona no telemóvel falha no PC |
 | **Estado em `localStorage`** (parametrizações, planos, overrides) | dados presos ao browser de um utilizador; perdem-se ao trocar de máquina |
 | **Contrato de API implícito** | DTOs mudam e os clientes só falham em produção (ex.: `metadata` vs `specifications`, 400 silencioso) |
 | **Sem testes de sincronização** | cada regressão de sync é descoberta pelo utilizador na mina |

@@ -1,67 +1,47 @@
 # MUFUTU — Windows
 
-Cliente nativo **WPF / .NET 8** para Windows 10 e 11 (64-bit).
+## Caminho primário: Electron (NSIS + MSIX)
 
-## Descarregar
+O cliente Windows recomendado é o **mesmo stack do macOS** (Electron + Next.js embutido + offline IndexedDB da web).
 
-| Tipo | Ficheiro | Experiência |
-|------|----------|-------------|
-| **Instalador (recomendado)** | `MUFUTU-Setup-*-x64.exe` | Como o DMG no Mac — duplo clique, assistente, atalhos |
-| **Portátil** | `MUFUTU-*-win-x64.zip` | Extrair e executar `MUFUTU.exe` |
+| Artefacto | Origem | Notas |
+|-----------|--------|--------|
+| `MUFUTU-Setup-*-x64.exe` | electron-builder **NSIS** | Instalador completo |
+| `MUFUTU-*-win-x64.appx` | electron-builder **appx/MSIX** | Empresas / Store sideload |
+| `MUFUTU-*-win-x64.zip` | electron-builder zip | Portátil |
 
-**Última release:** [GitHub Releases](https://github.com/osvaldowafulua/mufutusoftware/releases/latest)
+Código-fonte do shell: repositório privado `mufutu` → `apps/electron/` (`electron-builder.json` targets nsis + appx + zip).
 
-Se o `.exe` instalador ainda não estiver no release, dispare em GitHub → Actions → **Windows Electron Installer (NSIS)** → Run workflow.
+Auto-update: `electron-updater` (`electron-update.js`) com canal GitHub Releases `mufutusoftware`.
+
+API Luachimo: `~/AppData/.../api-config.json` → `{ "apiOrigin": "https://sml.api.mufutu.ao" }` ou `MUFUTU_API_URL`.
+
+## Legado: WPF (.NET 8)
+
+O cliente **WPF** (`apps/desktop-win`) permanece em Releases ZIP para instalações existentes. **Não** recebe write-offline novo — cutover para Electron após 2 releases estáveis.
+
+| Tipo | Ficheiro |
+|------|----------|
+| Portátil legado | `MUFUTU-*-win-x64.zip` (WPF) |
 
 ## Instalação
 
-### Utilizador
-
-1. Execute o instalador como utilizador com permissões de instalação.
+1. Execute o instalador NSIS (recomendado) ou sideload MSIX.
 2. Aceite o [EULA](../EULA.md).
-3. Inicie **MUFUTU** no menu Iniciar.
-4. Introduza URL do tenant (ex.: `https://app.mufutu.ao` ou o subdomínio da sua empresa).
-5. Faça login com as credenciais fornecidas pelo administrador.
+3. Login com credenciais do tenant.
 
-### TI / instalação silenciosa
+### TI / silenciosa (NSIS)
 
 ```powershell
-# Exemplo MSI — ajuste o nome do ficheiro à versão do release
-msiexec /i MUFUTU-1.0.0-x64.msi /qn
+.\MUFUTU-Setup-1.0.x-x64.exe /S
 ```
-
-Variáveis de ambiente opcionais (definidas pelo administrador, não sensíveis):
-
-| Variável | Descrição |
-|----------|-----------|
-| `MUFUTU_API_URL` | URL base da API do tenant |
-| `MUFUTU_SITE_CODE` | Site operacional (MUA, LUC, MIL) |
 
 ## Segurança
 
-- Instalador assinado digitalmente (Authenticode) em releases de produção.
-- Binário ofuscado — **não** inclui símbolos de debug públicos.
-- Tokens em repouso: encriptação AES + Credential Locker.
-- Verifique `checksums.sha256` no release antes de distribuir na rede interna.
+- Assinatura Authenticode quando certificados disponíveis no CI.
+- TLS para a API do tenant.
+- «MUFUTU 500» no desktop = erro da UI web embutida (não código nativo) — ver Error Boundaries no CMMS.
 
-## Actualização
+## Actualizações
 
-O cliente pode verificar automaticamente novos releases neste repositório.
-Política de actualização pode ser gerida pelo GPO / Intune da sua empresa.
-
-## Requisitos
-
-- Windows 10 22H2+ ou Windows 11
-- 4 GB RAM (8 GB recomendado)
-- 500 MB disco
-- Ligação HTTPS à API do tenant (ou modo offline limitado)
-
-## Problemas comuns
-
-| Sintoma | Solução |
-|---------|---------|
-| «Não confia no publicador» | Instale apenas releases oficiais; contacte TI para certificado |
-| Erro de rede | Verifique proxy Windows e firewall para `*.mufutu.ao` |
-| Licença inválida | Administrador deve activar chave em Definições → Licença |
-
-Suporte: **suporte@mufutu.ao**
+Version gate + electron-updater; sem rede o bloqueio **não** activa (offline-first).
