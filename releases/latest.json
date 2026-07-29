@@ -1,20 +1,20 @@
 {
   "product": "MUFUTU",
-  "version": "1.0.31",
-  "tag": "v1.0.31",
+  "version": "1.0.41",
+  "tag": "v1.0.41",
   "channel": "stable",
-  "releasedAt": "2026-07-25T21:50:33Z",
+  "releasedAt": "2026-07-29T10:33:34Z",
   "cmmsCompatibility": "1.1.2",
   "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/latest",
   "_comment": "Fonte de verdade do 'version gate': os clientes (Windows, macOS, Android) leem este ficheiro via raw.githubusercontent.com/.../main/releases/latest.json no arranque. (1) Para OBRIGAR a actualizar instalações antigas: suba 'minimumVersion' da plataforma e faça commit para main — não é preciso publicar um release novo, entra em vigor no próximo arranque com rede. (2) Depois de publicar um release novo de verdade (tag + assets no GitHub Releases), actualize 'latestVersion' e 'downloadUrl' aqui para apontar para os ficheiros reais — nunca aponte para uma versão que ainda não foi publicada.",
   "platforms": {
     "macos": {
-      "latestVersion": "1.0.31",
+      "latestVersion": "1.0.41",
       "minimumVersion": "1.0.29",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-1.0.31-arm64.dmg",
-      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-1.0.31-arm64.dmg",
-      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-1.0.31-arm64.zip",
-      "note": "Gatekeeper: usar «Instalar MUFUTU — clique aqui» no DMG ou xattr -cr. API Luachimo: sml.api.mufutu.ao"
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.41/MUFUTU-1.0.41-arm64.dmg",
+      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.41/MUFUTU-1.0.41-arm64.dmg",
+      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.41/MUFUTU-1.0.41-arm64.zip",
+      "note": "Gatekeeper: usar «Instalar MUFUTU — clique aqui» no DMG ou xattr -cr. API Luachimo: sml.api.mufutu.ao. Inclui segurança offline (licença + anti-tamper)."
     },
     "windows": {
       "latestVersion": "1.0.31",
@@ -23,7 +23,7 @@
       "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-Setup-1.0.31-x64.exe",
       "msi": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-1.0.31-x64.msi",
       "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-1.0.31-win-x64.zip",
-      "note": "Setup NSIS + MSI 1.0.31; Electron + offline IndexedDB da web."
+      "note": "Setup NSIS + MSI 1.0.31; Electron + offline IndexedDB da web. (Win ainda em 1.0.31 — Mac já em 1.0.41)"
     },
     "android": {
       "latestVersion": "1.0.20",

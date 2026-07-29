@@ -60,7 +60,7 @@
 | Plataforma | Instalador oficial | Notas |
 |------------|-------------------|--------|
 | **Windows** | [`MUFUTU-Setup-1.0.31-x64.exe`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-Setup-1.0.31-x64.exe) | Assistente completo — Program Files, atalhos, desinstalar. MSI: [1.0.31](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-1.0.31-x64.msi) · ZIP: [1.0.31](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-1.0.31-win-x64.zip) |
-| **macOS** | [`MUFUTU-1.0.31-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.31/MUFUTU-1.0.31-arm64.dmg) | Arrastar para Aplicações · **«Instalar MUFUTU — clique aqui»** no DMG · Luachimo: `sml.api.mufutu.ao` |
+| **macOS** | [`MUFUTU-1.0.41-arm64.dmg`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.41/MUFUTU-1.0.41-arm64.dmg) | Arrastar para Aplicações · **«Instalar MUFUTU — clique aqui»** no DMG · Luachimo: `sml.api.mufutu.ao` |
 | **Android** | Flutter Campo (`apps/mobile-flutter`) — build local / Releases futuros | **Caminho primário** · offline-first + PIN · API `sml.api.mufutu.ao` |
 | **Android (legado)** | [`MUFUTU Campo MAUI 1.0.20`](https://github.com/osvaldowafulua/mufutusoftware/releases/download/mobile-maui%2Fv1.0.20/com.mufutu.mobile-Signed.apk) | .NET MAUI — manutenção até cutover Flutter |
 | **Web** | [app.mufutu.ao](https://app.mufutu.ao) · [sml.app.mufutu.ao](https://sml.app.mufutu.ao) | CMMS completo — sem instalador |
@@ -103,7 +103,7 @@ binários compilados. Ver [`POLITICA_REPOSITORIOS.md`](docs/POLITICA_REPOSITORIO
 
 ```bash
 # dentro do clone de mufutu (privado)
-bash apps/desktop-mac/scripts/package.sh 1.0.31
+bash apps/desktop-mac/scripts/package.sh 1.0.41
 ```
 
 ---
