@@ -1,0 +1,51 @@
+name: Anexar instaladores Windows a uma release
+
+# Utilitário de recuperação: pega nos instaladores produzidos por um run do
+# desktop-win.yml e anexa-os (com --clobber) à release indicada. Existe porque
+# o job de release do desktop-win.yml pode falhar sem afectar o build, e
+# descarregar 120 MB para re-carregar à mão nem sempre é viável no terreno.
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'ID do run do desktop-win.yml com o artefacto mufutu-desktop-installer'
+        required: true
+      tag:
+        description: 'Tag da release destino (ex: v1.0.44)'
+        required: true
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  attach:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download installer artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mufutu-desktop-installer
+          run-id: ${{ github.event.inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: assets
+
+      - name: Anexar à release (substitui existentes)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          FILES=$(find assets -type f \( -name 'MUFUTU-Setup-*.exe' -o -name 'MUFUTU-*.msi' \))
+          if [ -z "$FILES" ]; then
+            echo "Nenhum instalador encontrado no artefacto" >&2
+            find assets -type f >&2
+            exit 1
+          fi
+          echo "=== SHA-256 (para o checksums.sha256 da release) ==="
+          sha256sum $FILES
+          gh release upload "${{ github.event.inputs.tag }}" $FILES \
+            --repo "${{ github.repository }}" --clobber
+          echo "=== assets finais ==="
+          gh release view "${{ github.event.inputs.tag }}" \
+            --repo "${{ github.repository }}" --json assets \
+            --jq '.assets[] | "\(.name) \(.size)"'
