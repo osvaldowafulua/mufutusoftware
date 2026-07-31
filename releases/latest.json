@@ -1,29 +1,29 @@
 {
   "product": "MUFUTU",
-  "version": "1.0.41",
-  "tag": "v1.0.41",
+  "version": "1.0.44",
+  "tag": "v1.0.44",
   "channel": "stable",
-  "releasedAt": "2026-07-29T11:11:00Z",
+  "releasedAt": "2026-07-31T18:45:00Z",
   "cmmsCompatibility": "1.1.2",
   "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/latest",
   "_comment": "Fonte de verdade do 'version gate': os clientes (Windows, macOS, Android) leem este ficheiro via raw.githubusercontent.com/.../main/releases/latest.json no arranque. (1) Para OBRIGAR a actualizar instalações antigas: suba 'minimumVersion' da plataforma e faça commit para main — não é preciso publicar um release novo, entra em vigor no próximo arranque com rede. (2) Depois de publicar um release novo de verdade (tag + assets no GitHub Releases), actualize 'latestVersion' e 'downloadUrl' aqui para apontar para os ficheiros reais — nunca aponte para uma versão que ainda não foi publicada.",
   "platforms": {
     "macos": {
-      "latestVersion": "1.0.41",
+      "latestVersion": "1.0.44",
       "minimumVersion": "1.0.29",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.41/MUFUTU-1.0.41-arm64.dmg",
-      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.41/MUFUTU-1.0.41-arm64.dmg",
-      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.41/MUFUTU-1.0.41-arm64.zip",
-      "note": "Gatekeeper: usar «Instalar MUFUTU — clique aqui» no DMG ou xattr -cr. API Luachimo: sml.api.mufutu.ao. Inclui segurança offline (licença + anti-tamper)."
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.44/MUFUTU-1.0.44-arm64.dmg",
+      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.44/MUFUTU-1.0.44-arm64.dmg",
+      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.44/MUFUTU-1.0.44-arm64.zip",
+      "note": "Gatekeeper: usar «Instalar MUFUTU — clique aqui» no DMG ou xattr -cr. API Luachimo: sml.api.mufutu.ao. Licença offline reconhecida (30 dias) — sem bloqueio local."
     },
     "windows": {
-      "latestVersion": "1.0.41",
+      "latestVersion": "1.0.44",
       "minimumVersion": "1.0.29",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.41/MUFUTU-Setup-1.0.41-x64.exe",
-      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.41/MUFUTU-Setup-1.0.41-x64.exe",
-      "msi": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.41/MUFUTU-1.0.41-x64.msi",
-      "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.41/MUFUTU-1.0.41-win-x64.zip",
-      "note": "Setup (Burn) + MSI + ZIP 1.0.41 — cliente WPF. Assinado self-signed (SmartScreen pode avisar)."
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.44/MUFUTU-Setup-1.0.44-x64.exe",
+      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.44/MUFUTU-Setup-1.0.44-x64.exe",
+      "msi": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.44/MUFUTU-1.0.44-x64.msi",
+      "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.44/MUFUTU-1.0.44-win-x64.zip",
+      "note": "Setup (Burn) + MSI + ZIP 1.0.44 — corrige o crash de arranque da 1.0.41 (VersionGateService) e a reinstalação da mesma versão (AllowSameVersionUpgrades). Assinado self-signed (SmartScreen pode avisar)."
     },
     "android": {
       "latestVersion": "1.0.20",
