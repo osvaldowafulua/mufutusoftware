@@ -1,12 +1,19 @@
-name: Windows Electron Installer (NSIS)
+name: Windows Electron (NSIS + ZIP)
 
+# Cliente Windows = o MESMO app Electron do macOS (UI web + offline-first).
+# Três jobs: build → smoke (instala e arranca num Windows real) → publish.
+# A publicação só acontece por tag desktop-electron/v* e só se o smoke passar.
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Versão semver (ex: 1.0.6)'
+        description: 'Versão semver (vazio = a do apps/electron/package.json)'
         required: false
-        default: '1.0.6'
+        default: ''
+      mufutu_ref:
+        description: 'Ref do repo mufutu a compilar (branch/tag/SHA)'
+        required: false
+        default: 'main'
   push:
     tags:
       - 'desktop-electron/v*'
@@ -18,17 +25,32 @@ env:
   NODE_VERSION: '22'
 
 jobs:
-  build-installer:
-    name: MUFUTU-Setup.exe (NSIS)
+  build:
+    name: Build (NSIS + ZIP)
     runs-on: windows-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Checkout CMMS (mufutu)
+      - name: Resolve mufutu ref
+        id: ref
+        shell: bash
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [[ "$TAG" =~ ^desktop-electron/v(.+)$ ]]; then
+            # Release por tag: compila a tag v<versão> do mufutu — reprodutível.
+            echo "ref=v${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=${{ github.event.inputs.mufutu_ref || 'main' }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout CMMS (mufutu — privado, ref fixo)
         uses: actions/checkout@v4
         with:
           repository: osvaldowafulua/mufutu
           path: mufutu
+          ref: ${{ steps.ref.outputs.ref }}
           token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
 
       - uses: actions/setup-node@v4
@@ -42,34 +64,118 @@ jobs:
           TAG="${{ github.ref_name }}"
           if [[ "$TAG" =~ ^desktop-electron/v(.+)$ ]]; then
             echo "version=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          elif [[ -n "${{ github.event.inputs.version }}" ]]; then
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
           else
-            echo "version=${{ github.event.inputs.version || '1.0.6' }}" >> "$GITHUB_OUTPUT"
+            echo "version=$(node -p "require('./mufutu/apps/electron/package.json').version")" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Build instalador NSIS
+      - name: Build (package-win.sh)
         shell: bash
+        env:
+          WIN_CODESIGN_PFX: ${{ secrets.WIN_CODESIGN_PFX }}
+          WIN_CODESIGN_PASSWORD: ${{ secrets.WIN_CODESIGN_PASSWORD }}
         run: |
-          chmod +x mufutu/apps/desktop-mac/scripts/package-win.sh
+          chmod +x mufutu/apps/desktop-mac/scripts/package-win.sh mufutu/apps/desktop-mac/scripts/verify-artifact.sh
           mufutu/apps/desktop-mac/scripts/package-win.sh "${{ steps.ver.outputs.version }}"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: mufutu-win-installer
-          path: |
-            mufutu/apps/desktop-win/artifacts/installer/**
-          retention-days: 14
+          name: mufutu-electron-win
+          path: mufutu/apps/electron/artifacts/win/**
+          retention-days: 30
 
-      - name: Publicar no GitHub Release
-        shell: bash
+  smoke:
+    name: Smoke (instala e arranca)
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: mufutu-electron-win
+          path: win
+
+      - name: Instalar silencioso e arrancar
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $setup = Get-ChildItem -Path win -Recurse -Filter 'MUFUTU-Setup-*.exe' | Select-Object -First 1
+          if (-not $setup) { throw 'Setup NSIS não encontrado no artefacto' }
+          Write-Host "Instalar: $($setup.FullName)"
+          Start-Process -Wait -FilePath $setup.FullName -ArgumentList '/S'
+
+          $exe = 'C:\Program Files\MUFUTU\MUFUTU.exe'
+          if (-not (Test-Path $exe)) { throw "MUFUTU.exe não existe após instalação: $exe" }
+
+          $env:MUFUTU_TELEMETRY = '0'
+          Write-Host 'Arrancar MUFUTU...'
+          $proc = Start-Process -FilePath $exe -PassThru
+
+          # Arranque a frio do Next standalone em runner é lento — 240 s.
+          $ok = $false
+          $deadline = (Get-Date).AddSeconds(240)
+          while ((Get-Date) -lt $deadline) {
+            Start-Sleep -Seconds 5
+            if ($proc.HasExited) { throw "MUFUTU fechou sozinho (exit $($proc.ExitCode)) — padrão «carrega e fecha»" }
+            try {
+              $resp = Invoke-WebRequest -Uri 'http://127.0.0.1:3847/login' -UseBasicParsing -TimeoutSec 5
+              if ($resp.StatusCode -eq 200) { $ok = $true; break }
+            } catch { }
+          }
+          if (-not $ok) { throw 'UI não respondeu HTTP 200 em http://127.0.0.1:3847/login dentro de 240 s' }
+
+          # Vivo +10 s depois do 200 — apanha crashes tardios de arranque.
+          Start-Sleep -Seconds 10
+          if ($proc.HasExited) { throw "MUFUTU fechou depois de servir a UI (exit $($proc.ExitCode))" }
+          Write-Host '✅ Smoke OK: instala, arranca, serve a UI e mantém-se vivo.'
+          Stop-Process -Id $proc.Id -Force
+
+      - name: Recolher logs em falha
+        if: failure()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path smoke-logs | Out-Null
+          Copy-Item "$env:APPDATA\MUFUTU\*" smoke-logs -Recurse -ErrorAction SilentlyContinue
+          Copy-Item "$env:LOCALAPPDATA\MUFUTU\*" smoke-logs -Recurse -ErrorAction SilentlyContinue
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: smoke-logs
+          path: smoke-logs/**
+          if-no-files-found: ignore
+
+  publish:
+    name: Publicar em mufutusoftware
+    needs: smoke
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/desktop-electron/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mufutu-electron-win
+          path: release-assets
+
+      - name: Publicar release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VER="${{ steps.ver.outputs.version }}"
-          TAG="v${VER}"
-          DIR="mufutu/apps/desktop-win/artifacts/installer"
-          NOTES="Instalador Windows MUFUTU-Setup-${VER}-x64.exe — assistente de instalacao (Program Files, atalhos, desinstalar em Definicoes)."
-          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" &>/dev/null; then
-            gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "$DIR"/*
-          else
-            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "MUFUTU ${VER}" --notes "$NOTES" "$DIR"/*
+          set -euo pipefail
+          TAG="${{ github.ref_name }}"
+          VERSION="${TAG#desktop-electron/v}"
+          # Os artefactos ficam em release-assets/dist (upload da pasta win/**).
+          DIR="release-assets"
+          [[ -d "release-assets/dist" ]] && DIR="release-assets/dist"
+
+          # Guardrail anti-colisão: nunca substituir às cegas um asset já
+          # publicado — foi assim que uma 1.0.41 renomeada se fez passar por
+          # 1.0.44. Re-publicação consciente: apagar o asset primeiro.
+          if gh release view "v${VERSION}" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' 2>/dev/null | grep -qx "MUFUTU-Setup-${VERSION}-x64.exe"; then
+            echo "::error::MUFUTU-Setup-${VERSION}-x64.exe já existe na release v${VERSION}. Apague o asset primeiro se quer re-publicar."
+            exit 1
           fi
+
+          chmod +x scripts/publish-release.sh
+          bash scripts/publish-release.sh "$VERSION" "$DIR"

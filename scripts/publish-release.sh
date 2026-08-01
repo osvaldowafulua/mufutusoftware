@@ -1,42 +1,102 @@
 #!/usr/bin/env bash
-# Publica release no repositório mufutusoftware a partir de builds locais.
-# Uso: ./scripts/publish-release.sh 1.0.5 /caminho/para/dist-electron
+# Publica release no repositório mufutusoftware a partir de builds locais ou CI.
+# Aceita conjuntos macOS (DMG+ZIP+latest-mac.yml), Windows Electron
+# (Setup NSIS + latest.yml [+ zip, blockmap, .cer]) ou ambos.
+# Uso: ./scripts/publish-release.sh 1.0.45 /caminho/para/dist
 
 set -euo pipefail
 
-VERSION="${1:?Versão semver obrigatória (ex: 1.0.5)}"
+VERSION="${1:?Versão semver obrigatória (ex: 1.0.45)}"
 DIST_DIR="${2:-$HOME/Documents/GitHub/mufutu/apps/web/dist-electron}"
 REPO="osvaldowafulua/mufutusoftware"
 TAG="v${VERSION}"
 STAGING="$(cd "$(dirname "$0")/.." && pwd)/staging"
 
-DMG="${DIST_DIR}/MUFUTU-${VERSION}-arm64.dmg"
-ZIP="${DIST_DIR}/MUFUTU-${VERSION}-arm64.zip"
-MAC_YML="${DIST_DIR}/latest-mac.yml"
+sha() {
+  if command -v shasum &>/dev/null; then shasum -a 256 "$@"; else sha256sum "$@"; fi
+}
+fsize() {
+  stat -f%z "$1" 2>/dev/null || stat -c%s "$1"
+}
 
-for f in "$DMG" "$ZIP" "$MAC_YML"; do
-  if [[ ! -f "$f" ]]; then
-    echo "Falta ficheiro: $f" >&2
-    exit 1
-  fi
-done
+DMG="${DIST_DIR}/MUFUTU-${VERSION}-arm64.dmg"
+MAC_ZIP="${DIST_DIR}/MUFUTU-${VERSION}-arm64.zip"
+MAC_YML="${DIST_DIR}/latest-mac.yml"
+WIN_SETUP="${DIST_DIR}/MUFUTU-Setup-${VERSION}-x64.exe"
+WIN_YML="${DIST_DIR}/latest.yml"
+
+HAS_MAC=0
+[[ -f "$DMG" && -f "$MAC_ZIP" && -f "$MAC_YML" ]] && HAS_MAC=1
+HAS_WIN=0
+[[ -f "$WIN_SETUP" && -f "$WIN_YML" ]] && HAS_WIN=1
+
+if [[ "$HAS_MAC" -eq 0 && "$HAS_WIN" -eq 0 ]]; then
+  echo "❌ Nenhum conjunto completo em $DIST_DIR:" >&2
+  echo "   macOS precisa de: $(basename "$DMG"), $(basename "$MAC_ZIP"), latest-mac.yml" >&2
+  echo "   Windows precisa de: $(basename "$WIN_SETUP"), latest.yml" >&2
+  exit 1
+fi
 
 mkdir -p "$STAGING"
-cp "$DMG" "$ZIP" "$MAC_YML" "$STAGING/"
+UPLOAD_FILES=()
 
-WIN_ZIP=$(ls "${DIST_DIR}"/MUFUTU-*-win-x64.zip 2>/dev/null | tail -1 || true)
-if [[ -n "$WIN_ZIP" && -f "$WIN_ZIP" ]]; then
-  cp "$WIN_ZIP" "$STAGING/"
+if [[ "$HAS_MAC" -eq 1 ]]; then
+  cp "$DMG" "$MAC_ZIP" "$MAC_YML" "$STAGING/"
+  UPLOAD_FILES+=("MUFUTU-${VERSION}-arm64.dmg" "MUFUTU-${VERSION}-arm64.zip" latest-mac.yml)
+fi
+
+if [[ "$HAS_WIN" -eq 1 ]]; then
+  cp "$WIN_SETUP" "$WIN_YML" "$STAGING/"
+  UPLOAD_FILES+=("MUFUTU-Setup-${VERSION}-x64.exe" latest.yml)
+  for extra in \
+    "${DIST_DIR}/MUFUTU-Setup-${VERSION}-x64.exe.blockmap" \
+    "${DIST_DIR}/MUFUTU-${VERSION}-win-x64.zip" \
+    "${DIST_DIR}/MUFUTU-${VERSION}-win-x64.appx" \
+    "${DIST_DIR}/MUFUTU-CodeSign.cer"; do
+    if [[ -f "$extra" ]]; then
+      cp "$extra" "$STAGING/"
+      UPLOAD_FILES+=("$(basename "$extra")")
+    fi
+  done
+fi
+
+# signed=true/false vindo do build (signing.env) — parsing restrito.
+SIGNED="false"
+if [[ -f "${DIST_DIR}/signing.env" ]]; then
+  if grep -qx 'signed=true' "${DIST_DIR}/signing.env"; then SIGNED="true"; fi
 fi
 
 cd "$STAGING"
-shasum -a 256 MUFUTU-${VERSION}-arm64.dmg MUFUTU-${VERSION}-arm64.zip > checksums.sha256
-[[ -f "$(basename "$WIN_ZIP")" ]] && shasum -a 256 "$(basename "$WIN_ZIP")" >> checksums.sha256
+sha "${UPLOAD_FILES[@]}" > checksums.sha256
 
-DMG_HASH=$(shasum -a 256 "MUFUTU-${VERSION}-arm64.dmg" | awk '{print $1}')
-ZIP_HASH=$(shasum -a 256 "MUFUTU-${VERSION}-arm64.zip" | awk '{print $1}')
-DMG_SIZE=$(stat -f%z "MUFUTU-${VERSION}-arm64.dmg" 2>/dev/null || stat -c%s "MUFUTU-${VERSION}-arm64.dmg")
-ZIP_SIZE=$(stat -f%z "MUFUTU-${VERSION}-arm64.zip" 2>/dev/null || stat -c%s "MUFUTU-${VERSION}-arm64.zip")
+platforms_json=""
+if [[ "$HAS_MAC" -eq 1 ]]; then
+  DMG_HASH=$(sha "MUFUTU-${VERSION}-arm64.dmg" | awk '{print $1}')
+  ZIP_HASH=$(sha "MUFUTU-${VERSION}-arm64.zip" | awk '{print $1}')
+  platforms_json+="$(cat <<EOF
+    {
+      "id": "macos",
+      "artifacts": [
+        { "filename": "MUFUTU-${VERSION}-arm64.dmg", "sha256": "${DMG_HASH}", "sizeBytes": $(fsize "MUFUTU-${VERSION}-arm64.dmg"), "signed": ${SIGNED} },
+        { "filename": "MUFUTU-${VERSION}-arm64.zip", "sha256": "${ZIP_HASH}", "sizeBytes": $(fsize "MUFUTU-${VERSION}-arm64.zip"), "signed": ${SIGNED} }
+      ]
+    }
+EOF
+)"
+fi
+if [[ "$HAS_WIN" -eq 1 ]]; then
+  [[ -n "$platforms_json" ]] && platforms_json+=","
+  SETUP_HASH=$(sha "MUFUTU-Setup-${VERSION}-x64.exe" | awk '{print $1}')
+  platforms_json+="$(cat <<EOF
+    {
+      "id": "windows",
+      "artifacts": [
+        { "filename": "MUFUTU-Setup-${VERSION}-x64.exe", "sha256": "${SETUP_HASH}", "sizeBytes": $(fsize "MUFUTU-Setup-${VERSION}-x64.exe"), "signed": ${SIGNED} }
+      ]
+    }
+EOF
+)"
+fi
 
 cat > manifest.json <<EOF
 {
@@ -45,39 +105,13 @@ cat > manifest.json <<EOF
   "releasedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "channel": "stable",
   "platforms": [
-    {
-      "id": "macos",
-      "artifacts": [
-        {
-          "filename": "MUFUTU-${VERSION}-arm64.dmg",
-          "sha256": "${DMG_HASH}",
-          "sizeBytes": ${DMG_SIZE},
-          "signed": true
-        },
-        {
-          "filename": "MUFUTU-${VERSION}-arm64.zip",
-          "sha256": "${ZIP_HASH}",
-          "sizeBytes": ${ZIP_SIZE},
-          "signed": true
-        }
-      ]
-    }
+${platforms_json}
   ],
   "releaseNotesUrl": "https://github.com/${REPO}/releases/tag/${TAG}",
   "eula": "https://github.com/${REPO}/blob/main/EULA.md"
 }
 EOF
-
-UPLOAD_FILES=(
-  "MUFUTU-${VERSION}-arm64.dmg"
-  "MUFUTU-${VERSION}-arm64.zip"
-  latest-mac.yml
-  manifest.json
-  checksums.sha256
-)
-if [[ -n "$WIN_ZIP" && -f "$(basename "$WIN_ZIP")" ]]; then
-  UPLOAD_FILES+=("$(basename "$WIN_ZIP")")
-fi
+UPLOAD_FILES+=(manifest.json checksums.sha256)
 
 if gh release view "$TAG" --repo "$REPO" &>/dev/null; then
   echo "→ Actualizar release ${TAG}..."
@@ -90,11 +124,10 @@ else
     --notes "## MUFUTU ${VERSION}
 
 ### macOS
-- DMG e ZIP (Apple Silicon)
-- \`latest-mac.yml\` para actualização automática
+- DMG e ZIP (Apple Silicon) + \`latest-mac.yml\` para actualização automática
 
-### Windows (se incluído)
-- ZIP portátil x64
+### Windows
+- \`MUFUTU-Setup-${VERSION}-x64.exe\` (NSIS — mesmo app Electron do macOS) + \`latest.yml\`
 
 Verifique \`checksums.sha256\` antes de instalar." \
     "${UPLOAD_FILES[@]}"
