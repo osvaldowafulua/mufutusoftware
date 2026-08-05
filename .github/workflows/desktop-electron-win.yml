@@ -101,15 +101,22 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $setup = Get-ChildItem -Path win -Recurse -Filter 'MUFUTU-Setup-*.exe' | Select-Object -First 1
           if (-not $setup) { throw 'Setup NSIS não encontrado no artefacto' }
-          Write-Host "Instalar: $($setup.FullName)"
-          Start-Process -Wait -FilePath $setup.FullName -ArgumentList '/S'
+          Write-Host "Setup OK: $($setup.FullName) ($([math]::Round($setup.Length/1MB,1)) MB)"
 
-          $exe = 'C:\Program Files\MUFUTU\MUFUTU.exe'
-          if (-not (Test-Path $exe)) { throw "MUFUTU.exe não existe após instalação: $exe" }
+          # Smoke via ZIP portátil — o NSIS perMachine exige UAC e em runners
+          # GitHub o /S muitas vezes «conclui» sem instalar em Program Files.
+          $zip = Get-ChildItem -Path win -Recurse -Filter 'MUFUTU-*-win-x64.zip' | Select-Object -First 1
+          if (-not $zip) { throw 'ZIP portátil Windows não encontrado (necessário para smoke sem UAC)' }
+          $extract = Join-Path $env:RUNNER_TEMP 'mufutu-smoke'
+          if (Test-Path $extract) { Remove-Item $extract -Recurse -Force }
+          Expand-Archive -Path $zip.FullName -DestinationPath $extract -Force
+          $exe = Get-ChildItem -Path $extract -Recurse -Filter 'MUFUTU.exe' | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $exe) { throw "MUFUTU.exe não encontrado após extrair $($zip.Name)" }
+          Write-Host "Exe (ZIP): $exe"
 
           $env:MUFUTU_TELEMETRY = '0'
           Write-Host 'Arrancar MUFUTU...'
-          $proc = Start-Process -FilePath $exe -PassThru
+          $proc = Start-Process -FilePath $exe -WorkingDirectory (Split-Path $exe -Parent) -PassThru
 
           # Arranque a frio do Next standalone em runner é lento — 240 s.
           $ok = $false
@@ -127,8 +134,9 @@ jobs:
           # Vivo +10 s depois do 200 — apanha crashes tardios de arranque.
           Start-Sleep -Seconds 10
           if ($proc.HasExited) { throw "MUFUTU fechou depois de servir a UI (exit $($proc.ExitCode))" }
-          Write-Host '✅ Smoke OK: instala, arranca, serve a UI e mantém-se vivo.'
-          Stop-Process -Id $proc.Id -Force
+          Write-Host '✅ Smoke OK: ZIP arranca, serve a UI e mantém-se vivo (Setup NSIS presente no artefacto).'
+          Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+          Get-Process -Name 'MUFUTU*' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
 
       - name: Recolher logs em falha
         if: failure()
