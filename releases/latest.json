@@ -3,7 +3,7 @@
   "version": "1.0.47",
   "tag": "v1.0.47",
   "channel": "stable",
-  "releasedAt": "2026-08-06T08:56:08Z",
+  "releasedAt": "2026-08-06T09:09:56Z",
   "cmmsCompatibility": "1.1.2",
   "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/latest",
   "_comment": "Fonte de verdade do 'version gate': os clientes (Windows, macOS, Android) leem este ficheiro via raw.githubusercontent.com/.../main/releases/latest.json no arranque. (1) Para OBRIGAR a actualizar instalações antigas: suba 'minimumVersion' da plataforma e faça commit para main — não é preciso publicar um release novo, entra em vigor no próximo arranque com rede. (2) Depois de publicar um release novo de verdade (tag + assets no GitHub Releases), actualize 'latestVersion' e 'downloadUrl' aqui para apontar para os ficheiros reais — nunca aponte para uma versão que ainda não foi publicada.",
@@ -17,12 +17,12 @@
       "note": "Gatekeeper: usar «Instalar MUFUTU — clique aqui» no DMG ou xattr -cr. Electron 1.0.47 — login offline com fallback 502 do proxy (IndexedDB/Dexie)."
     },
     "windows": {
-      "latestVersion": "1.0.46",
+      "latestVersion": "1.0.47",
       "minimumVersion": "1.0.29",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.46/MUFUTU-Setup-1.0.46-x64.exe",
-      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.46/MUFUTU-Setup-1.0.46-x64.exe",
-      "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.46/MUFUTU-1.0.46-win-x64.zip",
-      "note": "Setup NSIS Electron — 1.0.47 em build no Actions; até lá o instalador estável é 1.0.46. Offline login fix chega com 1.0.47."
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.47/MUFUTU-Setup-1.0.47-x64.exe",
+      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.47/MUFUTU-Setup-1.0.47-x64.exe",
+      "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.47/MUFUTU-1.0.47-win-x64.zip",
+      "note": "Setup NSIS Electron 1.0.47 (mesmo app do macOS). Login offline com fallback 502. Assinado self-signed — SmartScreen pode avisar; Mais informações → Executar na mesma. ZIP portátil disponível."
     },
     "android": {
       "latestVersion": "1.0.20",
