@@ -1,18 +1,20 @@
 name: Anexar instaladores Windows a uma release
 
-# Utilitário de recuperação: pega nos instaladores produzidos por um run do
-# desktop-win.yml e anexa-os (com --clobber) à release indicada. Existe porque
-# o job de release do desktop-win.yml pode falhar sem afectar o build, e
-# descarregar 120 MB para re-carregar à mão nem sempre é viável no terreno.
+# Utilitário de recuperação: pega nos instaladores de um run (WPF ou Electron)
+# e anexa-os (com --clobber) à release indicada.
 on:
   workflow_dispatch:
     inputs:
       run_id:
-        description: 'ID do run do desktop-win.yml com o artefacto mufutu-desktop-installer'
+        description: 'ID do run Actions com o artefacto'
         required: true
       tag:
-        description: 'Tag da release destino (ex: v1.0.44)'
+        description: 'Tag da release destino (ex: v1.0.47)'
         required: true
+      artifact_name:
+        description: 'Nome do artefacto (mufutu-electron-win ou mufutu-desktop-installer)'
+        required: false
+        default: 'mufutu-electron-win'
 
 permissions:
   contents: write
@@ -25,7 +27,7 @@ jobs:
       - name: Download installer artifact
         uses: actions/download-artifact@v4
         with:
-          name: mufutu-desktop-installer
+          name: ${{ github.event.inputs.artifact_name }}
           run-id: ${{ github.event.inputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: assets
@@ -35,15 +37,24 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          FILES=$(find assets -type f \( -name 'MUFUTU-Setup-*.exe' -o -name 'MUFUTU-*.msi' \))
-          if [ -z "$FILES" ]; then
+          mapfile -t FILES < <(find assets -type f \( \
+            -name 'MUFUTU-Setup-*.exe' -o \
+            -name 'MUFUTU-*-win-*.zip' -o \
+            -name 'MUFUTU-Setup-*.exe.blockmap' -o \
+            -name 'latest.yml' -o \
+            -name 'MUFUTU-CodeSign.cer' -o \
+            -name 'MUFUTU-*.msi' \
+          \) | sort)
+          if [ "${#FILES[@]}" -eq 0 ]; then
             echo "Nenhum instalador encontrado no artefacto" >&2
             find assets -type f >&2
             exit 1
           fi
-          echo "=== SHA-256 (para o checksums.sha256 da release) ==="
-          sha256sum $FILES
-          gh release upload "${{ github.event.inputs.tag }}" $FILES \
+          echo "=== Ficheiros ==="
+          printf '%s\n' "${FILES[@]}"
+          echo "=== SHA-256 ==="
+          sha256sum "${FILES[@]}"
+          gh release upload "${{ github.event.inputs.tag }}" "${FILES[@]}" \
             --repo "${{ github.repository }}" --clobber
           echo "=== assets finais ==="
           gh release view "${{ github.event.inputs.tag }}" \
