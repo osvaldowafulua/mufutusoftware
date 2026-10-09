@@ -1,11 +1,38 @@
 # Instalar MUFUTU no Windows (instalador oficial)
 
-## Use o instalador — não o ZIP portátil
+> **Use a 1.0.50 ou superior.** Nas versões anteriores o instalador do Windows
+> não funcionava: na 1.0.49 o `.exe` e o `.msi` eram outra aplicação (o cliente
+> WPF legado, publicado por engano com estes nomes) e nas 1.0.47/1.0.48 o `.exe`
+> instalava o app certo mas ele fechava-se logo no arranque. Nessa altura só o
+> ZIP portátil servia. Na 1.0.50 o `.exe` e o `.msi` estão corrigidos e
+> verificados em CI.
 
-| Ficheiro | Tipo | Usar? |
-|----------|------|-------|
-| **`MUFUTU-Setup-1.0.6-x64.exe`** | Instalador NSIS | **Sim** — recomendado |
-| `MUFUTU-*-win-x64.zip` | Portátil (extrair e correr) | **Não** — só para IT/testes |
+## Qual ficheiro escolher
+
+| Ficheiro | Tamanho | Tipo | Usar? |
+|----------|---------|------|-------|
+| **`MUFUTU-Web-Setup-1.0.50.exe`** | menos de 1 MB | Instalador web (NSIS) | **Sim** — recomendado. Descarrega o resto durante a instalação |
+| `MUFUTU-Setup-1.0.50-x64.exe` | ≈ 90 MB | Instalador completo (NSIS) | Sim — quando não há Internet no PC |
+| `MUFUTU-1.0.50-x64.msi` | ≈ 90 MB | MSI | Sim — parque gerido (GPO/Intune) |
+| `MUFUTU-1.0.50-win-x64.zip` | ≈ 125 MB | Portátil (extrair e correr) | Só para IT/testes |
+
+Os quatro instalam exactamente o mesmo app.
+
+### Como funciona o instalador web
+
+O `MUFUTU-Web-Setup-*.exe` é pequeno de propósito. Ao executá-lo:
+
+1. Mostra o contrato de licença e a pasta de instalação (em português se o Windows estiver em português, senão em inglês).
+2. Descarrega o pacote da aplicação (≈ 90 MB) do GitHub oficial, com barra de progresso
+   e retoma automática se a ligação cair.
+3. **Verifica o SHA-512** do pacote contra o valor gravado no próprio instalador — se o
+   ficheiro estiver corrompido ou tiver sido alterado, a instalação recusa-o.
+4. Instala e cria os atalhos.
+
+Se a ligação falhar, aparece **Repetir / Cancelar**. Para instalar **sem Internet no PC**:
+descarregue, noutra máquina, o `MUFUTU-Web-Setup-*.exe` **e** o `mufutu-*-x64.nsis.7z`
+da mesma release, copie os dois para a mesma pasta e execute o `.exe` — o instalador
+encontra o pacote ao lado e usa-o. (Ou use simplesmente o instalador completo.)
 
 O instalador `.exe`:
 - Instala em `C:\Program Files\MUFUTU\` (ou pasta que escolher)
@@ -19,6 +46,21 @@ O instalador `.exe`:
 2. Duplo clique → assistente → escolher pasta (ex. `C:\Program Files\MUFUTU`)
 3. Atalhos criados automaticamente
 4. Desinstalar em **Definições → Aplicações → MUFUTU**
+
+O SmartScreen pode avisar («Editor desconhecido») enquanto a assinatura for
+self-signed: **Mais informações → Executar na mesma**.
+
+## Parque gerido (MSI)
+
+```powershell
+msiexec /i MUFUTU-1.0.50-x64.msi /qn /norestart
+```
+
+Para diagnosticar uma instalação que falha, acrescente um log:
+
+```powershell
+msiexec /i MUFUTU-1.0.50-x64.msi /qn /norestart /l*v "%TEMP%\mufutu-msi.log"
+```
 
 ## Solução temporária (só se ainda não houver Setup.exe)
 
@@ -43,10 +85,16 @@ Ou **Menu Iniciar → MUFUTU → Desinstalar**
 
 O instalador é gerado no **GitHub Actions** (runner Windows). Peça ao administrador para:
 1. Configurar secret `MUFUTU_CMMS_CHECKOUT_TOKEN` no repo
-2. Correr workflow **Windows Electron Installer (NSIS)** versão `1.0.6`
+2. Correr o workflow **Windows Electron (NSIS + MSI + ZIP)**
 
 Ou num **PC Windows**, dentro do clone do repositório privado `mufutu`:
 ```powershell
 cd mufutu
-bash apps/desktop-mac/scripts/package-win.sh 1.0.6
+bash apps/desktop-mac/scripts/package-win.sh 1.0.50
 ```
+
+## O MUFUTU abre e fecha logo?
+
+Era o sintoma das 1.0.47/1.0.48 instaladas em Program Files e está corrigido na
+1.0.50 — actualize. Se acontecer na 1.0.50, o log do arranque está em
+`%APPDATA%\MUFUTU\desktop.log` e ajuda a diagnosticar.

@@ -18,9 +18,9 @@ mkdir -p "$STAGING"
 collect_assets() {
   if [[ -d "$ASSET_DIR" ]]; then
     find "$ASSET_DIR" -type f \( \
-      -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.msi' \
+      -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.msi' -o -name '*.7z' \
       -o -name 'latest-mac.yml' -o -name 'latest.yml' \
-    \) -exec cp {} "$STAGING/" \;
+    \) -not -path '*/ci-stub/*' -exec cp {} "$STAGING/" \;
   else
     cp "$ASSET_DIR" "$STAGING/" 2>/dev/null || true
     for f in "$@"; do
@@ -34,7 +34,7 @@ collect_assets
 cd "$STAGING"
 shopt -s nullglob
 mapfile -t FILES < <(find . -maxdepth 1 -type f \( \
-  -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.msi' \
+  -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.msi' -o -name '*.7z' \
   -o -name 'latest-mac.yml' -o -name 'latest.yml' \
 \) -printf '%f\n' | sort -u)
 if [[ ${#FILES[@]} -eq 0 ]]; then
@@ -44,14 +44,35 @@ fi
 
 shasum -a 256 "${FILES[@]}" > checksums.sha256 2>/dev/null || true
 
+# Guardrail: o MUFUTU-Setup-*.exe desta release é o instalador NSIS do app
+# Electron. Até à 1.0.49 o job «Windows» deste pipeline compilava o cliente WPF
+# legado, que saía com o mesmo nome e era publicado no lugar do app a sério —
+# era isso que os clientes instalavam no Windows.
+for setup in MUFUTU-Setup-*.exe MUFUTU-Web-Setup-*.exe; do
+  [[ -f "$setup" ]] || continue
+  if grep -qa '\.wixburn' "$setup"; then
+    echo "❌ ${setup} é um bootstrapper WiX Burn (cliente WPF legado), não o app Electron." >&2
+    exit 1
+  fi
+  if ! grep -qa 'Nullsoft' "$setup"; then
+    echo "❌ ${setup} não tem assinatura de NSIS — não é o instalador do app Electron." >&2
+    exit 1
+  fi
+done
+
 PLATFORMS_JSON="[]"
 SIGNED=false
 # Parsing explícito, nunca "source": o signing.env vem de um artefacto de CI —
 # executá-lo como shell daria execução de código arbitrário com o token de
 # release a quem conseguisse influenciar o artefacto.
-if [[ -f "$ASSET_DIR/signing.env" ]] && grep -qx 'signed=true' "$ASSET_DIR/signing.env"; then
-  SIGNED=true
-fi
+# O artefacto Windows é enviado como artifacts/win/** → o signing.env pode
+# chegar na raiz ou em dist/.
+for env_file in "$ASSET_DIR/signing.env" "$ASSET_DIR/dist/signing.env"; do
+  if [[ -f "$env_file" ]] && grep -qx 'signed=true' "$env_file"; then
+    SIGNED=true
+    break
+  fi
+done
 if ls MUFUTU-*-arm64.dmg &>/dev/null; then
   DMG=$(ls MUFUTU-*-arm64.dmg | head -1)
   DMG_HASH=$(shasum -a 256 "$DMG" | awk '{print $1}')
