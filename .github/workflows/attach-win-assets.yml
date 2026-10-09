@@ -52,6 +52,27 @@ jobs:
           fi
           echo "=== Ficheiros ==="
           printf '%s\n' "${FILES[@]}"
+
+          # Guardrail: o MUFUTU-Setup-*.exe da release é o instalador NSIS do
+          # app Electron. Este utilitário também aceita o artefacto do cliente
+          # WPF legado, cujo Setup é um bootstrapper WiX Burn — anexá-lo com
+          # --clobber substituía o app a sério (foi o que aconteceu até à
+          # 1.0.49). Recusar antes de tocar na release.
+          for f in "${FILES[@]}"; do
+            case "$(basename "$f")" in
+              MUFUTU-Setup-*.exe)
+                if grep -qa '\.wixburn' "$f"; then
+                  echo "::error::$(basename "$f") é um bootstrapper WiX Burn (cliente WPF legado), não o instalador NSIS do app Electron." >&2
+                  exit 1
+                fi
+                if ! grep -qa 'Nullsoft' "$f"; then
+                  echo "::error::$(basename "$f") não tem assinatura de NSIS — não é o instalador do app Electron." >&2
+                  exit 1
+                fi
+                ;;
+            esac
+          done
+
           echo "=== SHA-256 ==="
           sha256sum "${FILES[@]}"
           gh release upload "${{ github.event.inputs.tag }}" "${FILES[@]}" \

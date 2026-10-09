@@ -1,0 +1,246 @@
+name: Windows Electron — build + smoke (reutilizável)
+
+# Build e verificação do cliente Windows (app Electron, o MESMO do macOS).
+# Workflow reutilizável: tanto desktop-electron-win.yml como desktop-release.yml
+# passam por aqui. Ter dois pipelines Windows separados foi o que deixou
+# escapar, durante várias releases, o cliente WPF legado publicado com os nomes
+# do Electron — qualquer pipeline que publique Windows chama este.
+#
+# Artefacto produzido: mufutu-electron-win (NSIS + MSI + ZIP + latest.yml).
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Versão semver (vazio = a do apps/electron/package.json)'
+        required: false
+        type: string
+        default: ''
+      mufutu_ref:
+        description: 'Ref do repo mufutu a compilar (branch/tag/SHA)'
+        required: false
+        type: string
+        default: 'main'
+    outputs:
+      version:
+        description: 'Versão efectivamente compilada'
+        value: ${{ jobs.build.outputs.version }}
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  build:
+    name: Build (NSIS + MSI + ZIP)
+    runs-on: windows-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout CMMS (mufutu — privado, ref fixo)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          ref: ${{ inputs.mufutu_ref }}
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Resolve version
+        id: ver
+        shell: bash
+        run: |
+          if [[ -n "${{ inputs.version }}" ]]; then
+            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=$(node -p "require('./mufutu/apps/electron/package.json').version")" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build (package-win.sh)
+        shell: bash
+        env:
+          WIN_CODESIGN_PFX: ${{ secrets.WIN_CODESIGN_PFX }}
+          WIN_CODESIGN_PASSWORD: ${{ secrets.WIN_CODESIGN_PASSWORD }}
+        run: |
+          chmod +x mufutu/apps/desktop-mac/scripts/package-win.sh mufutu/apps/desktop-mac/scripts/verify-artifact.sh
+          mufutu/apps/desktop-mac/scripts/package-win.sh "${{ steps.ver.outputs.version }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mufutu-electron-win
+          path: mufutu/apps/electron/artifacts/win/**
+          retention-days: 30
+
+  smoke:
+    name: Smoke (${{ matrix.installer }})
+    needs: build
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        installer: [nsis, msi]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: mufutu-electron-win
+          path: win
+
+      - name: Confirmar que o artefacto é o app Electron
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # Até à 1.0.49 o .exe e o .msi publicados eram o cliente WPF legado:
+          # o package.ps1 escrevia-o com estes mesmos nomes e o upload com
+          # --clobber substituía o app a sério na release. Esse engano morre
+          # aqui — o Setup tem de ser NSIS e não um bootstrapper WiX Burn.
+          $setup = Get-ChildItem -Path win -Recurse -Filter 'MUFUTU-Setup-*.exe' | Select-Object -First 1
+          if (-not $setup) { throw 'Setup NSIS não encontrado no artefacto' }
+          $text = [Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($setup.FullName))
+          if ($text -match '\.wixburn') {
+            throw "$($setup.Name) é um bootstrapper WiX Burn (cliente WPF legado), não o app Electron"
+          }
+          if ($text -notmatch 'Nullsoft') {
+            throw "$($setup.Name) não tem assinatura de NSIS — não é o instalador do app Electron"
+          }
+          Write-Host "✅ $($setup.Name) é NSIS ($([math]::Round($setup.Length/1MB,1)) MB)"
+
+      - name: Instalar (${{ matrix.installer }})
+        id: install
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $target = 'C:\Program Files\MUFUTU'
+
+          if ('${{ matrix.installer }}' -eq 'nsis') {
+            $pkg = Get-ChildItem -Path win -Recurse -Filter 'MUFUTU-Setup-*.exe' | Select-Object -First 1
+            if (-not $pkg) { throw 'Setup NSIS não encontrado' }
+            Write-Host "Instalar silencioso: $($pkg.Name)"
+            $p = Start-Process -FilePath $pkg.FullName -ArgumentList '/S', "/D=$target" -PassThru -Wait
+            if ($p.ExitCode -ne 0) { throw "NSIS devolveu exit $($p.ExitCode)" }
+          } else {
+            $pkg = Get-ChildItem -Path win -Recurse -Filter 'MUFUTU-*-x64.msi' | Select-Object -First 1
+            if (-not $pkg) { throw 'MSI não encontrado no artefacto' }
+            Write-Host "Instalar silencioso: $($pkg.Name)"
+            $log = Join-Path $env:RUNNER_TEMP 'msi-install.log'
+            $p = Start-Process -FilePath 'msiexec.exe' `
+              -ArgumentList '/i', "`"$($pkg.FullName)`"", '/qn', '/norestart', '/l*v', "`"$log`"" `
+              -PassThru -Wait
+            if ($p.ExitCode -ne 0) {
+              if (Test-Path $log) { Get-Content $log -Tail 80 }
+              throw "msiexec devolveu exit $($p.ExitCode)"
+            }
+          }
+
+          # O instalador «concluir» não prova nada: já houve releases em que o
+          # /S saiu 0 sem instalar nada. Exige-se o MUFUTU.exe no disco.
+          $exe = Get-ChildItem -Path 'C:\Program Files' -Recurse -Filter 'MUFUTU.exe' -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+          if (-not $exe) { throw '${{ matrix.installer }}: MUFUTU.exe não apareceu em C:\Program Files' }
+          Write-Host "Instalado: $($exe.FullName)"
+          "exe=$($exe.FullName)" >> $env:GITHUB_OUTPUT
+          "root=$($exe.Directory.FullName)" >> $env:GITHUB_OUTPUT
+
+      - name: Tornar a pasta de instalação só-de-leitura
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # Este passo é o coração do teste. A conta do runner é administrador
+          # com token completo, pelo que escreve em Program Files à vontade —
+          # um utilizador normal não. Sem isto, a app escrevia o
+          # .runtime-server.cjs dentro da pasta de instalação, o CI passava, e
+          # no terreno o servidor morria com EPERM («carrega e fecha»).
+          # Negar escrita a Everyone (S-1-1-0) reproduz a realidade do cliente
+          # mesmo com o processo do runner elevado.
+          $root = '${{ steps.install.outputs.root }}'
+          icacls $root /deny "*S-1-1-0:(OI)(CI)(W,AD,WD)" /T /C | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw "icacls falhou (exit $LASTEXITCODE)" }
+
+          # Provar que a negação está activa antes de confiar no resultado.
+          $canary = Join-Path $root '.ci-write-probe'
+          $wrote = $false
+          try { [IO.File]::WriteAllText($canary, 'x'); $wrote = $true } catch { }
+          if ($wrote) {
+            Remove-Item $canary -Force -ErrorAction SilentlyContinue
+            throw 'A pasta de instalação continua gravável — o teste não provaria nada'
+          }
+          Write-Host "✅ $root é só-de-leitura (como para um utilizador normal)"
+
+      - name: Arrancar e verificar a UI
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $exe = '${{ steps.install.outputs.exe }}'
+          $env:MUFUTU_TELEMETRY = '0'
+          Write-Host "Arrancar $exe"
+          $proc = Start-Process -FilePath $exe -WorkingDirectory (Split-Path $exe -Parent) -PassThru
+
+          # Arranque a frio do Next standalone em runner é lento — 240 s.
+          $ok = $false
+          $deadline = (Get-Date).AddSeconds(240)
+          while ((Get-Date) -lt $deadline) {
+            Start-Sleep -Seconds 5
+            if ($proc.HasExited) { throw "MUFUTU fechou sozinho (exit $($proc.ExitCode)) — padrão «carrega e fecha»" }
+            try {
+              $resp = Invoke-WebRequest -Uri 'http://127.0.0.1:3847/login' -UseBasicParsing -TimeoutSec 5
+              if ($resp.StatusCode -eq 200) { $ok = $true; break }
+            } catch { }
+          }
+          if (-not $ok) { throw 'UI não respondeu HTTP 200 em http://127.0.0.1:3847/login dentro de 240 s' }
+
+          # Vivo +15 s depois do 200 — apanha crashes tardios de arranque.
+          Start-Sleep -Seconds 15
+          if ($proc.HasExited) { throw "MUFUTU fechou depois de servir a UI (exit $($proc.ExitCode))" }
+
+          Write-Host '✅ Smoke OK: instala, arranca com a pasta só-de-leitura, serve a UI e mantém-se vivo.'
+          Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+          Get-Process -Name 'MUFUTU*' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+
+      - name: Smoke do ZIP portátil
+        if: matrix.installer == 'nsis'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $zip = Get-ChildItem -Path win -Recurse -Filter 'MUFUTU-*-win-x64.zip' | Select-Object -First 1
+          if (-not $zip) { throw 'ZIP portátil Windows não encontrado' }
+          $extract = Join-Path $env:RUNNER_TEMP 'mufutu-zip-smoke'
+          if (Test-Path $extract) { Remove-Item $extract -Recurse -Force }
+          Expand-Archive -Path $zip.FullName -DestinationPath $extract -Force
+          $exe = Get-ChildItem -Path $extract -Recurse -Filter 'MUFUTU.exe' | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $exe) { throw "MUFUTU.exe não encontrado após extrair $($zip.Name)" }
+
+          $env:MUFUTU_TELEMETRY = '0'
+          $proc = Start-Process -FilePath $exe -WorkingDirectory (Split-Path $exe -Parent) -PassThru
+          $ok = $false
+          $deadline = (Get-Date).AddSeconds(240)
+          while ((Get-Date) -lt $deadline) {
+            Start-Sleep -Seconds 5
+            if ($proc.HasExited) { throw "ZIP: MUFUTU fechou sozinho (exit $($proc.ExitCode))" }
+            try {
+              $resp = Invoke-WebRequest -Uri 'http://127.0.0.1:3847/login' -UseBasicParsing -TimeoutSec 5
+              if ($resp.StatusCode -eq 200) { $ok = $true; break }
+            } catch { }
+          }
+          if (-not $ok) { throw 'ZIP: UI não respondeu HTTP 200 dentro de 240 s' }
+          Write-Host '✅ Smoke OK (ZIP portátil).'
+          Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+          Get-Process -Name 'MUFUTU*' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+
+      - name: Recolher logs em falha
+        if: failure()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path smoke-logs | Out-Null
+          Copy-Item "$env:APPDATA\MUFUTU\*" smoke-logs -Recurse -ErrorAction SilentlyContinue
+          Copy-Item "$env:LOCALAPPDATA\MUFUTU\*" smoke-logs -Recurse -ErrorAction SilentlyContinue
+          Copy-Item "$env:RUNNER_TEMP\msi-install.log" smoke-logs -ErrorAction SilentlyContinue
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: smoke-logs-${{ matrix.installer }}
+          path: smoke-logs/**
+          if-no-files-found: ignore

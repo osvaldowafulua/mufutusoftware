@@ -1,28 +1,31 @@
 {
   "product": "MUFUTU",
-  "version": "1.0.48",
-  "tag": "v1.0.48",
+  "version": "1.0.50",
+  "tag": "v1.0.50",
   "channel": "stable",
-  "releasedAt": "2026-08-06T11:00:00Z",
+  "releasedAt": "2026-10-09T00:00:00Z",
   "cmmsCompatibility": "1.1.2",
   "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/latest",
+  "_ordem": "Este ficheiro só vai para main DEPOIS de a release v1.0.50 existir com os assets — os clientes leem-no de main no arranque e um latestVersion sem assets é um download 404.",
   "_comment": "Fonte de verdade do 'version gate': os clientes (Windows, macOS, Android) leem este ficheiro via raw.githubusercontent.com/.../main/releases/latest.json no arranque. (1) Para OBRIGAR a actualizar instalações antigas: suba 'minimumVersion' da plataforma e faça commit para main — não é preciso publicar um release novo, entra em vigor no próximo arranque com rede. (2) Depois de publicar um release novo de verdade (tag + assets no GitHub Releases), actualize 'latestVersion' e 'downloadUrl' aqui para apontar para os ficheiros reais — nunca aponte para uma versão que ainda não foi publicada.",
   "platforms": {
     "macos": {
-      "latestVersion": "1.0.48",
+      "latestVersion": "1.0.50",
       "minimumVersion": "1.0.29",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.48/MUFUTU-1.0.48-arm64.dmg",
-      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.48/MUFUTU-1.0.48-arm64.dmg",
-      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.48/MUFUTU-1.0.48-arm64.zip",
-      "note": "Gatekeeper: usar «Instalar MUFUTU — clique aqui» no DMG ou xattr -cr. Electron 1.0.48 — login offline com fallback 502 do proxy; correcções de disponibilidade e férias."
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.50/MUFUTU-1.0.50-arm64.dmg",
+      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.50/MUFUTU-1.0.50-arm64.dmg",
+      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.50/MUFUTU-1.0.50-arm64.zip",
+      "note": "Gatekeeper: usar «Instalar MUFUTU — clique aqui» no DMG ou xattr -cr. Electron 1.0.50."
     },
     "windows": {
-      "latestVersion": "1.0.48",
+      "latestVersion": "1.0.50",
       "minimumVersion": "1.0.29",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.48/MUFUTU-Setup-1.0.48-x64.exe",
-      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.48/MUFUTU-Setup-1.0.48-x64.exe",
-      "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.48/MUFUTU-1.0.48-win-x64.zip",
-      "note": "Setup NSIS Electron 1.0.48 (mesmo app do macOS). Login offline com fallback 502. Assinado self-signed — SmartScreen pode avisar; Mais informações → Executar na mesma. ZIP portátil disponível."
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.50/MUFUTU-Setup-1.0.50-x64.exe",
+      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.50/MUFUTU-Setup-1.0.50-x64.exe",
+      "msi": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.50/MUFUTU-1.0.50-x64.msi",
+      "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.50/MUFUTU-1.0.50-win-x64.zip",
+      "note": "Primeira versão em que o Setup .exe e o .msi do Windows funcionam de facto. Na 1.0.49 ambos eram o cliente WPF legado publicado por engano com estes nomes; na 1.0.47/1.0.48 o Setup era o app certo mas morria ao arrancar instalado em Program Files. Setup NSIS e MSI são agora o mesmo app Electron do macOS. Assinado self-signed — SmartScreen pode avisar; Mais informações → Executar na mesma. ZIP portátil disponível.",
+      "_minimumVersion": "Deixado em 1.0.29 de propósito. Subi-lo para 1.0.50 não ajudaria quem tem o instalador estragado — essa gente não chega a arrancar a app, logo o gate nunca corre; só bloquearia os que instalaram pelo ZIP portátil e estão a trabalhar. O latestVersion já lhes mostra o aviso de actualização."
     },
     "android": {
       "latestVersion": "1.0.20",

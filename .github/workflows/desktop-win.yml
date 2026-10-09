@@ -1,4 +1,12 @@
-name: Windows Desktop (WPF)
+name: Windows Desktop (WPF — legado)
+
+# ATENÇÃO: este pipeline compila o cliente WPF .NET legado (apps/desktop-win),
+# que NÃO é o MUFUTU Desktop actual. O cliente Windows a sério é o app Electron
+# — ver desktop-electron-win.yml / win-electron-build.yml.
+# Os artefactos saem com prefixo MUFUTU-WPF- e são publicados numa release
+# própria (desktop-win/v*), nunca na release v<versão> do produto: até à 1.0.49
+# saíam com os nomes do Electron e substituíam-no na release, pelo que era o
+# WPF que os clientes instalavam no Windows.
 
 on:
   workflow_dispatch:
@@ -228,11 +236,31 @@ jobs:
           name: mufutu-desktop-installer
           path: release-assets
 
-      - name: Publicar release
+      - name: Publicar release do cliente legado
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          chmod +x scripts/publish-release.sh
+          set -euo pipefail
           TAG="${{ github.ref_name }}"
           VERSION="${TAG#desktop-win/v}"
-          bash scripts/publish-release.sh "$VERSION" release-assets
+          # Release própria, na tag desktop-win/v* — nunca a v<versão> do
+          # produto. Antes chamava publish-release.sh, que publica em
+          # v<versão> com --clobber: os MUFUTU-Setup-*.exe / MUFUTU-*.msi do
+          # WPF substituíam os do app Electron na release oficial.
+          mapfile -t FILES < <(find release-assets -type f \
+            \( -name 'MUFUTU-WPF-*' -o -name 'checksums.sha256' \) | sort)
+          if [[ ${#FILES[@]} -eq 0 ]]; then
+            echo "::error::Nenhum artefacto MUFUTU-WPF-* encontrado." >&2
+            find release-assets -type f >&2
+            exit 1
+          fi
+          printf '%s\n' "${FILES[@]}"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" &>/dev/null; then
+            gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "${FILES[@]}"
+          else
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+              --title "MUFUTU Desktop WPF (legado) ${VERSION}" \
+              --prerelease \
+              --notes "Cliente **WPF .NET legado** — não é o MUFUTU Desktop actual. O cliente Windows suportado é o app Electron, publicado na release \`v${VERSION}\`." \
+              "${FILES[@]}"
+          fi
