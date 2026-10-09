@@ -18,9 +18,9 @@ mkdir -p "$STAGING"
 collect_assets() {
   if [[ -d "$ASSET_DIR" ]]; then
     find "$ASSET_DIR" -type f \( \
-      -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.msi' \
+      -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.msi' -o -name '*.7z' \
       -o -name 'latest-mac.yml' -o -name 'latest.yml' \
-    \) -exec cp {} "$STAGING/" \;
+    \) -not -path '*/ci-stub/*' -exec cp {} "$STAGING/" \;
   else
     cp "$ASSET_DIR" "$STAGING/" 2>/dev/null || true
     for f in "$@"; do
@@ -34,7 +34,7 @@ collect_assets
 cd "$STAGING"
 shopt -s nullglob
 mapfile -t FILES < <(find . -maxdepth 1 -type f \( \
-  -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.msi' \
+  -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.msi' -o -name '*.7z' \
   -o -name 'latest-mac.yml' -o -name 'latest.yml' \
 \) -printf '%f\n' | sort -u)
 if [[ ${#FILES[@]} -eq 0 ]]; then
@@ -48,7 +48,7 @@ shasum -a 256 "${FILES[@]}" > checksums.sha256 2>/dev/null || true
 # Electron. Até à 1.0.49 o job «Windows» deste pipeline compilava o cliente WPF
 # legado, que saía com o mesmo nome e era publicado no lugar do app a sério —
 # era isso que os clientes instalavam no Windows.
-for setup in MUFUTU-Setup-*.exe; do
+for setup in MUFUTU-Setup-*.exe MUFUTU-Web-Setup-*.exe; do
   [[ -f "$setup" ]] || continue
   if grep -qa '\.wixburn' "$setup"; then
     echo "❌ ${setup} é um bootstrapper WiX Burn (cliente WPF legado), não o app Electron." >&2

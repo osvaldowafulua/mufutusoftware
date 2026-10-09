@@ -9,13 +9,30 @@
 
 ## Qual ficheiro escolher
 
-| Ficheiro | Tipo | Usar? |
-|----------|------|-------|
-| **`MUFUTU-Setup-1.0.50-x64.exe`** | Instalador NSIS | **Sim** — recomendado |
-| `MUFUTU-1.0.50-x64.msi` | MSI | Sim — parque gerido (GPO/Intune) |
-| `MUFUTU-1.0.50-win-x64.zip` | Portátil (extrair e correr) | Só para IT/testes |
+| Ficheiro | Tamanho | Tipo | Usar? |
+|----------|---------|------|-------|
+| **`MUFUTU-Web-Setup-1.0.50.exe`** | menos de 1 MB | Instalador web (NSIS) | **Sim** — recomendado. Descarrega o resto durante a instalação |
+| `MUFUTU-Setup-1.0.50-x64.exe` | ≈ 90 MB | Instalador completo (NSIS) | Sim — quando não há Internet no PC |
+| `MUFUTU-1.0.50-x64.msi` | ≈ 90 MB | MSI | Sim — parque gerido (GPO/Intune) |
+| `MUFUTU-1.0.50-win-x64.zip` | ≈ 125 MB | Portátil (extrair e correr) | Só para IT/testes |
 
-O `.exe` e o `.msi` instalam exactamente o mesmo app.
+Os quatro instalam exactamente o mesmo app.
+
+### Como funciona o instalador web
+
+O `MUFUTU-Web-Setup-*.exe` é pequeno de propósito. Ao executá-lo:
+
+1. Mostra o contrato de licença e a pasta de instalação (em português se o Windows estiver em português, senão em inglês).
+2. Descarrega o pacote da aplicação (≈ 90 MB) do GitHub oficial, com barra de progresso
+   e retoma automática se a ligação cair.
+3. **Verifica o SHA-512** do pacote contra o valor gravado no próprio instalador — se o
+   ficheiro estiver corrompido ou tiver sido alterado, a instalação recusa-o.
+4. Instala e cria os atalhos.
+
+Se a ligação falhar, aparece **Repetir / Cancelar**. Para instalar **sem Internet no PC**:
+descarregue, noutra máquina, o `MUFUTU-Web-Setup-*.exe` **e** o `mufutu-*-x64.nsis.7z`
+da mesma release, copie os dois para a mesma pasta e execute o `.exe` — o instalador
+encontra o pacote ao lado e usa-o. (Ou use simplesmente o instalador completo.)
 
 O instalador `.exe`:
 - Instala em `C:\Program Files\MUFUTU\` (ou pasta que escolher)

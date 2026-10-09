@@ -1,4 +1,4 @@
-name: Windows Electron (NSIS + MSI + ZIP)
+name: Windows Electron (instalador web + completo + MSI + ZIP)
 
 # Cliente Windows = o MESMO app Electron do macOS (UI web + offline-first).
 # O build e a verificação vivem em win-electron-build.yml (reutilizável, também
@@ -81,7 +81,7 @@ jobs:
           # publicado — foi assim que uma 1.0.41 renomeada se fez passar por
           # 1.0.44. Re-publicação consciente: apagar o asset primeiro.
           PUBLISHED="$(gh release view "v${VERSION}" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' 2>/dev/null || true)"
-          for asset in "MUFUTU-Setup-${VERSION}-x64.exe" "MUFUTU-${VERSION}-x64.msi"; do
+          for asset in "MUFUTU-Web-Setup-${VERSION}.exe" "mufutu-${VERSION}-x64.nsis.7z" "MUFUTU-Setup-${VERSION}-x64.exe" "MUFUTU-${VERSION}-x64.msi"; do
             if grep -qx "$asset" <<< "$PUBLISHED"; then
               echo "::error::${asset} já existe na release v${VERSION}. Apague o asset primeiro se quer re-publicar."
               exit 1

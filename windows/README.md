@@ -6,12 +6,16 @@ O cliente Windows é o **mesmo stack do macOS** (Electron + Next.js embutido + o
 
 | Artefacto | Origem | Notas |
 |-----------|--------|--------|
-| `MUFUTU-Setup-*-x64.exe` | electron-builder **NSIS** | Instalador recomendado |
+| `MUFUTU-Web-Setup-*.exe` | electron-builder **nsis-web** | **Recomendado.** < 1 MB; descarrega o pacote durante a instalação (SHA-512 verificado) |
+| `mufutu-*-x64.nsis.7z` | electron-builder nsis-web | Pacote que o instalador web e a actualização automática descarregam |
+| `MUFUTU-Setup-*-x64.exe` | electron-builder **NSIS** | Instalador completo, sem Internet |
 | `MUFUTU-*-x64.msi` | electron-builder **MSI** | Instalação por GPO / Intune |
-| `MUFUTU-*-win-x64.appx` | electron-builder **appx/MSIX** | Empresas / Store sideload |
 | `MUFUTU-*-win-x64.zip` | electron-builder zip | Portátil |
+| `latest.yml` | electron-builder | Feed da actualização automática |
 
-O `.exe` e o `.msi` são o **mesmo app**, só muda a forma de instalar.
+Todos são o **mesmo app**, só muda a forma de instalar. O instalador web e o completo são
+construídos em **execuções separadas** do electron-builder: no mesmo comando partilham o
+pacote em cache e o `latest.yml`, e o pacote de um saía com o conteúdo do outro.
 
 > **A partir da 1.0.50.** Até à 1.0.49 o `.exe` e o `.msi` publicados aqui eram o
 > cliente **WPF legado** — o `package.ps1` escrevia-o com os nomes do Electron e
@@ -22,7 +26,7 @@ O `.exe` e o `.msi` são o **mesmo app**, só muda a forma de instalar.
 > corrigidas e o CI passou a instalar o `.exe` **e** o `.msi` e a arrancá-los com
 > a pasta de instalação só-de-leitura antes de qualquer publicação.
 
-Código-fonte do shell: repositório privado `mufutu` → `apps/electron/` (`electron-builder.json` targets nsis + msi + appx + zip).
+Código-fonte do shell: repositório privado `mufutu` → `apps/electron/` (`electron-builder.json`: `nsis-web` por defeito; `nsis`, `msi` e `zip` na segunda execução do `package-win.sh`).
 
 Auto-update: `electron-updater` (`electron-update.js`) com canal GitHub Releases `mufutusoftware`.
 
@@ -42,14 +46,15 @@ Os seus artefactos passaram a ter prefixo `MUFUTU-WPF-` e são publicados numa r
 
 ## Instalação
 
-1. Execute o instalador NSIS (recomendado), o MSI (parque gerido) ou sideload MSIX.
+1. Execute o instalador web (recomendado), o instalador completo, ou o MSI (parque gerido).
 2. Aceite o [EULA](../EULA.md).
 3. Login com credenciais do tenant.
 
 ### TI / silenciosa
 
 ```powershell
-# NSIS
+# Instalador web (precisa de Internet) ou completo
+.\MUFUTU-Web-Setup-1.0.x.exe /S
 .\MUFUTU-Setup-1.0.x-x64.exe /S
 
 # MSI (GPO / Intune)

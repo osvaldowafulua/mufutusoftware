@@ -37,8 +37,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          mapfile -t FILES < <(find assets -type f \( \
+          mapfile -t FILES < <(find assets -type f -not -path '*/ci-stub/*' \( \
             -name 'MUFUTU-Setup-*.exe' -o \
+            -name 'MUFUTU-Web-Setup-*.exe' -o \
+            -name 'mufutu-*-x64.nsis.7z' -o \
             -name 'MUFUTU-*-win-*.zip' -o \
             -name 'MUFUTU-Setup-*.exe.blockmap' -o \
             -name 'latest.yml' -o \
@@ -60,7 +62,7 @@ jobs:
           # 1.0.49). Recusar antes de tocar na release.
           for f in "${FILES[@]}"; do
             case "$(basename "$f")" in
-              MUFUTU-Setup-*.exe)
+              MUFUTU-Setup-*.exe|MUFUTU-Web-Setup-*.exe)
                 if grep -qa '\.wixburn' "$f"; then
                   echo "::error::$(basename "$f") é um bootstrapper WiX Burn (cliente WPF legado), não o instalador NSIS do app Electron." >&2
                   exit 1
