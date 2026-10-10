@@ -215,7 +215,33 @@ jobs:
           $exe = '${{ steps.install.outputs.exe }}'
           $env:MUFUTU_TELEMETRY = '0'
           Write-Host "Arrancar $exe"
-          $proc = Start-Process -FilePath $exe -WorkingDirectory (Split-Path $exe -Parent) -PassThru
+          $dir = Split-Path $exe -Parent
+          try {
+            $proc = Start-Process -FilePath $exe -WorkingDirectory $dir -PassThru -ErrorAction Stop
+          } catch {
+            # «Access is denied» no arranque apareceu em 2 runs seguidos mesmo depois
+            # de corrigir o icacls: em vez de adivinhar uma terceira vez, o teste
+            # diz o que se passa — permissões, legibilidade, dono, token, e se o
+            # problema é o executável ou a pasta de trabalho.
+            Write-Host "::error::Start-Process falhou: $($_.Exception.Message)"
+            Write-Host '----- diagnóstico -----'
+            Write-Host '[icacls do executável]'; icacls $exe
+            Write-Host '[icacls da pasta]'; icacls $dir
+            Write-Host '[o executável é legível?]'
+            try { $fs = [IO.File]::OpenRead($exe); Write-Host "sim ($($fs.Length) bytes)"; $fs.Close() } catch { Write-Host "NÃO: $($_.Exception.Message)" }
+            Write-Host '[dono]'; (Get-Acl $exe).Owner
+            Write-Host '[atributos]'; (Get-Item $exe -Force).Attributes
+            Write-Host '[token: grupos relevantes]'; whoami /groups | Select-String 'Administrators|Mandatory Label'
+            Write-Host '[a pasta como diretório de trabalho de outro programa]'
+            try { Push-Location $dir; cmd /c ver; Pop-Location } catch { Write-Host "pasta inacessível: $($_.Exception.Message)" }
+            Write-Host '[arranque SEM WorkingDirectory]'
+            try { $p2 = Start-Process -FilePath $exe -PassThru -ErrorAction Stop; Write-Host "OK (pid $($p2.Id)) — o problema era o WorkingDirectory"; Stop-Process -Id $p2.Id -Force } catch { Write-Host "também falha: $($_.Exception.Message)" }
+            Write-Host '[arranque com ProcessStartInfo, UseShellExecute=false]'
+            try { $psi = [Diagnostics.ProcessStartInfo]::new($exe); $psi.UseShellExecute = $false; $psi.WorkingDirectory = $dir; $p3 = [Diagnostics.Process]::Start($psi); Write-Host "OK (pid $($p3.Id))"; Stop-Process -Id $p3.Id -Force } catch { Write-Host "também falha: $($_.Exception.Message)" }
+            Write-Host '[assinatura]'; try { Get-AuthenticodeSignature $exe | Format-List Status, StatusMessage } catch { Write-Host $_.Exception.Message }
+            Write-Host '[Defender]'; try { Get-MpThreatDetection | Select-Object -Last 3 | Format-List } catch { Write-Host 'indisponível' }
+            throw
+          }
 
           # Arranque a frio do Next standalone em runner é lento — 240 s.
           $ok = $false
