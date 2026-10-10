@@ -127,9 +127,24 @@ jobs:
               $serve = Join-Path $env:RUNNER_TEMP 'serve'
               New-Item -ItemType Directory -Force -Path $serve | Out-Null
               Copy-Item $payload.FullName $serve
-              $srv = Start-Process node -ArgumentList (Join-Path $env:GITHUB_WORKSPACE '.github/scripts/serve-range.js'), "`"$serve`"", '18080' -PassThru -WindowStyle Hidden
-              Start-Sleep -Seconds 2
-              $head = Invoke-WebRequest -Uri "http://127.0.0.1:18080/$($payload.Name)" -Method Head -UseBasicParsing
+              $srvOut = Join-Path $env:RUNNER_TEMP 'serve-out.log'
+              $srvErr = Join-Path $env:RUNNER_TEMP 'serve-err.log'
+              $srv = Start-Process node -ArgumentList (Join-Path $env:GITHUB_WORKSPACE '.github/scripts/serve-range.js'), "`"$serve`"", '18080' `
+                -PassThru -WindowStyle Hidden -RedirectStandardOutput $srvOut -RedirectStandardError $srvErr
+              # O servidor arranca de forma assíncrona: espera (até 30 s) que responda,
+              # em vez de um sleep fixo que dava «connection refused» por corrida.
+              $head = $null
+              $until = (Get-Date).AddSeconds(30)
+              while ((Get-Date) -lt $until) {
+                if ($srv.HasExited) {
+                  throw "servidor local terminou (exit $($srv.ExitCode)): $(Get-Content $srvErr -Raw -ErrorAction SilentlyContinue)"
+                }
+                try {
+                  $head = Invoke-WebRequest -Uri "http://127.0.0.1:18080/$($payload.Name)" -Method Head -UseBasicParsing -TimeoutSec 5
+                  break
+                } catch { Start-Sleep -Milliseconds 500 }
+              }
+              if (-not $head) { throw "servidor local não respondeu em 30 s: $(Get-Content $srvErr -Raw -ErrorAction SilentlyContinue)" }
               if ($head.StatusCode -ne 200) { throw "servidor local devolveu $($head.StatusCode)" }
 
               # O stub vai SOZINHO — sem o payload ao lado — para forçar o download.
