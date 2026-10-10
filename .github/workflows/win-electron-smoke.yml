@@ -188,15 +188,38 @@ jobs:
           # Negar escrita a Everyone (S-1-1-0) reproduz a realidade do cliente
           # mesmo com o processo do runner elevado.
           $root = '${{ steps.install.outputs.root }}'
-          # NÃO usar o direito genérico «W»: em icacls inclui SYNCHRONIZE e
-          # READ_CONTROL, e sem eles nem se consegue EXECUTAR o MUFUTU.exe
-          # («Access is denied» no Start-Process, visto no primeiro run). Um
-          # utilizador normal tem ler+executar em Program Files e não tem
-          # escrita: nega-se só a escrita, de forma específica —
-          # WD criar ficheiro/escrever, AD criar subpasta/anexar, WEA e WA
-          # escrever atributos, DC apagar filhos, D apagar.
-          icacls $root /deny "*S-1-1-0:(OI)(CI)(WD,AD,WEA,WA,DC,D)" /T /C | Out-Null
-          if ($LASTEXITCODE -ne 0) { throw "icacls falhou (exit $LASTEXITCODE)" }
+          $exe = '${{ steps.install.outputs.exe }}'
+
+          # Regra montada com a API do .NET, bit a bit. O icacls NÃO serve para isto:
+          # mesmo com a lista específica (WD,AD,WEA,WA,DC,D) ele gravou/mostrou
+          # «(DENY)(W,D,DC)», e o log do run 38011597426 provou o efeito — o
+          # MUFUTU.exe deixou de poder ser aberto sequer para LEITURA, nem por um
+          # administrador («Access to the path ... is denied»), logo nem executado.
+          # O «W» do icacls é FILE_GENERIC_WRITE = 0x00120116, que inclui
+          # SYNCHRONIZE; sem esse bit não se abre nenhum ficheiro.
+          # Aqui nega-se EXACTAMENTE 0x00010156: escrever, anexar, atributos e
+          # atributos estendidos de escrita, apagar e apagar filhos — e nada que
+          # leia, execute ou sincronize. É o que falta a um utilizador normal em
+          # Program Files (que tem ler+executar e não tem escrita).
+          $R = [Security.AccessControl.FileSystemRights]
+          $deny = $R::WriteData -bor $R::AppendData -bor $R::WriteExtendedAttributes -bor
+                  $R::WriteAttributes -bor $R::Delete -bor $R::DeleteSubdirectoriesAndFiles
+          $everyone = [Security.Principal.SecurityIdentifier]::new('S-1-1-0')
+          $rule = [Security.AccessControl.FileSystemAccessRule]::new(
+            $everyone, $deny, 'ContainerInherit, ObjectInherit', 'None', 'Deny')
+          # Set-Acl usa SetNamedSecurityInfo: a regra herdável propaga-se aos
+          # ficheiros que já existem.
+          $acl = Get-Acl -Path $root
+          $acl.AddAccessRule($rule)
+          Set-Acl -Path $root -AclObject $acl
+          Write-Host ("Regra aplicada (máscara 0x{0:X8})" -f [int]$deny)
+          icacls $root | Select-Object -First 4
+
+          # Nada do que se nega pode afectar a execução: o executável TEM de
+          # continuar legível. Se não estiver, o teste estaria a medir o próprio
+          # teste (foi o que aconteceu duas vezes).
+          try { $fs = [IO.File]::OpenRead($exe); $fs.Close() }
+          catch { throw "A regra de só-leitura tornou o executável ilegível ($($_.Exception.Message)) — o teste mediria o próprio teste" }
 
           # Provar que a negação está activa antes de confiar no resultado.
           $canary = Join-Path $root '.ci-write-probe'
