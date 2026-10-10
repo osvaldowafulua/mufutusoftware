@@ -27,8 +27,13 @@ on:
     tags:
       - 'desktop-electron/v*'
 
+# `actions: read` é para o smoke (workflow chamado): um workflow chamado só pode
+# ter permissões iguais ou INFERIORES às do chamador, e o smoke descarrega o
+# artefacto por API (também de um run anterior). Sem isto o run morre em
+# `startup_failure` ao fim de 1 segundo, sem nenhum job a arrancar.
 permissions:
   contents: write
+  actions: read
 
 jobs:
   resolve:
