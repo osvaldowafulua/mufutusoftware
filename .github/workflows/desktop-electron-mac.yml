@@ -1,0 +1,206 @@
+name: macOS Electron (DMG + ZIP) — build, smoke e publicação
+
+# Cliente macOS = o MESMO app Electron do Windows. Espelha desktop-electron-win.yml:
+# a publicação só acontece (a) por tag desktop-electron-mac/v*, ou (b) por disparo
+# manual a partir de main com `publish: true` e um mufutu_ref FIXO (SHA ou tag),
+# e em ambos só se o smoke passar. (b) existe porque nem sempre é possível
+# empurrar a tag para este repo. O DMG/ZIP junta-se à release v<versão> que já
+# exista (p.ex. a do Windows) sem tocar nos ficheiros que lá estão.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão semver (vazio = a do apps/electron/package.json)'
+        required: false
+        default: ''
+      mufutu_ref:
+        description: 'Ref do repo mufutu a compilar (branch/tag/SHA)'
+        required: false
+        default: 'main'
+      publish:
+        description: 'Publicar se o smoke passar (só a partir de main, com mufutu_ref fixo)'
+        type: boolean
+        required: false
+        default: false
+  push:
+    tags:
+      - 'desktop-electron-mac/v*'
+
+permissions:
+  contents: write
+  actions: read
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  resolve:
+    name: Resolver versão e ref
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.r.outputs.version }}
+      mufutu_ref: ${{ steps.r.outputs.mufutu_ref }}
+    steps:
+      - id: r
+        shell: bash
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [[ "$TAG" =~ ^desktop-electron-mac/v(.+)$ ]]; then
+            VERSION="${BASH_REMATCH[1]}"
+            echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+            echo "mufutu_ref=v${VERSION}" >> "$GITHUB_OUTPUT"
+          else
+            REF="${{ github.event.inputs.mufutu_ref || 'main' }}"
+            if [[ "${{ github.event.inputs.publish }}" == "true" ]]; then
+              [[ "$REF" =~ ^[0-9a-f]{40}$ || "$REF" =~ ^v[0-9] ]] \
+                || { echo "::error::publish=true exige mufutu_ref fixo (SHA de 40 caracteres ou tag v*), recebi «$REF»."; exit 1; }
+              [[ -n "${{ github.event.inputs.version }}" ]] \
+                || { echo "::error::publish=true exige a versão explícita."; exit 1; }
+            fi
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+            echo "mufutu_ref=${REF}" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    name: Build + smoke (macOS arm64)
+    needs: resolve
+    runs-on: macos-latest
+    timeout-minutes: 60
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout CMMS (mufutu — privado, ref fixo)
+        uses: actions/checkout@v4
+        with:
+          repository: osvaldowafulua/mufutu
+          path: mufutu
+          ref: ${{ needs.resolve.outputs.mufutu_ref }}
+          token: ${{ secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Resolve version
+        id: ver
+        shell: bash
+        run: |
+          if [[ -n "${{ needs.resolve.outputs.version }}" ]]; then
+            echo "version=${{ needs.resolve.outputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=$(node -p "require('./mufutu/apps/electron/package.json').version")" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Import Apple signing certificate
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          chmod +x mufutu/apps/desktop-mac/scripts/import-apple-cert.sh
+          mufutu/apps/desktop-mac/scripts/import-apple-cert.sh
+
+      - name: Build (package.sh)
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          chmod +x mufutu/apps/desktop-mac/scripts/*.sh
+          mufutu/apps/desktop-mac/scripts/package.sh "${{ steps.ver.outputs.version }}"
+
+      - name: Smoke — descompactar o ZIP, arrancar o app e esperar a UI
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIST="mufutu/apps/desktop-mac/artifacts/dist"
+          ZIP="$DIST/MUFUTU-${{ steps.ver.outputs.version }}-arm64.zip"
+          [[ -f "$ZIP" ]] || { echo "::error::ZIP em falta: $ZIP"; ls -l "$DIST"; exit 1; }
+          WORK="$RUNNER_TEMP/smoke"; rm -rf "$WORK"; mkdir -p "$WORK"
+          ditto -x -k "$ZIP" "$WORK"
+          APP="$(find "$WORK" -maxdepth 2 -name 'MUFUTU.app' -print -quit)"
+          [[ -n "$APP" ]] || { echo "::error::MUFUTU.app não está no ZIP"; ls -R "$WORK" | head -30; exit 1; }
+          # Tem de ser o app Electron, não outra coisa.
+          [[ -d "$APP/Contents/Frameworks/Electron Framework.framework" ]] \
+            || { echo "::error::não é um app Electron"; exit 1; }
+          xattr -cr "$APP" || true
+          codesign --verify --deep --strict "$APP" 2>&1 | tail -3 || true
+
+          export MUFUTU_TELEMETRY=0
+          "$APP/Contents/MacOS/MUFUTU" > "$WORK/app.out" 2>&1 &
+          PID=$!
+          cleanup() { kill "$PID" 2>/dev/null || true; pkill -f "$APP/Contents" 2>/dev/null || true; }
+          trap cleanup EXIT
+
+          OK=0
+          for i in $(seq 1 48); do   # 48 × 5 s = 240 s: o arranque a frio do Next é lento
+            sleep 5
+            if ! kill -0 "$PID" 2>/dev/null; then
+              echo "::error::MUFUTU fechou sozinho — padrão «carrega e fecha»"
+              tail -40 "$WORK/app.out" || true
+              tail -60 "$HOME/Library/Application Support/MUFUTU/desktop.log" 2>/dev/null || true
+              exit 1
+            fi
+            if [[ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://127.0.0.1:3847/login || true)" == "200" ]]; then OK=1; break; fi
+          done
+          if [[ "$OK" -ne 1 ]]; then
+            echo "::error::a UI não respondeu 200 em 240 s"
+            tail -40 "$WORK/app.out" || true
+            tail -60 "$HOME/Library/Application Support/MUFUTU/desktop.log" 2>/dev/null || true
+            exit 1
+          fi
+          echo "✓ UI a servir em http://127.0.0.1:3847/login"
+
+          sleep 15
+          kill -0 "$PID" 2>/dev/null || { echo "::error::MUFUTU fechou depois de servir a UI"; tail -40 "$WORK/app.out"; exit 1; }
+
+          # Só em loopback: nada do MUFUTU pode estar exposto na LAN.
+          EXPOSED="$(lsof -nP -iTCP:3847 -iTCP:3848 -sTCP:LISTEN 2>/dev/null | awk 'NR>1 && $9 !~ /^(127\.0\.0\.1|\[::1\]|localhost)/ {print $9}' || true)"
+          [[ -z "$EXPOSED" ]] || { echo "::error::portas expostas fora de loopback: $EXPOSED"; exit 1; }
+          echo "✓ vivo +15 s e só em loopback"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mufutu-electron-mac
+          path: mufutu/apps/desktop-mac/artifacts/dist/**
+          retention-days: 30
+
+  publish:
+    name: Publicar em mufutusoftware
+    needs: [resolve, build]
+    runs-on: ubuntu-latest
+    if: >-
+      startsWith(github.ref, 'refs/tags/desktop-electron-mac/') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.publish == 'true' && github.ref == 'refs/heads/main')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mufutu-electron-mac
+          path: release-assets
+
+      - name: Publicar release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.build.outputs.version }}"
+          [[ -n "$VERSION" ]] || { echo "::error::versão compilada desconhecida"; exit 1; }
+          DIR="release-assets"
+          [[ -d "release-assets/dist" ]] && DIR="release-assets/dist"
+
+          # Anti-colisão: nunca substituir às cegas um asset macOS já publicado.
+          PUBLISHED="$(gh release view "v${VERSION}" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' 2>/dev/null || true)"
+          for asset in "MUFUTU-${VERSION}-arm64.dmg" "MUFUTU-${VERSION}-arm64.zip" latest-mac.yml; do
+            if grep -qx "$asset" <<< "$PUBLISHED"; then
+              echo "::error::${asset} já existe na release v${VERSION}. Apague o asset primeiro se quer re-publicar."
+              exit 1
+            fi
+          done
+
+          chmod +x scripts/publish-release.sh
+          bash scripts/publish-release.sh "$VERSION" "$DIR"
