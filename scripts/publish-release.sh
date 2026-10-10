@@ -95,6 +95,25 @@ console.log(`✓ latest.yml coerente com ${base}`);
 NODE
 fi
 
+if [[ "$HAS_MAC" -eq 1 ]]; then
+  # latest-mac.yml tem de descrever ESTA versão e o ZIP que vai ser publicado:
+  # com o hash errado o electron-updater recusa a actualização no macOS.
+  node - "$MAC_YML" "$MAC_ZIP" "$VERSION" <<'NODE' || exit 1
+const fs = require('fs');
+const crypto = require('crypto');
+const path = require('path');
+const [yml, zip, version] = process.argv.slice(2);
+const text = fs.readFileSync(yml, 'utf8');
+const fail = (m) => { console.error('❌ ' + m); process.exit(1); };
+if (new RegExp(`^version:\\s*${version.replace(/\./g, '\\.')}\\s*$`, 'm').exec(text) === null) fail(`latest-mac.yml não é da versão ${version}.`);
+const base = path.basename(zip);
+if (!text.includes(`url: ${base}`)) fail(`latest-mac.yml não referencia ${base}.`);
+const sha = crypto.createHash('sha512').update(fs.readFileSync(zip)).digest('base64');
+if (!text.includes(sha)) fail(`o sha512 de ${base} não consta do latest-mac.yml.`);
+console.log(`✓ latest-mac.yml coerente com ${base}`);
+NODE
+fi
+
 mkdir -p "$STAGING"
 UPLOAD_FILES=()
 
@@ -132,6 +151,24 @@ fi
 cd "$STAGING"
 sha "${UPLOAD_FILES[@]}" > checksums.sha256
 
+# Release já existente (ex.: Windows publicado primeiro, macOS depois): os
+# ficheiros novos juntam-se, nunca substituem o manifest/checksums de quem lá
+# está — senão o macOS apagava do manifest tudo o que é Windows (e vice-versa).
+PRIOR_DIR="$(mktemp -d)"
+RELEASE_EXISTS=0
+if gh release view "$TAG" --repo "$REPO" &>/dev/null; then
+  RELEASE_EXISTS=1
+  gh release download "$TAG" --repo "$REPO" --dir "$PRIOR_DIR" \
+    --pattern checksums.sha256 --pattern manifest.json 2>/dev/null || true
+fi
+if [[ -f "$PRIOR_DIR/checksums.sha256" ]]; then
+  NEW_NAMES="$(printf '%s\n' "${UPLOAD_FILES[@]}")"
+  while read -r line; do
+    name="${line##* }"; name="${name#\*}"
+    grep -qxF "$name" <<< "$NEW_NAMES" || echo "$line" >> checksums.sha256
+  done < "$PRIOR_DIR/checksums.sha256"
+fi
+
 artifact_json() { # <ficheiro>
   printf '{ "filename": "%s", "sha256": "%s", "sizeBytes": %s, "signed": %s }' \
     "$1" "$(sha "$1" | awk '{print $1}')" "$(fsize "$1")" "$SIGNED"
@@ -167,9 +204,24 @@ ${platforms_json}
   "eula": "https://github.com/${REPO}/blob/main/EULA.md"
 }
 MANIFEST
+if [[ -f "$PRIOR_DIR/manifest.json" ]]; then
+  node - manifest.json "$PRIOR_DIR/manifest.json" <<'NODE'
+const fs = require('fs');
+const [cur, prior] = process.argv.slice(2);
+const c = JSON.parse(fs.readFileSync(cur, 'utf8'));
+const p = JSON.parse(fs.readFileSync(prior, 'utf8'));
+const have = new Set(c.platforms.map((x) => x.id));
+for (const plat of p.platforms || []) if (!have.has(plat.id)) c.platforms.push(plat);
+fs.writeFileSync(cur, JSON.stringify(c, null, 2) + '\n');
+NODE
+fi
 UPLOAD_FILES+=(manifest.json checksums.sha256)
 
-# Notas só com as secções do que esta release contém.
+# Notas só com as secções do que esta release contém (incluindo o que já lá estava).
+if [[ -f "$PRIOR_DIR/manifest.json" ]]; then
+  grep -q '"id": "macos"' manifest.json && HAS_MAC=1
+  grep -q '"id": "windows"' manifest.json && HAS_WIN=1
+fi
 NOTES_FILE="release-notes.md"
 {
   echo "## MUFUTU ${VERSION}"
@@ -191,9 +243,11 @@ NOTES_FILE="release-notes.md"
   echo "Licença: \`MUFUTU-LIC-*\` — licenca@mufutu.ao"
 } > "$NOTES_FILE"
 
-if gh release view "$TAG" --repo "$REPO" &>/dev/null; then
+if [[ "$RELEASE_EXISTS" -eq 1 ]]; then
   echo "→ Actualizar release ${TAG}..."
   gh release upload "$TAG" --repo "$REPO" --clobber "${UPLOAD_FILES[@]}"
+  # Só reescreve as notas quando esta publicação acrescentou uma plataforma.
+  [[ -f "$PRIOR_DIR/manifest.json" ]] && gh release edit "$TAG" --repo "$REPO" --notes-file "$NOTES_FILE"
 else
   echo "→ Criar release ${TAG}..."
   gh release create "$TAG" \
