@@ -1,28 +1,30 @@
 {
   "product": "MUFUTU",
-  "version": "1.0.48",
-  "tag": "v1.0.48",
+  "version": "1.0.50",
+  "tag": "v1.0.50",
   "channel": "stable",
-  "releasedAt": "2026-08-06T11:00:00Z",
+  "releasedAt": "2026-10-10T02:24:00Z",
   "cmmsCompatibility": "1.1.2",
   "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/latest",
   "_comment": "Fonte de verdade do 'version gate': os clientes (Windows, macOS, Android) leem este ficheiro via raw.githubusercontent.com/.../main/releases/latest.json no arranque. (1) Para OBRIGAR a actualizar instalações antigas: suba 'minimumVersion' da plataforma e faça commit para main — não é preciso publicar um release novo, entra em vigor no próximo arranque com rede. (2) Depois de publicar um release novo de verdade (tag + assets no GitHub Releases), actualize 'latestVersion' e 'downloadUrl' aqui para apontar para os ficheiros reais — nunca aponte para uma versão que ainda não foi publicada.",
   "platforms": {
     "macos": {
-      "latestVersion": "1.0.48",
+      "latestVersion": "1.0.49",
       "minimumVersion": "1.0.29",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.48/MUFUTU-1.0.48-arm64.dmg",
-      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.48/MUFUTU-1.0.48-arm64.dmg",
-      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.48/MUFUTU-1.0.48-arm64.zip",
-      "note": "Gatekeeper: usar «Instalar MUFUTU — clique aqui» no DMG ou xattr -cr. Electron 1.0.48 — login offline com fallback 502 do proxy; correcções de disponibilidade e férias."
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.49/MUFUTU-1.0.49-arm64.dmg",
+      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.49/MUFUTU-1.0.49-arm64.dmg",
+      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.49/MUFUTU-1.0.49-arm64.zip",
+      "note": "Gatekeeper: usar «Instalar MUFUTU — clique aqui» no DMG ou xattr -cr."
     },
     "windows": {
-      "latestVersion": "1.0.48",
+      "latestVersion": "1.0.50",
       "minimumVersion": "1.0.29",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.48/MUFUTU-Setup-1.0.48-x64.exe",
-      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.48/MUFUTU-Setup-1.0.48-x64.exe",
-      "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.48/MUFUTU-1.0.48-win-x64.zip",
-      "note": "Setup NSIS Electron 1.0.48 (mesmo app do macOS). Login offline com fallback 502. Assinado self-signed — SmartScreen pode avisar; Mais informações → Executar na mesma. ZIP portátil disponível."
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.50/MUFUTU-Web-Setup-1.0.50.exe",
+      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.50/MUFUTU-Web-Setup-1.0.50.exe",
+      "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.50/MUFUTU-1.0.50-win-x64.zip",
+      "note": "Instalador web de menos de 1 MB (descarrega o resto com verificação SHA-512); instalador completo, MSI e ZIP portátil também disponíveis. Assinado self-signed — SmartScreen pode avisar; Mais informações → Executar na mesma.",
+      "full": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.50/MUFUTU-Setup-1.0.50-x64.exe",
+      "msi": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.50/MUFUTU-1.0.50-x64.msi"
     },
     "android": {
       "latestVersion": "1.0.20",
