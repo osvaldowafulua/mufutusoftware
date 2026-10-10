@@ -100,9 +100,9 @@ jobs:
             if (-not $p.WaitForExit($minutes * 60 * 1000)) {
               Get-Process -Name 'MUFUTU*','msiexec' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
               try { $p.Kill() } catch { }
-              throw "$label: excedeu $minutes min — o instalador ficou preso (caixa de diálogo à espera de resposta?)"
+              throw "${label}: excedeu $minutes min — o instalador ficou preso (caixa de diálogo à espera de resposta?)"
             }
-            if ($p.ExitCode -ne 0) { throw "$label: exit $($p.ExitCode)" }
+            if ($p.ExitCode -ne 0) { throw "${label}: exit $($p.ExitCode)" }
           }
 
           switch ('${{ matrix.variant }}') {
