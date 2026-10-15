@@ -287,15 +287,19 @@ jobs:
           while ((Get-Date) -lt $deadline) {
             Start-Sleep -Seconds 5
             if ($proc.HasExited) { throw "MUFUTU fechou sozinho (exit $($proc.ExitCode)) — padrão «carrega e fecha»" }
+            # Desde a 1.0.51 o proxy :3847 exige o token do arranque (cookie que só a
+            # janela do MUFUTU tem): sem ele responde 403. A UI confirma-se no Next
+            # interno (:3848), só em loopback.
             try {
-              $resp = Invoke-WebRequest -Uri 'http://127.0.0.1:3847/login' -UseBasicParsing -TimeoutSec 5
-              if ($resp.StatusCode -eq 200) { $ok = $true; break }
+              $ui = Invoke-WebRequest -Uri 'http://127.0.0.1:3848/login' -UseBasicParsing -TimeoutSec 5 -SkipHttpErrorCheck
+              $px = Invoke-WebRequest -Uri 'http://127.0.0.1:3847/login' -UseBasicParsing -TimeoutSec 5 -SkipHttpErrorCheck
+              if ($ui.StatusCode -eq 200 -and $px.StatusCode -eq 403) { $ok = $true; break }
             } catch { }
           }
-          if (-not $ok) { throw 'UI não respondeu HTTP 200 em http://127.0.0.1:3847/login dentro de 240 s' }
+          if (-not $ok) { throw 'UI não respondeu HTTP 200 em :3848 com o proxy :3847 a recusar sem token (403) dentro de 240 s' }
 
-          # O servidor tem de ser um filho do MUFUTU.exe (Electron-as-Node), não um
-          # node.exe do PATH — senão o NSIS não o encontra ao actualizar/desinstalar.
+          # O servidor tem de ser um filho do MUFUTU.exe (utilityProcess desde a 1.0.51),
+          # não um node.exe do PATH — senão o NSIS não o encontra ao actualizar/desinstalar.
           $nodeSrv = Get-CimInstance Win32_Process -Filter "Name='node.exe'" -ErrorAction SilentlyContinue |
             Where-Object { $_.CommandLine -match 'launch-server' }
           if ($nodeSrv) { throw 'O servidor correu num node.exe externo em vez do runtime do MUFUTU.exe' }
@@ -334,12 +338,16 @@ jobs:
           while ((Get-Date) -lt $deadline) {
             Start-Sleep -Seconds 5
             if ($proc.HasExited) { throw "ZIP: MUFUTU fechou sozinho (exit $($proc.ExitCode))" }
+            # Desde a 1.0.51 o proxy :3847 exige o token do arranque (cookie que só a
+            # janela do MUFUTU tem): sem ele responde 403. A UI confirma-se no Next
+            # interno (:3848), só em loopback.
             try {
-              $resp = Invoke-WebRequest -Uri 'http://127.0.0.1:3847/login' -UseBasicParsing -TimeoutSec 5
-              if ($resp.StatusCode -eq 200) { $ok = $true; break }
+              $ui = Invoke-WebRequest -Uri 'http://127.0.0.1:3848/login' -UseBasicParsing -TimeoutSec 5 -SkipHttpErrorCheck
+              $px = Invoke-WebRequest -Uri 'http://127.0.0.1:3847/login' -UseBasicParsing -TimeoutSec 5 -SkipHttpErrorCheck
+              if ($ui.StatusCode -eq 200 -and $px.StatusCode -eq 403) { $ok = $true; break }
             } catch { }
           }
-          if (-not $ok) { throw 'ZIP: UI não respondeu HTTP 200 dentro de 240 s' }
+          if (-not $ok) { throw 'ZIP: UI não respondeu HTTP 200 em :3848 com o proxy :3847 a recusar sem token (403) dentro de 240 s' }
           Write-Host '✅ Smoke OK (ZIP portátil).'
           Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
           Get-Process -Name 'MUFUTU*' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
