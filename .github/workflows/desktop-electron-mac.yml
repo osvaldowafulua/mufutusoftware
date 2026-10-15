@@ -144,15 +144,20 @@ jobs:
               tail -60 "$HOME/Library/Application Support/MUFUTU/desktop.log" 2>/dev/null || true
               exit 1
             fi
-            if [[ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://127.0.0.1:3847/login || true)" == "200" ]]; then OK=1; break; fi
+            # Desde a 1.0.51 o proxy :3847 exige o token do arranque (cookie que só a
+            # janela do MUFUTU tem): sem ele responde 403 — é isso que se verifica.
+            # A UI em si confirma-se no Next interno (:3848), só em loopback.
+            UI="$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://127.0.0.1:3848/login || true)"
+            PROXY="$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://127.0.0.1:3847/login || true)"
+            if [[ "$UI" == "200" && "$PROXY" == "403" ]]; then OK=1; break; fi
           done
           if [[ "$OK" -ne 1 ]]; then
-            echo "::error::a UI não respondeu 200 em 240 s"
+            echo "::error::a UI não respondeu 200 em :3848 com o proxy :3847 a recusar sem token (403) em 240 s (último: UI=$UI proxy=$PROXY)"
             tail -40 "$WORK/app.out" || true
             tail -60 "$HOME/Library/Application Support/MUFUTU/desktop.log" 2>/dev/null || true
             exit 1
           fi
-          echo "✓ UI a servir em http://127.0.0.1:3847/login"
+          echo "✓ UI a servir (:3848) e proxy :3847 a recusar pedidos sem token (403)"
 
           sleep 15
           kill -0 "$PID" 2>/dev/null || { echo "::error::MUFUTU fechou depois de servir a UI"; tail -40 "$WORK/app.out"; exit 1; }
