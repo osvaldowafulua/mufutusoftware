@@ -1,30 +1,30 @@
 {
   "product": "MUFUTU",
-  "version": "1.0.53",
-  "tag": "v1.0.53",
+  "version": "1.0.54",
+  "tag": "v1.0.54",
   "channel": "stable",
-  "releasedAt": "2026-10-18T20:26:00Z",
-  "cmmsCompatibility": "1.1.4",
+  "releasedAt": "2026-10-18T23:03:00Z",
+  "cmmsCompatibility": "1.1.5",
   "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/latest",
   "_comment": "Fonte de verdade do 'version gate': os clientes (Windows, macOS, Android) leem este ficheiro via raw.githubusercontent.com/.../main/releases/latest.json no arranque. (1) Para OBRIGAR a actualizar instalações antigas: suba 'minimumVersion' da plataforma e faça commit para main — não é preciso publicar um release novo, entra em vigor no próximo arranque com rede. (2) Depois de publicar um release novo de verdade (tag + assets no GitHub Releases), actualize 'latestVersion' e 'downloadUrl' aqui para apontar para os ficheiros reais — nunca aponte para uma versão que ainda não foi publicada.",
   "platforms": {
     "macos": {
-      "latestVersion": "1.0.53",
+      "latestVersion": "1.0.54",
       "minimumVersion": "1.0.29",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.53/MUFUTU-1.0.53-arm64.dmg",
-      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.53/MUFUTU-1.0.53-arm64.dmg",
-      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.53/MUFUTU-1.0.53-arm64.zip",
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.54/MUFUTU-1.0.54-arm64.dmg",
+      "dmg": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.54/MUFUTU-1.0.54-arm64.dmg",
+      "zip": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.54/MUFUTU-1.0.54-arm64.zip",
       "note": "Gatekeeper: usar «Instalar MUFUTU — clique aqui» no DMG ou xattr -cr."
     },
     "windows": {
-      "latestVersion": "1.0.53",
+      "latestVersion": "1.0.54",
       "minimumVersion": "1.0.29",
-      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.53/MUFUTU-Web-Setup-1.0.53.exe",
-      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.53/MUFUTU-Web-Setup-1.0.53.exe",
-      "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.53/MUFUTU-1.0.53-win-x64.zip",
+      "downloadUrl": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.54/MUFUTU-Web-Setup-1.0.54.exe",
+      "installer": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.54/MUFUTU-Web-Setup-1.0.54.exe",
+      "portable": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.54/MUFUTU-1.0.54-win-x64.zip",
       "note": "Instalador web de menos de 1 MB (descarrega o resto com verificação SHA-512); instalador completo, MSI e ZIP portátil também disponíveis. Assinado self-signed — SmartScreen pode avisar; Mais informações → Executar na mesma.",
-      "full": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.53/MUFUTU-Setup-1.0.53-x64.exe",
-      "msi": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.53/MUFUTU-1.0.53-x64.msi"
+      "full": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.54/MUFUTU-Setup-1.0.54-x64.exe",
+      "msi": "https://github.com/osvaldowafulua/mufutusoftware/releases/download/v1.0.54/MUFUTU-1.0.54-x64.msi"
     },
     "android": {
       "latestVersion": "1.0.20",
