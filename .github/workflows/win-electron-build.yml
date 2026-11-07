@@ -77,6 +77,8 @@ jobs:
           # servidor local do smoke — o stub publicado tem a URL da release,
           # que ainda não existe durante o build.
           MUFUTU_CI_STUB_URL: http://127.0.0.1:18080
+          # Editores de Escritório (forks privados): sem este PAT de leitura a web embutida fica sem eles
+          OFFICE_GH_TOKEN: ${{ secrets.OFFICE_GH_TOKEN || secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
         run: |
           chmod +x mufutu/apps/desktop-mac/scripts/package-win.sh mufutu/apps/desktop-mac/scripts/verify-artifact.sh
           mufutu/apps/desktop-mac/scripts/package-win.sh "${{ steps.ver.outputs.version }}"
