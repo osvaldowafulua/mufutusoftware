@@ -108,6 +108,8 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Editores de Escritório (forks privados): sem este PAT de leitura a web embutida fica sem eles
+          OFFICE_GH_TOKEN: ${{ secrets.OFFICE_GH_TOKEN || secrets.MUFUTU_CMMS_CHECKOUT_TOKEN }}
         run: |
           chmod +x mufutu/apps/desktop-mac/scripts/*.sh
           mufutu/apps/desktop-mac/scripts/package.sh "${{ steps.ver.outputs.version }}"
